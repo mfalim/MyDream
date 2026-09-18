@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('google_id')->unique();
+            $table->string('avatar');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->enum('role', ['admin', 'client', 'vendor'])->default('client');
+            $table->enum('status', ['approved', 'pending', 'rejected'])->default('approved');
             $table->rememberToken();
             $table->timestamps();
         });
