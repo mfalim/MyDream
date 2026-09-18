@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 
@@ -10,25 +11,27 @@ class VendorController extends Controller
 {
     public function index()
     {
-        $vendors = Vendor::latest()->get();
+        $vendors = Vendor::with('category')->latest()->get();
 
         return view('admin.vendors.index', compact('vendors'));
     }
 
     public function create()
     {
-        return view('admin.vendors.create');
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.vendors.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'category' => 'required',
-            'phone' => 'required',
-            'address' => 'required',
-            'description' => 'nullable',
-            'photo' => 'nullable|image|max:2048',
+            'name' => 'required|string|max:255|unique:vendors,name',
+            'category_id' => 'required|integer|exists:categories,id',
+            'phone' => 'required|string|max:30',
+            'address' => 'required|string|max:1000',
+            'description' => 'nullable|string|max:2000',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         $photo = null;
@@ -39,7 +42,7 @@ class VendorController extends Controller
 
         Vendor::create([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'phone' => $request->phone,
             'address' => $request->address,
             'description' => $request->description,

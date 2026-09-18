@@ -25,11 +25,11 @@ class PackageController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric',
-            'photo' => 'nullable|image|max:2048',
+            'name' => 'required|string|max:255|unique:packages,name',
+            'price' => 'required|numeric|min:0',
+            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'vendors' => 'nullable|array',
-            'vendors.*' => 'exists:vendors,id',
+            'vendors.*' => 'integer|distinct|exists:vendors,id',
         ]);
 
         $photo = null;

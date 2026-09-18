@@ -44,8 +44,20 @@
                         Kategori
                     </label>
 
-                    <input type="text" name="category" class="form-control" placeholder="Contoh: Catering"
-                        value="{{ old('category') }}" required>
+                    @if($categories->isEmpty())
+                        <div class="alert alert-warning mb-0">
+                            Belum ada kategori. <a href="{{ route('admin.categories.create') }}">Buat kategori terlebih dahulu.</a>
+                        </div>
+                    @else
+                        <select name="category_id" class="form-select" required>
+                            <option value="">Pilih kategori</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
 
                 </div>
 

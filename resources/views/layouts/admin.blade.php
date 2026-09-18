@@ -121,6 +121,11 @@
                     Vendor
                 </a>
 
+                <a href="{{ route('admin.categories.index') }}"
+                   class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    Kategori
+                </a>
+
             </div>
 
         </div>

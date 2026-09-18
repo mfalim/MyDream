@@ -57,7 +57,7 @@
                                 </td>
 
                                 <td>
-                                    {{ $vendor->category }}
+                                    {{ $vendor->category?->name ?? $vendor->category ?? '-' }}
                                 </td>
 
                                 <td>
