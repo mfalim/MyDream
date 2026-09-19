@@ -36,6 +36,10 @@ Route::prefix('admin')
             ->only([
                 'index',
                 'create',
-                'store'
+                'store',
+                'show',
+                'edit',
+                'update',
+                'destroy'
             ]);
     });
