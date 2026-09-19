@@ -12,7 +12,7 @@ return new class extends Migration
             $table->foreignId('category_id')
                 ->nullable()
                 ->after('name')
-                ->constrained('categories')
+                ->constrained('categories') 
                 ->nullOnDelete();
         });
     }
