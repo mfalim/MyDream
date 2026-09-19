@@ -4,12 +4,36 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/login', function () {
+    return view('login.login');
+})->name('login');
+
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+
+// contoh middleware login
+Route::middleware('auth')->group(function () {
+
+    Route::get('/login/profile', [ClientController::class, 'profile'])
+        ->name('client.profile');
+
+    Route::post('/login/profile', [ClientController::class, 'storeProfile'])
+        ->name('client.profile.store');
+
+});
+
+
 
 Route::prefix('admin')
     ->name('admin.')
