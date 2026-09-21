@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\OrganizerEventController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Client\ClientController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +59,34 @@ Route::prefix('admin')
                 'store'
             ]);
 
+        Route::resource('event_day', BookingController::class)
+            ->only([
+                'index',
+                'create',
+                'store'
+            ]);
+        
+        Route::get('/event/{id}', [BookingController::class, 'show'])->name('event.show');
+        Route::get('/event/{id}/edit', [BookingController::class, 'edit'])->name('event.edit');
+        Route::put('/event/{id}', [BookingController::class, 'update'])->name('event.update');
+        
+        Route::get('/booking/{booking}/event-days', [BookingController::class, 'getEventDays'])->name('booking.event-days');
+        
+        Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
+        Route::get('/events/by-month', [CalendarController::class, 'getEventsByMonth'])->name('events.by-month');
+        Route::get('/events/by-date', [CalendarController::class, 'getEventsByDate'])->name('events.by-date');
+        
+        Route::resource('organizer-event', OrganizerEventController::class)
+            ->only([
+                'index',
+                'create',
+                'store',
+                'show',
+                'edit',
+                'update',
+                'destroy'
+            ]);
+        
         Route::resource('vendors', VendorController::class)
             ->only([
                 'index',

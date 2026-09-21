@@ -12,11 +12,15 @@ class Package extends Model
         'photo',
     ];
 
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
     public function vendors()
     {
         return $this->belongsToMany(Vendor::class, 'package_vendor')
             ->withPivot('status')
             ->withTimestamps();
     }
-    //
 }

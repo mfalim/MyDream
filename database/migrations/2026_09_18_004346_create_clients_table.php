@@ -17,9 +17,11 @@ return new class extends Migration
             ->constrained('users')
             ->onDelete('cascade');
 
-            $table->string('full_name');
-            $table->string('address');
-            $table->string('phone');
+            $table->string('groom_name');
+            $table->string('bride_name');
+            $table->string('groom_phone')->nullable();
+            $table->string('bride_phone')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

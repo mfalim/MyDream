@@ -7,9 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     protected $fillable = [
-        'users_id', 'full_name', 
-        'address', 'phone'
+        'users_id', 
+        'groom_name', 
+        'bride_name',
+        'groom_phone',
+        'bride_phone',
+        'email'
     ];
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 
     public static function findClientByIdUser($idUser) {
         $client = self::select('id')
