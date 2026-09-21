@@ -8,15 +8,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->dropColumn('category');
+        Schema::table('members', function (Blueprint $table) {
+            $table->dropColumn('tier');
         });
     }
 
     public function down(): void
     {
-        Schema::table('vendors', function (Blueprint $table) {
-            $table->string('category')->nullable();
+        Schema::table('members', function (Blueprint $table) {
+            $table->string('tier')->nullable()->after('position');
         });
     }
 };

@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('name');
-            $table->string('category');
             $table->string('phone');
             $table->text('address');
             $table->text('description')->nullable();
-            $table->string('photo')->nullable();
             $table->timestamps();
         });
     }

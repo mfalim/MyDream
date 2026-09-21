@@ -38,14 +38,36 @@
                 </div>
 
 
-                <div class="mb-3">
+                <div class="mb-4">
 
                     <label class="form-label">
-                        Harga
+                        Tanggal Ketersediaan Paket
                     </label>
 
-                    <input type="number" name="price" class="form-control" value="{{ old('price') }}" required>
+                    <input type="date" name="availability_date" class="form-control"
+                        value="{{ old('availability_date') }}" required>
 
+                </div>
+
+
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Durasi Pemakaian Paket</label>
+                        <div class="input-group">
+                            <input type="number" name="duration" class="form-control"
+                                value="{{ old('duration') }}" min="0.01" step="0.01" required>
+                            <span class="input-group-text">jam</span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Kapasitas Tamu</label>
+                        <div class="input-group">
+                            <input type="number" name="guest_capacity" class="form-control"
+                                value="{{ old('guest_capacity') }}" min="1" required>
+                            <span class="input-group-text">tamu</span>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -78,7 +100,7 @@
                                 {{ $vendor->name }}
 
                                 <span class="text-muted">
-                                    ({{ $vendor->category }})
+                                    ({{ $vendor->category?->name ?? '-' }} · Rp {{ number_format($vendor->price, 0, ',', '.') }})
                                 </span>
 
                             </label>

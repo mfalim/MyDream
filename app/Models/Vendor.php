@@ -7,14 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Vendor extends Model
 {
     protected $fillable = [
-        'user_id',
         'name',
         'category_id',
-        'category',
+        'price',
         'phone',
         'address',
         'description',
-        'photo',
     ];
 
     public function user()
@@ -25,6 +23,13 @@ class Vendor extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function photos()
+    {
+        return $this->hasMany(VendorPhoto::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 
     public function packages()
