@@ -26,7 +26,7 @@ class CalendarController extends Controller
         $startDate = Carbon::parse($month . '-01')->startOfMonth();
         $endDate = Carbon::parse($month . '-01')->endOfMonth();
 
-        $clientEvents = Event::with(['booking.client', 'eventVendors.vendor', 'teamMembers.user'])
+        $clientEvents = Event::with(['booking.client', 'schedules.vendor', 'eventMembers.member'])
             ->whereBetween('event_date', [$startDate, $endDate])
             ->get()
             ->map(function ($event) {
@@ -46,8 +46,8 @@ class CalendarController extends Controller
                         ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i')
                         : null,
                     'status' => $event->status,
-                    'vendor_count' => $event->eventVendors->count(),
-                    'team_count' => $event->teamMembers->count()
+                    'vendor_count' => $event->schedules->count(),
+                    'team_count' => $event->eventMembers->count()
                 ];
             });
 
@@ -91,13 +91,13 @@ class CalendarController extends Controller
             return response()->json(['error' => 'Date parameter required'], 400);
         }
 
-        $clientEvents = Event::with(['booking.client', 'eventVendors.vendor', 'teamMembers.user', 'package'])
+        $clientEvents = Event::with(['booking.client', 'schedules.vendor', 'eventMembers.member', 'package'])
             ->whereDate('event_date', $date)
             ->get()
             ->map(function ($event) {
                 $booking = $event->booking;
                 $client = $booking ? $booking->client : null;
-                $leadDirector = $event->teamMembers->where('role', 'lead_director')->first();
+                $leadDirector = $event->eventMembers->first();
                 
                 return [
                     'id' => $event->id,
@@ -112,16 +112,16 @@ class CalendarController extends Controller
                         : 'Belum ditentukan',
                     'status' => ucfirst($event->status),
                     'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : 'N/A'),
-                    'vendor_count' => $event->eventVendors->count(),
-                    'vendors' => $event->eventVendors->map(function($ev) {
+                    'vendor_count' => $event->schedules->count(),
+                    'vendors' => $event->schedules->map(function($schedule) {
                         return [
-                            'name' => $ev->vendor->name,
-                            'category' => $ev->vendor->category ? $ev->vendor->category->name : 'N/A',
-                            'status' => $ev->status
+                            'name' => $schedule->vendor ? $schedule->vendor->name : 'N/A',
+                            'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'N/A',
+                            'status' => $schedule->status
                         ];
                     }),
-                    'team_count' => $event->teamMembers->count(),
-                    'lead_director' => $leadDirector ? $leadDirector->user->name : 'Belum ditentukan',
+                    'team_count' => $event->eventMembers->count(),
+                    'lead_director' => $leadDirector && $leadDirector->member ? $leadDirector->member->name : 'Belum ditentukan',
                     'notes' => $event->notes
                 ];
             });

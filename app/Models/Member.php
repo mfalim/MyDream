@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Member extends Model
+{
+    protected $fillable = [
+        'user_id',
+        'member_code',
+        'name',
+        'call_sign',
+        'phone',
+        'email',
+        'domicile',
+        'photo',
+        'division',
+        'position',
+        'specialization',
+        'certification',
+        'ht_code',
+        'emergency_name',
+        'emergency_phone',
+        'daily_fee',
+        'status',
+    ];
+
+    protected $casts = [
+        'daily_fee' => 'decimal:2',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function events()
+    {
+        return $this->belongsToMany(Event::class, 'event_members')
+            ->withPivot('role', 'notes', 'status')
+            ->withTimestamps();
+    }
+}

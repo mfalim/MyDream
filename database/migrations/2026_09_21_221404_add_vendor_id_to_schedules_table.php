@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('event_vendors', function (Blueprint $table) {
-            $table->foreign('event_id')->references('id')->on('events')->cascadeOnDelete();
-            $table->foreign('vendor_id')->references('id')->on('vendors')->cascadeOnDelete();
+        Schema::table('schedules', function (Blueprint $table) {
+            $table->foreignId('vendor_id')->nullable()->after('event_id')->constrained('vendors')->onDelete('cascade');
         });
     }
 
@@ -22,9 +21,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('event_vendors', function (Blueprint $table) {
-            $table->dropForeign(['event_id']);
+        Schema::table('schedules', function (Blueprint $table) {
             $table->dropForeign(['vendor_id']);
+            $table->dropColumn('vendor_id');
         });
     }
 };

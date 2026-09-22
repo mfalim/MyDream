@@ -65,6 +65,17 @@
                 <div class="mb-3">
 
                     <label class="form-label">
+                        Harga Vendor
+                    </label>
+
+                    <input type="number" name="price" class="form-control" value="{{ old('price') }}" min="0" step="0.01" required>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
                         Nomor Telepon
                     </label>
 
@@ -101,7 +112,12 @@
                         Foto Vendor
                     </label>
 
-                    <input type="file" name="photo" class="form-control">
+                    <input type="file" name="photos[]" class="form-control" accept=".jpg,.jpeg,.png,.webp" multiple>
+
+                    <small class="text-muted">
+                        Kamu dapat memilih beberapa foto sekaligus. Maksimal 10 foto,
+                        masing-masing maksimal 2 MB.
+                    </small>
 
                 </div>
 

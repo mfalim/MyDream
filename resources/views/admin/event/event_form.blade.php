@@ -164,24 +164,17 @@
                         <div class="team-list" id="teamList">
                             <div class="row g-3 mb-3 team-item">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Pilih User</label>
+                                    <label class="form-label fw-semibold">Pilih Member</label>
                                     <select class="form-select" name="team_member_id[]">
-                                        <option value="">Pilih User</option>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        <option value="">Pilih Member</option>
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-5">
                                     <label class="form-label fw-semibold">Role</label>
-                                    <select class="form-select" name="team_member_role[]">
-                                        <option value="lead_director">Lead Director</option>
-                                        <option value="co_director">Co Director</option>
-                                        <option value="coordinator">Coordinator</option>
-                                        <option value="technical">Technical</option>
-                                        <option value="documentation">Documentation</option>
-                                        <option value="other">Other</option>
-                                    </select>
+                                    <input type="text" class="form-control" name="team_member_role[]" placeholder="Contoh: Lead Director, Coordinator">
                                 </div>
                                 <div class="col-md-1 d-flex align-items-end">
                                     <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">

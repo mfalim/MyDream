@@ -42,18 +42,25 @@
         @php
             $booking = $event->booking;
             $client = $booking ? $booking->client : null;
-            $leadDirector = $event->teamMembers->where('role', 'lead_director')->first();
+            $leadMember = $event->eventMembers->first();
             $statusBadge = [
                 'scheduled' => 'secondary',
                 'ongoing' => 'warning',
                 'completed' => 'success',
                 'cancelled' => 'danger'
             ][$event->status] ?? 'secondary';
+            
+            $vendorPhotos = $event->schedules ? $event->schedules->map(function($schedule) {
+                return $schedule->vendor && $schedule->vendor->photos && $schedule->vendor->photos->count() > 0 ? 
+                    ($schedule->vendor->photos->where('is_cover', true)->first() ?? $schedule->vendor->photos->first()) : null;
+            })->filter()->take(3) : collect();
         @endphp
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="position-relative">
-                    @if($event->photo)
+                    @if($vendorPhotos->count() > 0)
+                        <img src="{{ asset('storage/' . $vendorPhotos->first()->photo) }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
+                    @elseif($event->photo)
                         <img src="{{ asset('storage/' . $event->photo) }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
                     @else
                         <img src="https://images.unsplash.com/photo-1519167758481-83f29da8fd4e?w=400" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
@@ -98,17 +105,17 @@
                     
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-light text-dark">TIM INTERNAL WO</span>
-                        <span class="text-muted">{{ $event->teamMembers->count() }} Personel</span>
+                        <span class="text-muted">{{ $event->eventMembers->count() }} Personel</span>
                     </div>
                     
-                    @if($leadDirector)
+                    @if($leadMember)
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
                             <i class="bi bi-person-fill"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <small class="d-block fw-bold">{{ $leadDirector->user->name }}</small>
-                            <small class="text-muted">Lead Wedding Director</small>
+                            <small class="d-block fw-bold">{{ $leadMember->member->name }}</small>
+                            <small class="text-muted">{{ $leadMember->role ?? $leadMember->member->position }}</small>
                         </div>
                     </div>
                     @endif
@@ -116,16 +123,16 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-1">
                             <span class="badge bg-light text-dark">VENDOR BERTUGAS</span>
-                            <span class="badge bg-info">{{ $event->eventVendors->count() }} Vendor</span>
+                            <span class="badge bg-info">{{ $event->schedules->count() }} Vendor</span>
                         </div>
                         <div class="d-flex flex-wrap gap-1 mb-2">
-                            @forelse($event->eventVendors->take(3) as $eventVendor)
-                                <span class="badge bg-secondary">{{ $eventVendor->vendor->name }}</span>
+                            @forelse($event->schedules->take(3) as $schedule)
+                                <span class="badge bg-secondary">{{ $schedule->vendor ? $schedule->vendor->name : 'N/A' }}</span>
                             @empty
                                 <span class="badge bg-light text-dark">Belum ada vendor</span>
                             @endforelse
-                            @if($event->eventVendors->count() > 3)
-                                <span class="badge bg-secondary">+{{ $event->eventVendors->count() - 3 }} lagi</span>
+                            @if($event->schedules->count() > 3)
+                                <span class="badge bg-secondary">+{{ $event->schedules->count() - 3 }} lagi</span>
                             @endif
                         </div>
                     </div>

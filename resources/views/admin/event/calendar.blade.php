@@ -11,7 +11,7 @@
                 <h2 class="fw-bold mb-2">Kalender & Tanggal Acara Berlangsung</h2>
                 <p class="text-muted" style="font-size: 0.9rem;">Menampilkan jadwal rangkaian acara, ganti next, dan timeline operasional WO PROJECT</p>
             </div>
-            <button class="btn btn-dark"><i class="bi bi-plus-circle"></i> Jadwal Acara Baru</button>
+            <a href="{{ route('admin.event_day.create') }}" class="btn btn-dark"><i class="bi bi-plus-circle"></i> Jadwal Acara Baru</a>
         </div>
     </div>
 

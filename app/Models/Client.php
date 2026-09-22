@@ -15,6 +15,11 @@ class Client extends Model
         'email'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id');
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);

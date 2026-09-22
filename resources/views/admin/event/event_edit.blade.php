@@ -146,27 +146,20 @@
                         </div>
 
                         <div class="team-list" id="teamList">
-                            @forelse($event->teamMembers as $member)
+                            @forelse($event->eventMembers as $eventMember)
                             <div class="row g-3 mb-3 team-item">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Pilih User</label>
+                                    <label class="form-label fw-semibold">Pilih Member</label>
                                     <select class="form-select" name="team_member_id[]">
-                                        <option value="">Pilih User</option>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}" {{ $member->user_id == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
+                                        <option value="">Pilih Member</option>
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}" {{ $eventMember->member_id == $member->id ? 'selected' : '' }}>{{ $member->name }} ({{ $member->call_sign }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-5">
                                     <label class="form-label fw-semibold">Role</label>
-                                    <select class="form-select" name="team_member_role[]">
-                                        <option value="lead_director" {{ $member->role == 'lead_director' ? 'selected' : '' }}>Lead Director</option>
-                                        <option value="co_director" {{ $member->role == 'co_director' ? 'selected' : '' }}>Co Director</option>
-                                        <option value="coordinator" {{ $member->role == 'coordinator' ? 'selected' : '' }}>Coordinator</option>
-                                        <option value="technical" {{ $member->role == 'technical' ? 'selected' : '' }}>Technical</option>
-                                        <option value="documentation" {{ $member->role == 'documentation' ? 'selected' : '' }}>Documentation</option>
-                                        <option value="other" {{ $member->role == 'other' ? 'selected' : '' }}>Other</option>
-                                    </select>
+                                    <input type="text" class="form-control" name="team_member_role[]" value="{{ $eventMember->role }}" placeholder="Contoh: Lead Director, Coordinator">
                                 </div>
                                 <div class="col-md-1 d-flex align-items-end">
                                     <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">
@@ -177,24 +170,17 @@
                             @empty
                             <div class="row g-3 mb-3 team-item">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Pilih User</label>
+                                    <label class="form-label fw-semibold">Pilih Member</label>
                                     <select class="form-select" name="team_member_id[]">
-                                        <option value="">Pilih User</option>
-                                        @foreach($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        <option value="">Pilih Member</option>
+                                        @foreach($members as $member)
+                                            <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-md-5">
                                     <label class="form-label fw-semibold">Role</label>
-                                    <select class="form-select" name="team_member_role[]">
-                                        <option value="lead_director">Lead Director</option>
-                                        <option value="co_director">Co Director</option>
-                                        <option value="coordinator">Coordinator</option>
-                                        <option value="technical">Technical</option>
-                                        <option value="documentation">Documentation</option>
-                                        <option value="other">Other</option>
-                                    </select>
+                                    <input type="text" class="form-control" name="team_member_role[]" placeholder="Contoh: Lead Director, Coordinator">
                                 </div>
                                 <div class="col-md-1 d-flex align-items-end">
                                     <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">
@@ -253,14 +239,14 @@
                             </div>
 
                             <div class="vendor-list" id="vendorList">
-                                @forelse($event->eventVendors as $eventVendor)
+                                @forelse($event->schedules as $schedule)
                                 <div class="row g-3 mb-3 vendor-item">
                                     <div class="col-md-5">
                                         <label class="form-label fw-semibold">Pilih Vendor</label>
                                         <select class="form-select" name="vendor_id[]">
                                             <option value="">Pilih Vendor</option>
                                             @foreach($vendors as $vendor)
-                                                <option value="{{ $vendor->id }}" {{ $eventVendor->vendor_id == $vendor->id ? 'selected' : '' }}>
+                                                <option value="{{ $vendor->id }}" {{ $schedule->vendor_id == $vendor->id ? 'selected' : '' }}>
                                                     {{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}
                                                 </option>
                                             @endforeach
@@ -268,19 +254,18 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Waktu Mulai</label>
-                                        <input type="time" class="form-control" name="vendor_start_time[]" value="{{ $eventVendor->start_time ? \Carbon\Carbon::parse($eventVendor->start_time)->format('H:i') : '' }}">
+                                        <input type="time" class="form-control" name="vendor_start_time[]" value="{{ $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '' }}">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Waktu Selesai</label>
-                                        <input type="time" class="form-control" name="vendor_end_time[]" value="{{ $eventVendor->end_time ? \Carbon\Carbon::parse($eventVendor->end_time)->format('H:i') : '' }}">
+                                        <input type="time" class="form-control" name="vendor_end_time[]" value="{{ $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '' }}">
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Status</label>
                                         <select class="form-select" name="vendor_status[]">
-                                            <option value="pending" {{ $eventVendor->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                            <option value="confirmed" {{ $eventVendor->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                            <option value="on_site" {{ $eventVendor->status == 'on_site' ? 'selected' : '' }}>On-Site</option>
-                                            <option value="loading" {{ $eventVendor->status == 'loading' ? 'selected' : '' }}>Loading</option>
+                                            <option value="pending" {{ $schedule->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="approved" {{ $schedule->status == 'approved' ? 'selected' : '' }}>Approved</option>
+                                            <option value="rejected" {{ $schedule->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
                                         </select>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">
@@ -368,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const vendors = JSON.parse(selectedOption.getAttribute('data-vendors') || '[]');
             
             // Get existing event vendors for this event
-            const existingVendors = @json($event->eventVendors->keyBy('vendor_id'));
+            const existingVendors = @json($event->schedules->keyBy('vendor_id'));
             
             let vendorHTML = '';
             

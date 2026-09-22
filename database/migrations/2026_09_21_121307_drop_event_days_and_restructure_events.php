@@ -12,11 +12,25 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropForeign(['event_day_id']);
+        });
+
+        if (!Schema::hasColumn('events', 'booking_id')) {
+            Schema::table('events', function (Blueprint $table) {
+                $table->foreignId('booking_id')->after('id')->constrained('bookings')->cascadeOnDelete();
+            });
+        }
+
         if (!Schema::hasColumn('events', 'event_date')) {
             Schema::table('events', function (Blueprint $table) {
                 $table->date('event_date')->after('event_type');
             });
         }
+
+        Schema::table('events', function (Blueprint $table) {
+            $table->dropColumn('event_day_id');
+        });
 
         Schema::table('schedules', function (Blueprint $table) {
             $table->dropForeign(['event_day_id']);

@@ -3,6 +3,10 @@
 @section('title', 'Vendor')
 @section('page-title', 'Vendor Rekanan')
 
+@push('styles')
+    @vite('resources/css/admin/vendors/index.css')
+@endpush
+
 @section('content')
 
     <div class="vendor-page">
@@ -69,89 +73,98 @@
 
             @forelse ($vendors as $vendor)
 
-                <div class="vendor-card">
+                            <div class="vendor-card">
 
-                    {{-- Foto --}}
-                    <div class="vendor-image">
+                                {{-- Foto --}}
+                                <div class="vendor-image">
 
-                        @if ($vendor->photo)
-                            <img src="{{ asset('storage/' . $vendor->photo) }}" alt="{{ $vendor->name }}">
-                        @else
-                            <div class="vendor-no-image">
-                                <span>📷</span>
-                                <small>Tidak ada foto</small>
+                                    @php
+                                        $coverPhoto = $vendor->photos->firstWhere('is_cover', true)
+                                            ?? $vendor->photos->first();
+                                    @endphp
+
+                                    @if ($coverPhoto)
+                                        <img src="{{ asset('storage/' . $coverPhoto->photo) }}" alt="{{ $vendor->name }}">
+                                    @else
+                                        <div class="vendor-no-image">
+                                            <span>📷</span>
+                                            <small>Tidak ada foto</small>
+                                        </div>
+                                    @endif
+
+                                    <span class="vendor-category">
+                                        {{ $vendor->category?->name ?? '-' }}
+                                    </span>
+
+                                </div>
+
+                            {{-- Content --}}
+                            <div class="vendor-card-body">
+
+                                <h4>{{ $vendor->name }}</h4>
+
+                                <div class="vendor-location">
+                                    📍 {{ $vendor->address }}
+                                </div>
+
+                                <div class="vendor-phone">
+                                    ☎ {{ $vendor->phone }}
+                                </div>
+
+                                <div class="vendor-price">
+                                    Rp {{ number_format($vendor->price, 0, ',', '.') }}
+                                </div>
+
+                                @if ($vendor->description)
+                                    <p class="vendor-description">
+                                        {{ $vendor->description }}
+                                    </p>
+                                @endif
+
+                                {{-- Lihat Detail --}}
+                                <a href="{{ route('admin.vendors.show', $vendor) }}" class="btn-detail-vendor">
+                                    Lihat Detail
+                                </a>
+
+                                {{-- Hubungi WhatsApp --}}
+                                @php
+                $whatsappNumber = preg_replace('/\D+/', '', $vendor->phone);
+
+                if (str_starts_with($whatsappNumber, '0')) {
+                    $whatsappNumber = '62' . substr($whatsappNumber, 1);
+                }
+
+                $whatsappMessage = urlencode(
+                    'Halo ' . $vendor->name . ', saya ingin menanyakan mengenai layanan vendor wedding Anda.'
+                );
+                                @endphp
+
+                                <a href="https://wa.me/{{ $whatsappNumber }}?text={{ $whatsappMessage }}" target="_blank" class="btn-whatsapp">
+                                    ☎ Hubungi Vendor
+                                </a>
+
+                                {{-- Edit & Delete --}}
+                                <div class="vendor-actions">
+
+                                    <a href="{{ route('admin.vendors.edit', $vendor) }}" class="btn-edit-vendor">
+                                        ✏ Edit
+                                    </a>
+
+                                    <form action="{{ route('admin.vendors.destroy', $vendor) }}" method="POST"
+                                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus vendor ini?')">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="btn-delete-vendor">
+                                            🗑 Hapus
+                                        </button>
+                                    </form>
+
+                                </div>
+
                             </div>
-                        @endif
 
-                        <span class="vendor-category">
-                            {{ $vendor->category?->name ?? '-' }}
-                        </span>
-
-                    </div>
-
-                {{-- Content --}}
-                <div class="vendor-card-body">
-
-                    <h4>{{ $vendor->name }}</h4>
-
-                    <div class="vendor-location">
-                        📍 {{ $vendor->address }}
-                    </div>
-
-                    <div class="vendor-phone">
-                        ☎ {{ $vendor->phone }}
-                    </div>
-
-                    @if ($vendor->description)
-                        <p class="vendor-description">
-                            {{ $vendor->description }}
-                        </p>
-                    @endif
-
-                    {{-- Lihat Detail --}}
-                    <a href="{{ route('admin.vendors.show', $vendor) }}" class="btn-detail-vendor">
-                        Lihat Detail
-                    </a>
-
-                    {{-- Hubungi WhatsApp --}}
-                    @php
-                        $whatsappNumber = preg_replace('/\D+/', '', $vendor->phone);
-
-                        if (str_starts_with($whatsappNumber, '0')) {
-                            $whatsappNumber = '62' . substr($whatsappNumber, 1);
-                        }
-
-                        $whatsappMessage = urlencode(
-                            'Halo ' . $vendor->name . ', saya ingin menanyakan mengenai layanan vendor wedding Anda.'
-                        );
-                    @endphp
-
-                    <a href="https://wa.me/{{ $whatsappNumber }}?text={{ $whatsappMessage }}" target="_blank" class="btn-whatsapp">
-                        ☎ Hubungi Vendor
-                    </a>
-
-                    {{-- Edit & Delete --}}
-                    <div class="vendor-actions">
-
-                        <a href="{{ route('admin.vendors.edit', $vendor) }}" class="btn-edit-vendor">
-                            ✏ Edit
-                        </a>
-
-                        <form action="{{ route('admin.vendors.destroy', $vendor) }}" method="POST"
-                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus vendor ini?')">
-                            @csrf
-                            @method('DELETE')
-
-                            <button type="submit" class="btn-delete-vendor">
-                                🗑 Hapus
-                            </button>
-                        </form>
-
-                    </div>
-
-                </div>
-
-                </div>
+                            </div>
 
             @empty
 

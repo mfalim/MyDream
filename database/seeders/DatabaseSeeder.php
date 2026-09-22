@@ -8,6 +8,10 @@ use App\Models\Vendor;
 use App\Models\Package;
 use App\Models\Client;
 use App\Models\Booking;
+use App\Models\Member;
+use App\Models\Event;
+use App\Models\Schedule;
+use App\Models\EventMember;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,12 +22,50 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        User::create([
+        $adminUser = User::create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'google_id' => 'admin_123456',
             'avatar' => 'https://ui-avatars.com/api/?name=Admin+User',
             'role' => 'admin',
+            'status' => 'approved',
+        ]);
+
+        // Create member users
+        $memberUser1 = User::create([
+            'name' => 'Budi Santoso',
+            'email' => 'budi@example.com',
+            'google_id' => 'budi_123456',
+            'avatar' => 'https://ui-avatars.com/api/?name=Budi+Santoso',
+            'role' => 'member',
+            'status' => 'approved',
+        ]);
+
+        $memberUser2 = User::create([
+            'name' => 'Siti Rahayu',
+            'email' => 'siti@example.com',
+            'google_id' => 'siti_123456',
+            'avatar' => 'https://ui-avatars.com/api/?name=Siti+Rahayu',
+            'role' => 'member',
+            'status' => 'approved',
+        ]);
+
+        $memberUser3 = User::create([
+            'name' => 'Ahmad Fadli',
+            'email' => 'fadli@example.com',
+            'google_id' => 'fadli_123456',
+            'avatar' => 'https://ui-avatars.com/api/?name=Ahmad+Fadli',
+            'role' => 'member',
+            'status' => 'approved',
+        ]);
+
+        // Create client user
+        $clientUser = User::create([
+            'name' => 'John Doe',
+            'email' => 'johndoe@example.com',
+            'google_id' => 'john_123456',
+            'avatar' => 'https://ui-avatars.com/api/?name=John+Doe',
+            'role' => 'client',
             'status' => 'approved',
         ]);
 
@@ -43,16 +85,11 @@ class DatabaseSeeder extends Seeder
             Category::create(['name' => $categoryName]);
         }
 
-        // Create vendors
+        // Create vendors (simplified - only 3 vendors)
         $vendorData = [
             ['name' => 'Delicious Catering', 'category_id' => 1, 'phone' => '081234567890', 'address' => 'Jakarta Selatan'],
             ['name' => 'Golden Moments Photography', 'category_id' => 2, 'phone' => '081234567891', 'address' => 'Jakarta Pusat'],
             ['name' => 'Elegant Decor', 'category_id' => 3, 'phone' => '081234567892', 'address' => 'Jakarta Barat'],
-            ['name' => 'Live Band Harmony', 'category_id' => 4, 'phone' => '081234567893', 'address' => 'Jakarta Timur'],
-            ['name' => 'Perfect Shot Videography', 'category_id' => 5, 'phone' => '081234567894', 'address' => 'Jakarta Utara'],
-            ['name' => 'Glamour Makeup Studio', 'category_id' => 6, 'phone' => '081234567895', 'address' => 'Tangerang'],
-            ['name' => 'Sweet Dreams Cake', 'category_id' => 7, 'phone' => '081234567896', 'address' => 'Bekasi'],
-            ['name' => 'Crystal Sound System', 'category_id' => 8, 'phone' => '081234567897', 'address' => 'Depok'],
         ];
 
         foreach ($vendorData as $vendor) {
@@ -60,41 +97,31 @@ class DatabaseSeeder extends Seeder
                 'user_id' => null,
                 'name' => $vendor['name'],
                 'category_id' => $vendor['category_id'],
+                'price' => 5000000,
                 'phone' => $vendor['phone'],
                 'address' => $vendor['address'],
                 'description' => 'Professional ' . $vendor['name'] . ' services',
-                'photo' => null,
             ]);
         }
 
-        // Create packages with vendors
+        // Create packages with vendors (simplified - only 2 packages)
         $packages = [
             [
                 'name' => 'Standard Package',
-                'price' => 25000000,
-                'vendor_ids' => [1, 2, 3], // Catering, Photography, Decoration
+                'vendor_ids' => [1, 2],
             ],
             [
                 'name' => 'Premium Package',
-                'price' => 50000000,
-                'vendor_ids' => [1, 2, 3, 4, 5], // + Entertainment, Videography
-            ],
-            [
-                'name' => 'Grand Package',
-                'price' => 75000000,
-                'vendor_ids' => [1, 2, 3, 4, 5, 6, 7], // + Makeup, Cake
-            ],
-            [
-                'name' => 'VIP Package',
-                'price' => 100000000,
-                'vendor_ids' => [1, 2, 3, 4, 5, 6, 7, 8], // All vendors
+                'vendor_ids' => [1, 2, 3],
             ],
         ];
 
         foreach ($packages as $packageData) {
             $package = Package::create([
                 'name' => $packageData['name'],
-                'price' => $packageData['price'],
+                'availability_date' => now()->addDays(30),
+                'duration' => 8,
+                'guest_capacity' => 500,
                 'photo' => null,
             ]);
 
@@ -108,10 +135,151 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        // Create Members
+        $members = [
+            [
+                'user_id' => $memberUser1->id,
+                'member_code' => 'MBR001',
+                'name' => 'Budi Santoso',
+                'call_sign' => 'Budi',
+                'phone' => '081234567800',
+                'email' => 'budi@example.com',
+                'domicile' => 'Jakarta',
+                'division' => 'Coordinator',
+                'position' => 'Lead Coordinator',
+                'specialization' => 'Event Management',
+                'daily_fee' => 500000,
+                'status' => 'active',
+            ],
+            [
+                'user_id' => $memberUser2->id,
+                'member_code' => 'MBR002',
+                'name' => 'Siti Rahayu',
+                'call_sign' => 'Siti',
+                'phone' => '081234567801',
+                'email' => 'siti@example.com',
+                'domicile' => 'Jakarta',
+                'division' => 'Documentation',
+                'position' => 'Photographer',
+                'specialization' => 'Photography',
+                'daily_fee' => 400000,
+                'status' => 'active',
+            ],
+            [
+                'user_id' => $memberUser3->id,
+                'member_code' => 'MBR003',
+                'name' => 'Ahmad Fadli',
+                'call_sign' => 'Fadli',
+                'phone' => '081234567802',
+                'email' => 'fadli@example.com',
+                'domicile' => 'Jakarta',
+                'division' => 'Technical',
+                'position' => 'Technical Support',
+                'specialization' => 'Sound System',
+                'daily_fee' => 350000,
+                'status' => 'active',
+            ],
+        ];
+
+        foreach ($members as $memberData) {
+            Member::create($memberData);
+        }
+
+        // Create Clients & Bookings & Events
+        $client1 = Client::create([
+            'users_id' => $clientUser->id,
+            'groom_name' => 'John Doe',
+            'bride_name' => 'Jane Smith',
+            'groom_phone' => '081234567777',
+            'bride_phone' => '081234567778',
+            'email' => 'johnjane@example.com',
+        ]);
+
+        $booking1 = Booking::create([
+            'client_id' => $client1->id,
+            'package_id' => 2,
+            'venue_name' => 'Grand Ballroom Hotel',
+            'venue_address' => 'Jl. Sudirman No. 123',
+            'venue_city' => 'Jakarta',
+            'venue_province' => 'DKI Jakarta',
+            'guest_count' => 300,
+            'total_price' => 50000000,
+            'status' => 'approved',
+            'notes' => 'Premium package booking',
+        ]);
+
+        $event1 = Event::create([
+            'booking_id' => $booking1->id,
+            'name' => 'Resepsi Pernikahan',
+            'event_type' => 'resepsi',
+            'event_date' => now()->addDays(30),
+            'guest_count' => 300,
+            'start_time' => '18:00:00',
+            'end_time' => '22:00:00',
+            'package_id' => 2,
+            'status' => 'scheduled',
+            'notes' => 'Evening reception',
+        ]);
+
+        // Add vendors to event via schedules
+        Schedule::create([
+            'event_id' => $event1->id,
+            'vendor_id' => 1,
+            'activity' => 'Delicious Catering',
+            'location' => null,
+            'start_time' => '18:00:00',
+            'end_time' => '22:00:00',
+            'status' => 'approved',
+        ]);
+
+        Schedule::create([
+            'event_id' => $event1->id,
+            'vendor_id' => 2,
+            'activity' => 'Golden Moments Photography',
+            'location' => null,
+            'start_time' => '18:00:00',
+            'end_time' => '22:00:00',
+            'status' => 'approved',
+        ]);
+
+        Schedule::create([
+            'event_id' => $event1->id,
+            'vendor_id' => 3,
+            'activity' => 'Elegant Decor',
+            'location' => null,
+            'start_time' => '16:00:00',
+            'end_time' => '22:00:00',
+            'status' => 'pending',
+        ]);
+
+        // Add members to event
+        EventMember::create([
+            'event_id' => $event1->id,
+            'member_id' => 1,
+            'role' => 'Koordinator Utama',
+            'status' => 'assigned',
+        ]);
+
+        EventMember::create([
+            'event_id' => $event1->id,
+            'member_id' => 2,
+            'role' => 'Dokumentasi',
+            'status' => 'assigned',
+        ]);
+
+        EventMember::create([
+            'event_id' => $event1->id,
+            'member_id' => 3,
+            'role' => 'Technical Support',
+            'status' => 'assigned',
+        ]);
+
         echo "\nSeeding completed successfully!\n";
-        echo "- Admin user created (admin@example.com)\n";
+        echo "- 5 users created (1 admin, 3 members, 1 client)\n";
         echo "- " . count($categories) . " categories created\n";
         echo "- " . count($vendorData) . " vendors created\n";
         echo "- " . count($packages) . " packages created with vendors\n";
+        echo "- " . count($members) . " members created with user relations\n";
+        echo "- 1 client, 1 booking, 1 event created\n";
     }
 }

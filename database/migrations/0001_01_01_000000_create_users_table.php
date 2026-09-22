@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('google_id')->unique();
             $table->string('avatar');
             $table->string('email')->unique();
-            $table->enum('role', ['admin', 'client', 'vendor'])->default('client');
+            $table->enum('role', ['admin', 'client', 'vendor', 'member'])->default('client');
             $table->enum('status', ['approved', 'pending', 'rejected'])->default('approved');
             $table->rememberToken();
             $table->timestamps();

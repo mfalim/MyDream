@@ -8,7 +8,7 @@
     @php
         $booking = $event->booking;
         $client = $booking ? $booking->client : null;
-        $leadDirector = $event->teamMembers->where('role', 'lead_director')->first();
+        $leadMember = $event->eventMembers->first();
     @endphp
 
     <div class="mb-4">
@@ -100,19 +100,19 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <!-- Lead Director -->
+            <!-- Lead Member -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body p-4">
                     <h5 class="fw-bold mb-3">
-                        <i class="bi bi-person-badge-fill text-primary"></i> LEAD WEDDING DIRECTOR
+                        <i class="bi bi-person-badge-fill text-primary"></i> KOORDINATOR UTAMA
                     </h5>
                     <div class="d-flex align-items-center">
                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
                             <i class="bi bi-person-fill fs-4"></i>
                         </div>
                         <div>
-                            <div class="fw-bold">{{ $leadDirector ? $leadDirector->user->name : 'Belum ditentukan' }}</div>
-                            <div class="small text-muted">Lead Wedding Director</div>
+                            <div class="fw-bold">{{ $leadMember ? $leadMember->member->name : 'Belum ditentukan' }}</div>
+                            <div class="small text-muted">{{ $leadMember ? ($leadMember->role ?? $leadMember->member->position) : '-' }}</div>
                         </div>
                     </div>
                 </div>
@@ -146,18 +146,18 @@
                         <i class="bi bi-shop-window text-success"></i> VENDOR REKOMENDASI TERIKAT
                     </h5>
                     
-                    @forelse($event->eventVendors as $eventVendor)
+                    @forelse($event->schedules as $schedule)
                     <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
                         <div class="d-flex align-items-center flex-grow-1">
                             <div class="bg-light rounded-3 p-3 me-3">
                                 <i class="bi bi-briefcase-fill text-muted fs-5"></i>
                             </div>
                             <div class="flex-grow-1">
-                                <div class="fw-bold">{{ $eventVendor->vendor->name }}</div>
+                                <div class="fw-bold">{{ $schedule->vendor ? $schedule->vendor->name : 'N/A' }}</div>
                                 <div class="small text-muted">
-                                    <i class="bi bi-tag-fill"></i> {{ $eventVendor->vendor->category ? $eventVendor->vendor->category->name : 'N/A' }}
-                                    @if($eventVendor->start_time && $eventVendor->end_time)
-                                        | <i class="bi bi-clock"></i> {{ date('H:i', strtotime($eventVendor->start_time)) }} - {{ date('H:i', strtotime($eventVendor->end_time)) }}
+                                    <i class="bi bi-tag-fill"></i> {{ $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'N/A' }}
+                                    @if($schedule->start_time && $schedule->end_time)
+                                        | <i class="bi bi-clock"></i> {{ date('H:i', strtotime($schedule->start_time)) }} - {{ date('H:i', strtotime($schedule->end_time)) }}
                                     @endif
                                 </div>
                             </div>
@@ -165,13 +165,12 @@
                         <div>
                             @php
                                 $statusClass = [
-                                    'confirmed' => 'success',
-                                    'on_site' => 'primary',
-                                    'loading' => 'warning',
-                                    'pending' => 'secondary'
-                                ][$eventVendor->status] ?? 'secondary';
+                                    'approved' => 'success',
+                                    'pending' => 'secondary',
+                                    'rejected' => 'danger'
+                                ][$schedule->status] ?? 'secondary';
                             @endphp
-                            <span class="badge bg-{{ $statusClass }}">{{ strtoupper($eventVendor->status) }}</span>
+                            <span class="badge bg-{{ $statusClass }}">{{ strtoupper($schedule->status) }}</span>
                         </div>
                     </div>
                     @empty
@@ -191,15 +190,15 @@
                     </h5>
                     
                     <div class="row">
-                        @forelse($event->teamMembers as $member)
+                        @forelse($event->eventMembers as $eventMember)
                         <div class="col-md-6 mb-3">
                             <div class="d-flex align-items-center">
                                 <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
                                     <i class="bi bi-person-fill text-warning"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-semibold">{{ $member->user->name }}</div>
-                                    <div class="small text-muted">{{ ucfirst(str_replace('_', ' ', $member->role)) }}</div>
+                                    <div class="fw-semibold">{{ $eventMember->member->name }}</div>
+                                    <div class="small text-muted">{{ $eventMember->role ?? $eventMember->member->position }}</div>
                                 </div>
                             </div>
                         </div>
@@ -228,11 +227,11 @@
                     </div>
                     <div class="mb-3">
                         <div class="small text-muted">Total Vendor</div>
-                        <div class="fw-semibold">{{ $event->eventVendors->count() }} Vendor</div>
+                        <div class="fw-semibold">{{ $event->schedules->count() }} Vendor</div>
                     </div>
                     <div class="mb-3">
                         <div class="small text-muted">Total Tim</div>
-                        <div class="fw-semibold">{{ $event->teamMembers->count() }} Orang</div>
+                        <div class="fw-semibold">{{ $event->eventMembers->count() }} Orang</div>
                     </div>
                 </div>
             </div>

@@ -36,21 +36,16 @@ class Event extends Model
         return $this->belongsTo(Package::class);
     }
 
-    public function eventVendors()
+    public function eventMembers()
     {
-        return $this->hasMany(EventVendor::class);
+        return $this->hasMany(EventMember::class);
     }
 
-    public function vendors()
+    public function members()
     {
-        return $this->belongsToMany(Vendor::class, 'event_vendors')
-            ->withPivot('start_time', 'end_time', 'status', 'notes')
+        return $this->belongsToMany(Member::class, 'event_members')
+            ->withPivot('role', 'notes', 'status')
             ->withTimestamps();
-    }
-
-    public function teamMembers()
-    {
-        return $this->hasMany(EventTeamMember::class);
     }
 
     public function schedules()
