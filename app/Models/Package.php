@@ -12,11 +12,19 @@ class Package extends Model
         'photo',
     ];
 
+    protected $casts = [
+        'price' => 'decimal:2',
+    ];
+
     public function vendors()
     {
         return $this->belongsToMany(Vendor::class, 'package_vendor')
             ->withPivot('status')
             ->withTimestamps();
     }
-    //
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
