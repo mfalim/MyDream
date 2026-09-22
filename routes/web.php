@@ -8,9 +8,9 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\FrontendController;
-use App\Http\Controllers\MyDream\HomeController;
-use App\Http\Controllers\MyDream\StoreController;
+use App\Http\Controllers\MyDream\HomeController as MyDreamHomeController;
 use App\Http\Controllers\MyDream\PackageController as MyDreamPackageController;
+use App\Http\Controllers\MyDream\StoreController as MyDreamStoreController;
 use App\Http\Controllers\MyDream\VendorController as MyDreamVendorController;
 
 Route::get('/login', function () { return view('login.login'); })->name('login');
@@ -26,14 +26,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('categories', CategoryController::class)->only(['index', 'create', 'store']);
     Route::resource('packages', PackageController::class)->only(['index', 'create', 'store']);
     Route::resource('vendors', VendorController::class)->only(['index', 'create', 'store']);
-});
-
-// Route MyDream teman dipisahkan agar tidak bentrok dengan route utama.
-Route::prefix('mydream')->name('mydream.')->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/store', [StoreController::class, 'index'])->name('store');
-    Route::get('/paket/{slug}', [MyDreamPackageController::class, 'show'])->name('packages.show');
-    Route::get('/vendor/{slug}', [MyDreamVendorController::class, 'show'])->name('vendors.show');
 });
 
 $frontend = FrontendController::class;
@@ -54,6 +46,19 @@ Route::post('/pembayaran', [$frontend, 'payment'])->name('payment.process');
 Route::get('/pembayaran/sukses', [$frontend, 'paymentSuccess'])->name('payment.success');
 Route::post('/pembayaran/sukses', [$frontend, 'paymentSuccess']);
 Route::get('/event', [$frontend, 'event'])->name('event.index');
+
+// Fitur storefront tambahan dari modul MyDream. Prefix mencegah bentrok
+// dengan storefront utama yang sudah memakai /, /paket, dan /vendor.
+Route::view('/welcome', 'welcome')->name('welcome');
+
+Route::prefix('mydream')
+    ->name('mydream.')
+    ->group(function () {
+        Route::get('/', [MyDreamHomeController::class, 'index'])->name('home');
+        Route::get('/store', [MyDreamStoreController::class, 'index'])->name('store');
+        Route::get('/paket/{slug}', [MyDreamPackageController::class, 'show'])->name('packages.show');
+        Route::get('/vendor/{slug}', [MyDreamVendorController::class, 'show'])->name('vendors.show');
+    });
 
 // Semua data dummy teman tetap dipertahankan di dalam group user.
 Route::prefix('user')->name('user.')->group(function () {
@@ -292,10 +297,6 @@ Route::prefix('user')->name('user.')->group(function () {
             ]);
 
         })->name('explore-vendor');
-
-        Route::get('/vendors', function () {
-            return view('user.vendors.index');
-        })->name('vendors');
 
         // VENDOR OVERVIEW
         Route::get('/explore-vendor/{vendor}', function ($vendor) use ($vendors) {
