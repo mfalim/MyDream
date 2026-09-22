@@ -1,0 +1,241 @@
+/* public/css/dashboard.css */
+/* Layout shell (sidebar + content) dipakai oleh SEMUA halaman user via user.layouts.app */
+
+:root {
+    --wo-green-900: #16302a;
+    --wo-green-700: #1f4b3d;
+    --wo-green-100: #e7f1ea;
+    --wo-gold: #8a6a3b;
+    --wo-gold-bg: #4b3621;
+    --wo-bg: #f2f6f3;
+    --wo-surface: #ffffff;
+    --wo-surface-cream: #fdfbf6;
+    --wo-text: #212a24;
+    --wo-text-muted: #6d7972;
+    --wo-border: #e7e0d6;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "DM Sans", sans-serif;
+    color: var(--wo-text);
+    background: var(--wo-bg);
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-family: "Cormorant Garamond", serif;
+}
+
+a {
+    color: inherit;
+}
+
+/* ===== Shell ===== */
+.dashboard-shell {
+    display: flex;
+    align-items: stretch;
+    min-height: 100vh;
+    background: var(--wo-bg);
+}
+
+/* Setiap halaman konten (mis. <main class="wo-page">) jadi kolom kedua di sebelah sidebar */
+.dashboard-shell > main {
+    flex: 1;
+    min-width: 0;
+}
+
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(22, 48, 42, 0.45);
+    z-index: 40;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: var(--wo-surface-cream);
+    border-right: 1px solid var(--wo-border);
+    padding: 26px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+}
+
+/* Brand */
+.brand-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--wo-border);
+}
+
+.brand-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--wo-green-900);
+    color: #f0e6d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.brand-name {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--wo-green-900);
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    color: var(--wo-text-muted);
+    text-transform: uppercase;
+}
+
+/* Client card */
+.client-card {
+    background: var(--wo-green-100);
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+
+.client-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--wo-green-700);
+    margin-bottom: 6px;
+}
+
+.client-card-top strong {
+    color: var(--wo-green-900);
+    font-weight: 700;
+}
+
+.client-name {
+    font-family: "Cormorant Garamond", serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--wo-green-900);
+}
+
+/* Navigation */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--wo-text-muted);
+    text-decoration: none;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.nav-item i {
+    font-size: 1.05rem;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.nav-item:hover {
+    background: var(--wo-green-100);
+    color: var(--wo-green-900);
+    text-decoration: none;
+}
+
+.nav-item.active {
+    background: var(--wo-green-900);
+    color: #fff;
+}
+
+/* Wedding Director box */
+.sidebar-director {
+    background: var(--wo-surface);
+    border: 1px solid var(--wo-border);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.sidebar-director .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wo-gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.sidebar-director p {
+    font-size: 0.8rem;
+    color: var(--wo-text-muted);
+    margin: 0 0 12px;
+    line-height: 1.45;
+}
+
+.btn-director {
+    background: var(--wo-green-900);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-director:hover {
+    background: var(--wo-green-700);
+    color: #fff;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+    .dashboard-shell {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--wo-border);
+    }
+}

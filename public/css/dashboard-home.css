@@ -1,0 +1,116 @@
+/* public/css/dashboard-home.css */
+
+.dashboard-home .dh-hero {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    background: linear-gradient(120deg, var(--wo-bg-warm), var(--wo-bg) 70%);
+    border-radius: var(--wo-radius-lg);
+    padding: 26px 28px;
+    margin-bottom: 22px;
+}
+
+.dh-hero-text h1 { font-size: 2.3rem; margin: 8px 0 6px; }
+.dh-hero-text p { margin: 0; color: var(--wo-text-muted); font-size: 0.92rem; }
+.dh-hero-text p span { margin: 0 6px; }
+
+.dh-hero-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; }
+
+.dh-countdown {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--wo-surface);
+    border: 1px solid var(--wo-border);
+    border-radius: 999px;
+    padding: 10px 18px;
+}
+.dh-countdown i { color: var(--wo-amber-500); font-size: 1.1rem; }
+.dh-countdown span { display: block; font-size: 0.68rem; color: var(--wo-text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.dh-countdown strong { font-size: 0.95rem; color: var(--wo-green-900); }
+
+.dh-quick-links { display: flex; gap: 10px; }
+
+/* stat grid */
+.dh-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 22px; }
+.dh-card-title { font-size: 1.15rem; margin: 10px 0 4px; }
+.dh-card-sub { font-size: 0.8rem; color: var(--wo-text-muted); margin: 0 0 16px; }
+
+.dh-ring-row { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+.dh-legend { list-style: none; margin: 0; padding: 0; font-size: 0.82rem; display: flex; flex-direction: column; gap: 6px; }
+.dh-legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.dot-green { background: var(--wo-green-900); }
+.dot-amber { background: var(--wo-amber-500); }
+.dot-red { background: var(--wo-red-600); }
+
+.dh-budget-box { background: var(--wo-surface-soft); border-radius: var(--wo-radius-sm); padding: 14px; margin-bottom: 14px; }
+.dh-budget-box > span { font-size: 0.7rem; color: var(--wo-text-muted); letter-spacing: 0.04em; }
+.dh-budget-box > strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--wo-green-900); margin: 2px 0 10px; }
+.dh-budget-row { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--wo-text-muted); margin-top: 8px; }
+.dh-budget-row strong { color: var(--wo-text); font-weight: 600; }
+
+.dh-task-list { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.dh-task-list li { display: flex; gap: 10px; }
+.dh-task-list i { color: var(--wo-gold); margin-top: 3px; }
+.dh-task-list strong { display: block; font-size: 0.85rem; }
+.dh-task-list span { font-size: 0.76rem; color: var(--wo-text-muted); }
+
+/* layout */
+.dh-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.dh-main { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.dh-sidebar { display: flex; flex-direction: column; gap: 18px; }
+
+/* milestone */
+.dh-milestone-card { background: var(--wo-surface-soft); border-radius: var(--wo-radius-sm); padding: 14px 16px; }
+.dh-milestone-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.dh-milestone-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--wo-text-muted); font-weight: 700; }
+.dh-milestone-label span { margin: 0 4px; }
+.dh-milestone-card strong { display: block; font-size: 1rem; color: var(--wo-green-900); margin-bottom: 4px; }
+.dh-milestone-card p { margin: 0; font-size: 0.82rem; color: var(--wo-text-muted); }
+.dh-milestone-card .wo-btn { margin-top: 10px; }
+
+/* moodboard */
+.dh-moodboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.dh-moodboard figure { margin: 0; border-radius: var(--wo-radius-sm); overflow: hidden; position: relative; }
+.dh-moodboard img { width: 100%; height: 170px; object-fit: cover; display: block; }
+.dh-moodboard figcaption { padding: 10px 12px; background: var(--wo-surface); }
+.dh-moodboard figcaption strong { display: block; font-size: 0.85rem; color: var(--wo-green-900); }
+.dh-moodboard figcaption span { font-size: 0.75rem; color: var(--wo-text-muted); }
+
+/* team */
+.dh-team-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.dh-team-head strong { display: block; font-size: 0.95rem; color: var(--wo-green-900); }
+.dh-team-head span { font-size: 0.76rem; color: var(--wo-text-muted); }
+
+.dh-team-list { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.dh-team-list li { display: flex; align-items: center; gap: 10px; }
+.dh-team-list div { flex: 1; }
+.dh-team-list strong { display: block; font-size: 0.85rem; }
+.dh-team-list span { font-size: 0.76rem; color: var(--wo-gold); }
+.dh-team-list small { display: block; font-size: 0.72rem; color: var(--wo-text-muted); }
+.dh-team-list i { color: var(--wo-text-muted); cursor: pointer; }
+
+.dh-full-btn { width: 100%; }
+.dh-response-time { display: block; text-align: center; margin-top: 8px; color: var(--wo-text-muted); font-size: 0.72rem; }
+
+/* docs */
+.dh-doc-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.dh-doc-list li { display: flex; align-items: center; gap: 10px; }
+.dh-doc-list i.bi-file-earmark-text { color: var(--wo-gold); font-size: 1.1rem; }
+.dh-doc-list div { flex: 1; }
+.dh-doc-list strong { display: block; font-size: 0.83rem; }
+.dh-doc-list span { font-size: 0.74rem; color: var(--wo-text-muted); }
+.dh-doc-list a { color: var(--wo-text-muted); }
+
+/* guarantee */
+.dh-guarantee { background: var(--wo-green-900); color: #f2ece0; border-radius: var(--wo-radius-lg); padding: 20px 22px; }
+.dh-guarantee strong { display: block; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin: 10px 0 6px; }
+.dh-guarantee p { margin: 0; font-size: 0.82rem; color: rgba(242,236,224,0.78); line-height: 1.6; }
+
+@media (max-width: 1100px) {
+    .dh-stat-grid { grid-template-columns: 1fr; }
+    .dh-layout { grid-template-columns: 1fr; }
+    .dh-moodboard { grid-template-columns: 1fr; }
+}
