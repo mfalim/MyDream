@@ -59,13 +59,32 @@ class VendorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:vendors,name',
             'category_id' => 'required|integer|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'phone' => 'required|string|max:30',
+            'price' => 'required|numeric|min:0|max:999999999',
+            'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'address' => 'required|string|max:1000',
             'description' => 'nullable|string|max:2000',
 
             'photos' => 'nullable|array|max:10',
             'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'name.required' => 'Nama vendor harus diisi',
+            'name.unique' => 'Nama vendor sudah digunakan',
+            'name.max' => 'Nama vendor maksimal 255 karakter',
+            'category_id.required' => 'Kategori harus dipilih',
+            'category_id.exists' => 'Kategori tidak valid',
+            'price.required' => 'Harga harus diisi',
+            'price.min' => 'Harga tidak boleh negatif',
+            'price.max' => 'Harga terlalu besar',
+            'phone.required' => 'Nomor telepon harus diisi',
+            'phone.regex' => 'Nomor telepon harus berupa angka 10-15 digit',
+            'phone.max' => 'Nomor telepon maksimal 15 digit',
+            'address.required' => 'Alamat harus diisi',
+            'address.max' => 'Alamat maksimal 1000 karakter',
+            'description.max' => 'Deskripsi maksimal 2000 karakter',
+            'photos.max' => 'Maksimal 10 foto',
+            'photos.*.image' => 'File harus berupa gambar',
+            'photos.*.mimes' => 'Format gambar harus jpg, jpeg, png, atau webp',
+            'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         $vendor = Vendor::create([
@@ -111,8 +130,8 @@ class VendorController extends Controller
         $request->validate([
             'name' => 'required|string|max:255|unique:vendors,name,' . $vendor->id,
             'category_id' => 'required|integer|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'phone' => 'required|string|max:30',
+            'price' => 'required|numeric|min:0|max:999999999',
+            'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'address' => 'required|string|max:1000',
             'description' => 'nullable|string|max:2000',
 
@@ -123,6 +142,25 @@ class VendorController extends Controller
             'delete_photos.*' => 'integer',
 
             'cover_photo_id' => 'nullable|integer',
+        ], [
+            'name.required' => 'Nama vendor harus diisi',
+            'name.unique' => 'Nama vendor sudah digunakan',
+            'name.max' => 'Nama vendor maksimal 255 karakter',
+            'category_id.required' => 'Kategori harus dipilih',
+            'category_id.exists' => 'Kategori tidak valid',
+            'price.required' => 'Harga harus diisi',
+            'price.min' => 'Harga tidak boleh negatif',
+            'price.max' => 'Harga terlalu besar',
+            'phone.required' => 'Nomor telepon harus diisi',
+            'phone.regex' => 'Nomor telepon harus berupa angka 10-15 digit',
+            'phone.max' => 'Nomor telepon maksimal 15 digit',
+            'address.required' => 'Alamat harus diisi',
+            'address.max' => 'Alamat maksimal 1000 karakter',
+            'description.max' => 'Deskripsi maksimal 2000 karakter',
+            'photos.max' => 'Maksimal 10 foto',
+            'photos.*.image' => 'File harus berupa gambar',
+            'photos.*.mimes' => 'Format gambar harus jpg, jpeg, png, atau webp',
+            'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
         $vendor->update([

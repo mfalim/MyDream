@@ -138,7 +138,7 @@
                                     {{ round($event->progress) }}%
                                 </div>
                             </div>
-                            <small class="text-muted">{{ $event->schedules->where('status', 'completed')->count() }}/{{ $event->schedules->count() }}</small>
+                            <small class="text-muted">{{ $event->schedules->where('status', 'approved')->count() }}/{{ $event->schedules->count() }}</small>
                         </div>
                     </td>
                     <td>

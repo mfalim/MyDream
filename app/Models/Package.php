@@ -59,4 +59,9 @@ class Package extends Model
             ->withPivot('status')
             ->withTimestamps();
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

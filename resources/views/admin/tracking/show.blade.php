@@ -75,6 +75,18 @@
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <label class="text-muted small mb-1">Status Booking</label>
+                            <div>
+                                <select class="form-select form-select-sm booking-status-select" data-booking-id="{{ $event->booking->id }}" style="max-width: 150px;">
+                                    <option value="pending" {{ $event->booking->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                    <option value="approved" {{ $event->booking->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                    <option value="rejected" {{ $event->booking->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
                             <label class="text-muted small mb-1">Paket</label>
                             <div class="fw-semibold">{{ $event->package?->name ?? 'Custom' }}</div>
                         </div>
@@ -105,12 +117,12 @@
                         </div>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">Selesai</span>
-                        <span class="fw-semibold text-success">{{ $completedSchedules }}</span>
+                        <span class="text-muted small">Approved</span>
+                        <span class="fw-semibold text-success">{{ $approvedSchedules }}</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">Dalam Progress</span>
-                        <span class="fw-semibold text-warning">{{ $inProgressSchedules }}</span>
+                        <span class="text-muted small">Rejected</span>
+                        <span class="fw-semibold text-danger">{{ $rejectedSchedules }}</span>
                     </div>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted small">Pending</span>
@@ -175,7 +187,7 @@
                             <td>
                                 <input type="checkbox" class="form-check-input schedule-checkbox" 
                                     data-schedule-id="{{ $schedule->id }}"
-                                    {{ $schedule->status === 'completed' ? 'checked' : '' }}>
+                                    {{ $schedule->status === 'approved' ? 'checked' : '' }}>
                             </td>
                             <td>
                                 <div class="fw-semibold">{{ $schedule->vendor?->name ?? $schedule->activity }}</div>
@@ -213,8 +225,8 @@
                             <td>
                                 <select class="form-select form-select-sm status-select" data-schedule-id="{{ $schedule->id }}">
                                     <option value="pending" {{ $schedule->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="in_progress" {{ $schedule->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                    <option value="completed" {{ $schedule->status === 'completed' ? 'selected' : '' }}>Completed</option>
+                                    <option value="approved" {{ $schedule->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                    <option value="rejected" {{ $schedule->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
                                 </select>
                             </td>
                             <td>
@@ -238,6 +250,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const statusSelects = document.querySelectorAll('.status-select');
     const checkboxes = document.querySelectorAll('.schedule-checkbox');
+    const bookingStatusSelect = document.querySelector('.booking-status-select');
 
     statusSelects.forEach(select => {
         select.addEventListener('change', function() {
@@ -251,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const scheduleId = this.dataset.scheduleId;
-            const status = this.checked ? 'completed' : 'pending';
+            const status = this.checked ? 'approved' : 'pending';
             const select = document.querySelector(`.status-select[data-schedule-id="${scheduleId}"]`);
             
             if (select) {
@@ -260,6 +273,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    if (bookingStatusSelect) {
+        bookingStatusSelect.addEventListener('change', function() {
+            const bookingId = this.dataset.bookingId;
+            const status = this.value;
+            
+            updateBookingStatus(bookingId, status);
+        });
+    }
 
     function updateScheduleStatus(scheduleId, status) {
         fetch(`/admin/tracking/schedule/${scheduleId}/status`, {
@@ -273,6 +295,25 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateBookingStatus(bookingId, status) {
+        fetch(`/admin/tracking/booking/${bookingId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Status booking berhasil diupdate');
                 location.reload();
             }
         })

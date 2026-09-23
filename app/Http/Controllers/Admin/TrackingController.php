@@ -31,8 +31,8 @@ class TrackingController extends Controller
 
         $events = $query->get()->map(function($event) {
             $totalSchedules = $event->schedules->count();
-            $completedSchedules = $event->schedules->where('status', 'completed')->count();
-            $event->progress = $totalSchedules > 0 ? ($completedSchedules / $totalSchedules) * 100 : 0;
+            $approvedSchedules = $event->schedules->where('status', 'approved')->count();
+            $event->progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
             return $event;
         });
 
@@ -50,12 +50,12 @@ class TrackingController extends Controller
         ])->findOrFail($id);
 
         $totalSchedules = $event->schedules->count();
-        $completedSchedules = $event->schedules->where('status', 'completed')->count();
-        $inProgressSchedules = $event->schedules->where('status', 'in_progress')->count();
+        $approvedSchedules = $event->schedules->where('status', 'approved')->count();
+        $rejectedSchedules = $event->schedules->where('status', 'rejected')->count();
         $pendingSchedules = $event->schedules->where('status', 'pending')->count();
-        $progress = $totalSchedules > 0 ? ($completedSchedules / $totalSchedules) * 100 : 0;
+        $progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
 
-        return view('admin.tracking.show', compact('event', 'totalSchedules', 'completedSchedules', 'inProgressSchedules', 'pendingSchedules', 'progress'));
+        return view('admin.tracking.show', compact('event', 'totalSchedules', 'approvedSchedules', 'rejectedSchedules', 'pendingSchedules', 'progress'));
     }
 
     public function updateScheduleStatus(Request $request, $scheduleId)
@@ -63,7 +63,7 @@ class TrackingController extends Controller
         $schedule = Schedule::findOrFail($scheduleId);
         
         $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed'
+            'status' => 'required|in:pending,approved,rejected'
         ]);
 
         $schedule->update(['status' => $validated['status']]);
@@ -71,6 +71,22 @@ class TrackingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Status updated successfully'
+        ]);
+    }
+    
+    public function updateBookingStatus(Request $request, $bookingId)
+    {
+        $booking = \App\Models\Booking::findOrFail($bookingId);
+        
+        $validated = $request->validate([
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $booking->update(['status' => $validated['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status booking berhasil diupdate'
         ]);
     }
 }

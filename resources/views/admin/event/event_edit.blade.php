@@ -297,11 +297,10 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Status</label>
-                                        <select class="form-select" name="vendor_status[]">
+                                         <select class="form-select" name="vendor_status[]">
                                             <option value="pending">Pending</option>
-                                            <option value="confirmed">Confirmed</option>
-                                            <option value="on_site">On-Site</option>
-                                            <option value="loading">Loading</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
                                         </select>
                                     </div>
                                     <div class="col-md-1 d-flex align-items-end">

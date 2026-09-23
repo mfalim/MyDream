@@ -43,7 +43,9 @@ class GoogleAuthController extends Controller
     return match ($user->role) {
         'admin' => redirect('/admin/dashboard'),
         'vendor' => redirect('/vendor/dashboard'),
-        'client' => redirect('/client/dashboard'),
+        'client' => redirect('/user/dashboard'),
+        'member' => redirect('/user/dashboard'),
+        default => redirect('/user/dashboard'),
     };
 }
 }

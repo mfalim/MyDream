@@ -315,11 +315,11 @@
                 </div>
 
                 <h2>
-                    Informasi Pribadi
+                    Data Mempelai
                 </h2>
 
                 <p class="description">
-                    Lengkapi data berikut untuk melanjutkan
+                    Lengkapi data mempelai untuk melanjutkan
                     ke dalam sistem MyDream.
                 </p>
 
@@ -329,23 +329,23 @@
                     @csrf
 
 
-                    <!-- FULL NAME -->
+                    <!-- GROOM NAME -->
                     <div class="form-group">
 
-                        <label for="full_name">
-                            Nama Lengkap
+                        <label for="groom_name">
+                            Nama Mempelai Pria
                         </label>
 
                         <input
                             type="text"
-                            id="full_name"
-                            name="full_name"
-                            value="{{ old('full_name') }}"
-                            placeholder="Masukkan nama lengkap"
+                            id="groom_name"
+                            name="groom_name"
+                            value="{{ old('groom_name') }}"
+                            placeholder="Masukkan nama mempelai pria"
                             required
                         >
 
-                        @error('full_name')
+                        @error('groom_name')
                             <div class="error">
                                 {{ $message }}
                             </div>
@@ -354,23 +354,49 @@
                     </div>
 
 
-                    <!-- PHONE -->
+                    <!-- BRIDE NAME -->
                     <div class="form-group">
 
-                        <label for="phone">
-                            Nomor Telepon
+                        <label for="bride_name">
+                            Nama Mempelai Wanita
                         </label>
 
                         <input
                             type="text"
-                            id="phone"
-                            name="phone"
-                            value="{{ old('phone') }}"
+                            id="bride_name"
+                            name="bride_name"
+                            value="{{ old('bride_name') }}"
+                            placeholder="Masukkan nama mempelai wanita"
+                            required
+                        >
+
+                        @error('bride_name')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- GROOM PHONE -->
+                    <div class="form-group">
+
+                        <label for="groom_phone">
+                            Nomor Telepon Mempelai Pria
+                        </label>
+
+                        <input
+                            type="text"
+                            id="groom_phone"
+                            name="groom_phone"
+                            value="{{ old('groom_phone') }}"
                             placeholder="Contoh: 081234567890"
+                            pattern="[0-9]{10,15}"
                             required
                         >
 
-                        @error('phone')
+                        @error('groom_phone')
                             <div class="error">
                                 {{ $message }}
                             </div>
@@ -379,21 +405,49 @@
                     </div>
 
 
-                    <!-- ADDRESS -->
+                    <!-- BRIDE PHONE -->
                     <div class="form-group">
 
-                        <label for="address">
-                            Alamat
+                        <label for="bride_phone">
+                            Nomor Telepon Mempelai Wanita
                         </label>
 
-                        <textarea
-                            id="address"
-                            name="address"
-                            placeholder="Masukkan alamat lengkap"
+                        <input
+                            type="text"
+                            id="bride_phone"
+                            name="bride_phone"
+                            value="{{ old('bride_phone') }}"
+                            placeholder="Contoh: 081234567890"
+                            pattern="[0-9]{10,15}"
                             required
-                        >{{ old('address') }}</textarea>
+                        >
 
-                        @error('address')
+                        @error('bride_phone')
+                            <div class="error">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value="{{ old('email', auth()->user()->email) }}"
+                            placeholder="contoh@email.com"
+                            required
+                        >
+
+                        @error('email')
                             <div class="error">
                                 {{ $message }}
                             </div>
