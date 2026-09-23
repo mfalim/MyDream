@@ -5,20 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Schedule;
+use App\Models\Booking;
 use Illuminate\Http\Request;
 
 class TrackingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::with(['booking.client', 'schedules.vendor', 'schedules.member'])
-            ->orderBy('event_date', 'desc');
+        $query = Booking::with(['client', 'package'])
+            ->orderBy('created_at', 'desc');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('booking.client', function($q) use ($search) {
+                $q->where('venue_name', 'like', "%{$search}%")
+                  ->orWhereHas('client', function($q) use ($search) {
                       $q->where('groom_name', 'like', "%{$search}%")
                         ->orWhere('bride_name', 'like', "%{$search}%");
                   });
@@ -29,14 +30,28 @@ class TrackingController extends Controller
             $query->where('status', $request->status);
         }
 
-        $events = $query->get()->map(function($event) {
-            $totalSchedules = $event->schedules->count();
-            $approvedSchedules = $event->schedules->where('status', 'approved')->count();
-            $event->progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
-            return $event;
-        });
+        $bookings = $query->get();
+        
+        $eventsByBooking = Event::with(['schedules'])
+            ->get()
+            ->groupBy('booking_id')
+            ->map(function($events) {
+                $allSchedules = $events->flatMap->schedules;
+                $totalSchedules = $allSchedules->count();
+                $approvedSchedules = $allSchedules->where('status', 'approved')->count();
+                $progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
+                
+                return [
+                    'events' => $events,
+                    'progress' => $progress,
+                    'approved_count' => $approvedSchedules,
+                    'total_count' => $totalSchedules
+                ];
+            });
+        
+        $members = \App\Models\Member::where('status', 'active')->get();
 
-        return view('admin.tracking.index', compact('events'));
+        return view('admin.tracking.index', compact('bookings', 'eventsByBooking', 'members'));
     }
 
     public function show($id)
@@ -76,13 +91,33 @@ class TrackingController extends Controller
     
     public function updateBookingStatus(Request $request, $bookingId)
     {
-        $booking = \App\Models\Booking::findOrFail($bookingId);
+        $booking = Booking::findOrFail($bookingId);
         
         $validated = $request->validate([
-            'status' => 'required|in:pending,approved,rejected'
+            'status' => 'required|in:pending,approved,rejected',
+            'coordinator_id' => 'nullable|exists:members,id'
         ]);
 
         $booking->update(['status' => $validated['status']]);
+        
+        if ($validated['status'] === 'approved' && isset($validated['coordinator_id'])) {
+            $event = Event::where('booking_id', $bookingId)->first();
+            
+            if ($event) {
+                $existingMember = \App\Models\EventMember::where('event_id', $event->id)
+                    ->where('member_id', $validated['coordinator_id'])
+                    ->first();
+                
+                if (!$existingMember) {
+                    \App\Models\EventMember::create([
+                        'event_id' => $event->id,
+                        'member_id' => $validated['coordinator_id'],
+                        'role' => 'Lead Coordinator',
+                        'status' => 'assigned'
+                    ]);
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,

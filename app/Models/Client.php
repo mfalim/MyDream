@@ -27,7 +27,7 @@ class Client extends Model
 
     public static function findClientByIdUser($idUser) {
         $client = self::select('id')
-             ->where('id', $idUser)
+             ->where('users_id', $idUser)
              ->first();
 
         return $client;
