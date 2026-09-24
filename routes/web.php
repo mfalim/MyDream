@@ -67,3 +67,8 @@ Route::prefix('admin')
                 'destroy'
             ]);
     });
+
+
+    Route::get('/vendor/dashboard', function () {
+    return view('vendor.dashboard');
+});
