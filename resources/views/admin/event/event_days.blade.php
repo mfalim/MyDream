@@ -80,13 +80,18 @@
                     </span>
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">
-                        @if($client)
+                    <div class="mb-3">
+                    @if($client)
+                        <h5 class="card-title fw-bold mb-1">
                             {{ $client->groom_name }} & {{ $client->bride_name }}
-                        @else
-                            {{ $event->name }}
-                        @endif
-                    </h5>
+                        </h5>
+                    @endif
+
+                    <div class="text-muted small">
+                        <i class="bi bi-heart-fill me-1"></i>
+                        {{ $event->name }}
+                    </div>
+                </div>
                     
                     <div class="mb-3">
                         <i class="bi bi-calendar-event text-muted me-1"></i>
@@ -138,8 +143,8 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <a href="{{ route('admin.event.show', $event->id) }}" class="btn btn-dark">
-                            <i class="bi bi-box-arrow-up-right me-2"></i> Lihat Detail
+                        <a href="{{ route('admin.event.show', $event->id) }}" class="btn btn-dark" data-event-id="{{ $event->id }}">
+                            <i class="bi bi-eye me-2"></i> Rincian Acara
                         </a>
                     </div>
                 </div>
@@ -160,6 +165,19 @@
     </div>
 </div>
 
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventDetailModalLabel">Detail Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalEventDetailContent">
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.getElementById('searchInput').addEventListener('input', function(e) {
     const searchTerm = e.target.value.toLowerCase();
@@ -170,5 +188,43 @@ document.getElementById('searchInput').addEventListener('input', function(e) {
         card.style.display = text.includes(searchTerm) ? '' : 'none';
     });
 });
+
+document.querySelectorAll('a[data-event-id]').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const eventId = this.getAttribute('data-event-id');
+        showEventDetailModal(eventId);
+    });
+});
+
+function showEventDetailModal(eventId) {
+    const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+    const modalBody = document.getElementById('modalEventDetailContent');
+    
+    modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border" role="status"></div></div>';
+    modal.show();
+
+    fetch(`/admin/event/${eventId}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const content = doc.querySelector('.container-fluid');
+        if (content) {
+            modalBody.innerHTML = content.innerHTML;
+        } else {
+            modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';
+        }
+    })
+    .catch(error => {
+        modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';
+        console.error('Error:', error);
+    });
+}
 </script>
 @endsection

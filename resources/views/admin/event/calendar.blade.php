@@ -11,7 +11,6 @@
                 <h2 class="fw-bold mb-2">Kalender & Tanggal Acara Berlangsung</h2>
                 <p class="text-muted" style="font-size: 0.9rem;">Menampilkan jadwal rangkaian acara, ganti next, dan timeline operasional WO PROJECT</p>
             </div>
-            <a href="{{ route('admin.event_day.create') }}" class="btn btn-dark"><i class="bi bi-plus-circle"></i> Jadwal Acara Baru</a>
         </div>
     </div>
 
@@ -377,21 +376,57 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div><i class="bi bi-clock me-1"></i> ${event.schedule || 'Jadwal'}</div>
                         ${isOrganizerEvent && event.priority ? `<div><i class="bi bi-flag-fill me-1"></i> Priority: ${event.priority.toUpperCase()}</div>` : ''}
                     </div>
-                    <button class="btn btn-sm btn-outline-dark w-100 mt-2" onclick="viewEventDetail(${event.id}, '${event.type}')">
+                    <button class="btn btn-sm btn-outline-dark w-100 mt-2" onclick="showEventDetailModal(${event.id}, '${event.type}')">
                         Rincian ${isOrganizerEvent ? 'Event' : 'Acara'} ›
                     </button>
                 </div>
             `;
         }).join('');
     }
-
-    window.viewEventDetail = function(eventId, eventType) {
-        if (eventType === 'organizer_event') {
-            window.location.href = `/admin/organizer-event/${eventId}`;
-        } else {
-            window.location.href = `/admin/event/${eventId}`;
-        }
-    };
 });
+
+function showEventDetailModal(eventId, eventType) {
+    const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+    const modalBody = document.getElementById('modalEventDetail');
+    modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border" role="status"></div></div>';
+    modal.show();
+
+    const url = eventType === 'organizer_event' ? `/admin/organizer-event/${eventId}` : `/admin/event/${eventId}`;
+    
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.text())
+    .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const content = doc.querySelector('.container-fluid');
+        if (content) {
+            modalBody.innerHTML = content.innerHTML;
+        } else {
+            modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';
+        }
+    })
+    .catch(error => {
+        modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';
+        console.error('Error:', error);
+    });
+}
 </script>
+
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventDetailModalLabel">Detail Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalEventDetail">
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

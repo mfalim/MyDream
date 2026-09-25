@@ -53,6 +53,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/events/by-month', [CalendarController::class, 'getEventsByMonth'])->name('events.by-month');
     Route::get('/events/by-date', [CalendarController::class, 'getEventsByDate'])->name('events.by-date');
+    Route::get('/events/{id}/detail', [CalendarController::class, 'getEventDetail'])->name('events.detail');
     
     Route::get('/tracking', [TrackingController::class, 'index'])->name('tracking.index');
     Route::get('/tracking/{id}', [TrackingController::class, 'show'])->name('tracking.show');

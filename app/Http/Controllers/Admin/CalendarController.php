@@ -160,4 +160,51 @@ class CalendarController extends Controller
             ]
         ]);
     }
+
+    public function getEventDetail($id)
+    {
+        $event = Event::with(['booking.client', 'schedules.vendor.category', 'eventMembers.member', 'package'])
+            ->find($id);
+
+        if (!$event) {
+            return response()->json(['error' => 'Event not found'], 404);
+        }
+
+        $booking = $event->booking;
+        $client = $booking ? $booking->client : null;
+        $leadMember = $event->eventMembers->first();
+
+        return response()->json([
+            'id' => $event->id,
+            'title' => $event->name,
+            'couple_name' => $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'N/A',
+            'type' => 'client_event',
+            'event_date' => $event->event_date ? $event->event_date->format('d F Y') : 'N/A',
+            'venue' => $booking ? $booking->venue_name : 'N/A',
+            'venue_city' => $booking ? $booking->venue_city : null,
+            'schedule' => $event->start_time && $event->end_time 
+                ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i') . ' WIB'
+                : 'Belum ditentukan',
+            'status' => $event->status,
+            'guest_count' => $event->guest_count ?? ($booking ? $booking->guest_count : null),
+            'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : null),
+            'lead_director' => $leadMember && $leadMember->member ? $leadMember->member->name : null,
+            'vendor_count' => $event->schedules->count(),
+            'vendors' => $event->schedules->map(function($schedule) {
+                return [
+                    'name' => $schedule->vendor ? $schedule->vendor->name : 'N/A',
+                    'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'N/A',
+                    'status' => $schedule->status
+                ];
+            }),
+            'team_count' => $event->eventMembers->count(),
+            'team_members' => $event->eventMembers->map(function($em) {
+                return [
+                    'name' => $em->member ? $em->member->name : 'N/A',
+                    'role' => $em->role ?? ($em->member ? $em->member->position : 'N/A')
+                ];
+            }),
+            'notes' => $event->notes
+        ]);
+    }
 }
