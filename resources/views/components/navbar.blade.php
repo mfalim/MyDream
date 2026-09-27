@@ -38,14 +38,21 @@
 
         <div class="navbar-actions">
 
-            <span class="navbar-currency hide-mobile">
-                Mata Uang: IDR (Rp)
-            </span>
+            {{-- KONDISI JIKA USER BELUM LOGIN --}}
+            @guest
+                <a href="{{ route('login') }}" class="text-link strong hide-mobile">
+                    Daftar Sebagai User
+                </a>
+            @endguest
 
-            <a href="{{ route('login') }}" class="text-link strong hide-mobile">
-                Daftar Sebagai User
-            </a>
+            {{-- KONDISI JIKA USER SUDAH LOGIN (Opsional: Menampilkan nama atau teks lain jika mau) --}}
+            @auth
+                <span class="hide-mobile" style="font-size: 0.85rem; color: #555;">
+                    Halo, <strong>{{ auth()->user()->name }}</strong>
+                </span>
+            @endauth
 
+            {{-- Sisa kode tombol ikon keranjang, akun, dll tetap sama di bawah ini --}}
             <a href="{{ route('cart.index') }}" class="navbar-icon" aria-label="Keranjang">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="1.8">
@@ -62,13 +69,8 @@
                     <path d="M5.5 20c.8-3.4 3-5.2 6.5-5.2s5.7 1.8 6.5 5.2" />
                 </svg>
             </a>
-
-            <a href="{{ route('client.profile') }}" aria-label="Profile"
-                style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#4b171b;color:#fff;text-decoration:none;font-size:.72rem;font-weight:700;">
-                MD
-            </a>
-
         </div>
+
     </div>
 
     <nav class="navbar-links">
