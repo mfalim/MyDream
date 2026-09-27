@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class VendorController extends Controller
 {
@@ -87,8 +88,18 @@ class VendorController extends Controller
             'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
+        $slug = Str::slug($request->name);
+
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (Vendor::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
         $vendor = Vendor::create([
             'name' => $request->name,
+            'slug' => $slug,
             'category_id' => $request->category_id,
             'price' => $request->price,
             'phone' => $request->phone,
@@ -163,8 +174,22 @@ class VendorController extends Controller
             'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
+        $slug = Str::slug($request->name);
+
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (
+            Vendor::where('slug', $slug)
+                ->where('id', '!=', $vendor->id)
+                ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
         $vendor->update([
             'name' => $request->name,
+            'slug' => $slug,
             'category_id' => $request->category_id,
             'price' => $request->price,
             'phone' => $request->phone,

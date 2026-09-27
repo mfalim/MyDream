@@ -31,7 +31,7 @@ class TrackingController extends Controller
         }
 
         $bookings = $query->get();
-        
+
         $eventsByBooking = Event::with(['schedules'])
             ->get()
             ->groupBy('booking_id')
@@ -40,7 +40,7 @@ class TrackingController extends Controller
                 $totalSchedules = $allSchedules->count();
                 $approvedSchedules = $allSchedules->where('status', 'approved')->count();
                 $progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
-                
+
                 return [
                     'events' => $events,
                     'progress' => $progress,
@@ -48,8 +48,8 @@ class TrackingController extends Controller
                     'total_count' => $totalSchedules
                 ];
             });
-        
-        $members = \App\Models\Member::where('status', 'active')->get();
+
+        $members = \App\Models\Member::whereIn('status', ['standby', 'aktif'])->get();
 
         return view('admin.tracking.index', compact('bookings', 'eventsByBooking', 'members'));
     }
@@ -76,7 +76,7 @@ class TrackingController extends Controller
     public function updateScheduleStatus(Request $request, $scheduleId)
     {
         $schedule = Schedule::findOrFail($scheduleId);
-        
+
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected'
         ]);
@@ -88,26 +88,26 @@ class TrackingController extends Controller
             'message' => 'Status updated successfully'
         ]);
     }
-    
+
     public function updateBookingStatus(Request $request, $bookingId)
     {
         $booking = Booking::findOrFail($bookingId);
-        
+
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected',
             'coordinator_id' => 'nullable|exists:members,id'
         ]);
 
         $booking->update(['status' => $validated['status']]);
-        
+
         if ($validated['status'] === 'approved' && isset($validated['coordinator_id'])) {
             $event = Event::where('booking_id', $bookingId)->first();
-            
+
             if ($event) {
                 $existingMember = \App\Models\EventMember::where('event_id', $event->id)
                     ->where('member_id', $validated['coordinator_id'])
                     ->first();
-                
+
                 if (!$existingMember) {
                     \App\Models\EventMember::create([
                         'event_id' => $event->id,

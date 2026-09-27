@@ -8,6 +8,7 @@ class Package extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
         'availability_date',
         'duration',
         'guest_capacity',
@@ -24,8 +25,7 @@ class Package extends Model
     {
         $availabilityDate = $this->getRawOriginal('availability_date');
 
-        return is_string($availabilityDate)
-            && $availabilityDate >= now()->toDateString();
+        return is_string($availabilityDate) && $availabilityDate >= now()->toDateString();
     }
 
     public function getDurationLabelAttribute(): string
@@ -41,9 +41,7 @@ class Package extends Model
 
     public function getPriceAttribute(): float
     {
-        $vendors = $this->relationLoaded('vendors')
-            ? $this->vendors
-            : $this->vendors()->get();
+        $vendors = $this->relationLoaded('vendors') ? $this->vendors : $this->vendors()->get();
 
         return (float) $vendors->sum('price');
     }
@@ -58,10 +56,5 @@ class Package extends Model
         return $this->belongsToMany(Vendor::class, 'package_vendor')
             ->withPivot('status')
             ->withTimestamps();
-    }
-
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
     }
 }

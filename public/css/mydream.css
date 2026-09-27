@@ -914,6 +914,58 @@ h3 {
     margin-bottom: 1.8rem;
 }
 
+/* ---------- Navbar navigation ---------- */
+
+.navbar-links {
+    width: 100%;
+}
+
+.navbar-links > .container.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 28px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar-links > .container.row > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    /* PENTING: override Bootstrap .row > * */
+    width: auto;
+    max-width: none;
+    flex: 0 0 auto;
+
+    white-space: nowrap;
+}
+
+/* Baris kategori vendor */
+.navbar-links > .container.row.categories {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 24px;
+    overflow-x: auto;
+    width: 100%;
+    scrollbar-width: none;
+}
+
+.navbar-links > .container.row.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.navbar-links > .container.row.categories > a {
+    width: auto;
+    max-width: none;
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
 /* ==========================================================================
    STORE (Halaman 2)
    ========================================================================== */

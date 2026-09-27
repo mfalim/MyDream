@@ -1,83 +1,323 @@
 @extends('layouts.frontend')
 
-@php
-    // TODO: ganti dengan data dari controller berdasarkan $slug
-    $paket = [
-        'title' => 'Oceanfront Wedding Ceremony & Dinner Package (200 Pax)',
-        'vendor' => 'AYANA Resort & Spa Bali',
-        'location' => 'Jimbaran, Bali',
-        'rating' => '4.9', 'reviews' => 98,
-        'before' => '185.000.000', 'now' => '160.000.000', 'cicilan' => '6,6 Jt', 'discount' => 'Hemat Rp 25.000.000',
-        'gallery' => ['package/package-01.jpg', 'package/package-02.jpg', 'package/package-03.jpg', 'package/package-04.jpg'],
-        'description' => 'Rayakan momen sakral pernikahanmu dengan latar matahari terbenam di tepi laut Jimbaran. Paket ini mencakup venue eksklusif, dekorasi tematik, dan jamuan makan malam internasional untuk 200 tamu, lengkap dengan penginapan mewah untuk mempelai.',
-        'includes' => ['Eksklusif venue outdoor selama 6 jam', '5-course International Buffet Dinner untuk 200 pax', 'Menginap 2 malam di Bridal Ocean Suite', 'Dekorasi altar & meja tamu tema tropis', 'Sound system, MC, dan tim wedding coordinator', 'Dokumentasi foto highlight 1 hari'],
-    ];
-@endphp
+@php use App\MyDream\Format; @endphp
+@php use App\MyDream\Catalog; @endphp
 
-@section('title', $paket['title'].' — MyDream Organizer')
-
-@section('breadcrumb')
-    <x-breadcrumb :items="[['label' => 'Paket & Promo', 'href' => route('catalog.index')], ['label' => $paket['title']]]" />
-@endsection
+@section('title', $package['title'] . ' | MyDream Store')
+@section('body_class', 'page-detail page-package')
+@section('with_categories', '1')
 
 @section('content')
-    <section class="section">
-        <div class="container" style="display:grid;grid-template-columns:2fr 1fr;gap:40px;">
+    @php
+        $first = $package['options'][0];
+    @endphp
 
+    <div class="container-xxl detail">
+        {{-- Breadcrumb --}}
+        <nav class="detail-crumb" aria-label="breadcrumb">
+            <a href="{{ route('home') }}"><i class="bi bi-house"></i> Beranda</a><i class="bi bi-chevron-right"></i>
+            <a href="{{ route('catalog.index') }}">MyDream Store</a><i class="bi bi-chevron-right"></i>
+            <a href="{{ route('catalog.index', ['kategori' => 'paket']) }}">Paket Pernikahan</a><i
+                class="bi bi-chevron-right"></i>
+            <span>{{ $package['title'] }}</span>
+        </nav>
+
+        {{-- Judul --}}
+        <header class="detail-head">
             <div>
-                <div class="grid grid-2">
-                    <img src="{{ asset('images/'.$paket['gallery'][0]) }}" alt="{{ $paket['title'] }}" style="grid-column:1/-1;border-radius:var(--radius-md);aspect-ratio:16/9;object-fit:cover;width:100%;">
-                    @foreach (array_slice($paket['gallery'], 1) as $img)
-                        <img src="{{ asset('images/'.$img) }}" alt="" style="border-radius:var(--radius-md);aspect-ratio:4/3;object-fit:cover;width:100%;">
+                <div class="detail-badges">
+                    @foreach ($package['badges'] as [$label, $tone])
+                        <span class="md-badge md-badge--{{ $tone }}">{{ $label }}</span>
+                    @endforeach
+                </div>
+                <h1 class="detail-title">{{ $package['title'] }}</h1>
+                <div class="detail-meta">
+                    <span><i class="bi bi-building"></i> Diselenggarakan oleh <strong
+                            class="text-gold">{{ $package['organizer'] }}</strong></span>
+                    <span><i class="bi bi-star-fill text-warning"></i>
+                        <strong>{{ Format::stars($package['rating']) }}</strong> <a
+                            href="#ulasan">({{ $package['reviews'] }} ulasan terverifikasi)</a></span>
+                    <span><i class="bi bi-patch-check"></i> {{ $package['sold'] }}+ paket terjual</span>
+                    <span><i class="bi bi-geo-alt"></i> {{ $package['area'] }}</span>
+                </div>
+            </div>
+            <div class="detail-actions">
+                <button type="button" class="btn btn-md-outline btn-sm"><i class="bi bi-heart"></i> Simpan</button>
+                <button type="button" class="btn btn-md-outline btn-sm" data-share><i class="bi bi-share"></i>
+                    Bagikan</button>
+            </div>
+        </header>
+
+        <div class="row g-4 g-xl-5">
+            {{-- ================= KOLOM KIRI ================= --}}
+            <div class="col-lg-8">
+
+                {{-- Galeri --}}
+                <div class="detail-gallery" data-gallery>
+                    <div class="detail-gallery__grid">
+                        <div class="detail-gallery__main">
+                            <img src="{{ asset($package['gallery'][0]) }}" alt="{{ $package['title'] }}"
+                                data-gallery-main>
+                            <span class="md-tag md-tag--gold"><i class="bi bi-camera"></i> Official venue photography</span>
+                            <span class="detail-gallery__caption">{{ $package['gallery_caption'] }}</span>
+                        </div>
+                        <div class="detail-gallery__side">
+                            <img src="{{ asset($package['gallery'][1]) }}" alt="Bridal suite prep">
+                            <div class="detail-gallery__more">
+                                <img src="{{ asset($package['gallery'][2]) }}" alt="Dekorasi">
+                                <span><i class="bi bi-images"></i> +18 Foto</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-thumbs">
+                        @foreach ($package['gallery'] as $i => $g)
+                            <button type="button" class="{{ $i === 0 ? 'is-active' : '' }}" data-gallery-thumb
+                                data-src="{{ asset($g) }}">
+                                <img src="{{ asset($g) }}" alt="Galeri {{ $i + 1 }}">
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Fakta ringkas --}}
+                <div class="detail-facts">
+                    @foreach ($package['facts'] as [$icon, $label, $value])
+                        <div><span class="detail-facts__icon"><i
+                                    class="bi {{ $icon }}"></i></span><span><small>{{ $label }}</small><strong>{{ $value }}</strong></span>
+                        </div>
                     @endforeach
                 </div>
 
-                <div class="mt-4">
-                    <p class="tiny faint" style="text-transform:uppercase;">{{ $paket['location'] }}</p>
-                    <h1 class="h1 mt-1" style="font-size:2rem;">{{ $paket['title'] }}</h1>
-                    <div class="flex gap-2 mt-1" style="align-items:center;">
-                        <span class="small muted">oleh <strong class="text-maroon">{{ $paket['vendor'] }}</strong></span>
-                        <span class="small muted rating">★ {{ $paket['rating'] }} ({{ $paket['reviews'] }} ulasan)</span>
+                {{-- Tab anchor --}}
+                <nav class="detail-tabs" aria-label="Bagian halaman">
+                    @foreach ($package['tabs'] as $i => $tab)
+                        <a href="{{ $i === 0 ? '#inklusi' : ($i === count($package['tabs']) - 1 ? '#lokasi' : '#inklusi') }}"
+                            class="{{ $i === 0 ? 'is-active' : '' }}">{{ $tab }}</a>
+                    @endforeach
+                </nav>
+
+                {{-- Rincian isi paket: gabungan beberapa vendor --}}
+                <section class="detail-card" id="inklusi">
+                    <span class="md-eyebrow">MyDream complete solution</span>
+                    <h2 class="detail-h2">{{ $package['inclusion_title'] }}</h2>
+                    <p class="detail-lead">{{ $package['inclusion_intro'] }}</p>
+
+                    <div class="d-grid gap-3">
+                        @foreach ($package['inclusions'] as $inc)
+                            <div class="pkg-inc">
+                                <div class="pkg-inc__head">
+                                    <span class="pkg-inc__icon"><i class="bi {{ $inc['icon'] }}"></i></span>
+                                    <h3>{{ $loop->iteration }}. {{ $inc['title'] }}</h3>
+                                    <span class="pkg-inc__worth">Senilai {{ Format::rupiah($inc['worth']) }}</span>
+                                </div>
+                                <ul>
+                                    @foreach ($inc['points'] as $p)
+                                        <li><i class="bi bi-check2"></i>{{ $p }}</li>
+                                    @endforeach
+                                </ul>
+                                @if (!empty($inc['vendor']))
+                                    <a href="{{ route('vendor.show', $inc['vendor']) }}" class="pkg-inc__vendor">Lihat
+                                        profil vendor <i class="bi bi-arrow-right"></i></a>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
 
-                    <p class="lede mt-3">{{ $paket['description'] }}</p>
+                </section>
 
-                    <h2 class="h3 mt-4">Termasuk Dalam Paket</h2>
-                    <ul class="card-features mt-2 grid grid-2" style="gap:10px;">
-                        @foreach ($paket['includes'] as $item)
-                            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>{{ $item }}</span></li>
+                {{-- Lokasi --}}
+                <section class="detail-card" id="lokasi">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <span class="md-eyebrow">Lokasi venue</span>
+                            <h2 class="detail-h2">{{ $package['location_title'] }}</h2>
+                        </div>
+                        <a class="store-link" target="_blank" rel="noopener"
+                            href="https://www.google.com/maps/search/?api=1&query={{ urlencode($package['map_query']) }}">Buka
+                            di Google Maps <i class="bi bi-box-arrow-up-right"></i></a>
+                    </div>
+                    <p class="detail-lead">{{ $package['address'] }}</p>
+                    <div class="detail-map">
+                        <iframe title="Peta lokasi" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                            src="https://maps.google.com/maps?q={{ urlencode($package['map_query']) }}&output=embed"></iframe>
+                        <div class="detail-map__pin"><i
+                                class="bi bi-geo-alt-fill"></i><span><strong>{{ $package['location_title'] }}</strong><small>{{ $package['map_note'] }}</small></span>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Ulasan --}}
+                <section class="detail-card" id="ulasan">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+                        <div>
+                            <span class="md-eyebrow">Testimoni nyata</span>
+                            <h2 class="detail-h2 mb-0">Ulasan Calon & Pengantin Asli</h2>
+                        </div>
+                        <div class="detail-score"><i class="bi bi-star-fill"></i>
+                            <strong>{{ Format::stars($package['rating']) }}</strong> / 5.0 <span>|</span>
+                            {{ $package['reviews'] }} ulasan lengkap
+                        </div>
+                    </div>
+                    <div class="d-grid gap-3">
+                        @foreach ($package['testimonials'] as $t)
+                            <article class="detail-review">
+                                <div class="detail-review__top">
+                                    <span class="detail-review__avatar">{{ $t['initials'] }}</span>
+                                    <div><strong>{{ $t['name'] }}</strong><small>{{ $t['meta'] }}</small></div>
+                                    <span class="detail-review__stars">
+                                        @for ($i = 0; $i < 5; $i++)
+                                            <i class="bi bi-star-fill"></i>
+                                        @endfor
+                                    </span>
+                                </div>
+                                <p>"{{ $t['text'] }}"</p>
+                                <span class="md-badge md-badge--green"><i class="bi bi-patch-check"></i> Pembelian
+                                    terverifikasi MyDream Store</span>
+                            </article>
                         @endforeach
-                    </ul>
-                </div>
+                    </div>
+                </section>
+
+                {{-- Langkah --}}
+                <section class="detail-card">
+                    <span class="md-eyebrow">Langkah mudah</span>
+                    <h2 class="detail-h2">Cara Kerja Pemesanan Paket di MyDream Store</h2>
+                    <div class="row g-3">
+                        @foreach ($package['steps'] as $s)
+                            <div class="col-6 col-md-3">
+                                <div class="detail-step">
+                                    <span>{{ $loop->iteration }}</span>
+                                    <strong>{{ $s['title'] }}</strong>
+                                    <p>{{ $s['desc'] }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
             </div>
 
-            <aside>
-                <div class="summary-card">
-                    <span class="badge badge-maroon">{{ $paket['discount'] }}</span>
-                    <p class="tiny faint mt-2" style="text-decoration:line-through;">Rp {{ $paket['before'] }}</p>
-                    <p class="h2" style="color:var(--maroon);">Rp {{ $paket['now'] }}</p>
-                    <p class="small muted">Cicilan mulai Rp {{ $paket['cicilan'] }}/bln</p>
+            {{-- ================= KOLOM KANAN (sticky) ================= --}}
+            <div class="col-lg-4">
+                <aside class="detail-box" data-package-box data-title="{{ $package['title'] }}"
+                    data-wa="{{ Catalog::WA_NUMBER }}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="md-eyebrow">Harga paket spesial</span>
+                        <span class="md-badge md-badge--maroon" data-discount>Diskon {{ $package['discount'] }}%</span>
+                    </div>
 
-                    <form class="mt-3" action="{{ route('cart.index') ?? '#' }}" method="POST">
-                        @csrf
-                        <div class="field">
-                            <label>Tanggal Acara</label>
-                            <input type="date">
-                        </div>
-                        <div class="field">
-                            <label>Jumlah Tamu</label>
-                            <input type="number" value="200">
-                        </div>
-                        <button type="submit" class="btn btn-dark btn-block">Tambah ke Keranjang</button>
-                        <a href="{{ route('checkout.index') ?? '#' }}" class="btn btn-outline btn-block mt-1">Booking Sekarang</a>
-                    </form>
+                    <div class="pkg-price">
+                        <strong data-price>{{ Format::rupiah($first['price']) }}</strong>
+                        <s data-old>{{ Format::rupiah($first['old_price']) }}</s>
+                    </div>
+                    <p class="pkg-save"><i class="bi bi-tag"></i> Hemat <span
+                            data-save>{{ Format::rupiah($first['old_price'] - $first['price']) }}</span> dengan voucher
+                        MyDream Store</p>
 
-                    <a href="#" class="flex justify-between mt-3 small muted" style="justify-content:center;gap:8px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 01-2.555-.337A5.97 5.97 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/></svg>
-                        Chat Vendor Langsung
-                    </a>
+                    <div class="pkg-cicilan">
+                        <strong><i class="bi bi-credit-card"></i> Cicilan 0% MyDream Pay</strong>
+                        <span>Mulai <b data-installment>{{ Format::rupiah(round($first['price'] / 24)) }}</b> / bulan
+                            (tenor 24 bulan bebas bunga dengan kartu kredit rekanan).</span>
+                    </div>
+
+                    <p class="detail-box__label">Pilih opsi kapasitas undangan:</p>
+                    <div class="d-grid gap-2">
+                        @foreach ($package['options'] as $i => $opt)
+                            <label class="pkg-option">
+                                <input type="radio" name="option" value="{{ $i }}"
+                                    @checked($i === 0) data-price="{{ $opt['price'] }}"
+                                    data-old="{{ $opt['old_price'] }}" data-label="{{ $opt['label'] }}">
+                                <span class="pkg-option__body">
+                                    <strong>{{ $opt['label'] }}</strong>
+                                    <small>{{ $opt['desc'] }}</small>
+                                </span>
+                                <span class="pkg-option__price">{{ Format::juta($opt['price']) }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <p class="detail-box__label">Perkiraan waktu & sesi acara:</p>
+                    <div class="pkg-sessions">
+                        @foreach ($package['sessions'] as $i => $s)
+                            <label>
+                                <input type="radio" name="session" value="{{ $s }}"
+                                    @checked($i === 0)>
+                                <span><i class="bi {{ $i === 0 ? 'bi-moon-stars' : 'bi-sun' }}"></i>
+                                    {{ $s }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+
+                    <div class="d-grid gap-2 mt-3">
+
+                        {{-- Tambah ke keranjang --}}
+                        <form method="POST" action="{{ route('user.cart.add-package', $package['id']) }}">
+                            @csrf
+
+                            <button type="submit" class="btn btn-md-primary w-100">
+                                <i class="bi bi-cart-plus"></i>
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+
+                        {{-- Langsung ke checkout --}}
+                        <form method="POST" action="{{ route('user.cart.add-package', $package['id']) }}">
+                            @csrf
+
+                            <input type="hidden" name="redirect" value="checkout">
+
+                            <button type="submit" class="btn btn-md-gold-soft w-100">
+                                <i class="bi bi-credit-card"></i>
+                                Lanjut ke Pembayaran
+                            </button>
+                        </form>
+
+                    </div>
+                    <a href="{{ Catalog::wa('Halo MyDream, saya ingin konsultasi paket ' . $package['title']) }}"
+                        target="_blank" rel="noopener" class="btn btn-md-gold-soft w-100 mt-2"><i
+                            class="bi bi-whatsapp"></i> Konsultasi gratis via WhatsApp</a>
+                    <a href="#" class="detail-box__pdf"><i class="bi bi-download"></i> Unduh e-brochure & rundown
+                        (PDF)</a>
+
+                    <ul class="detail-box__guarantee">
+                        <li><i class="bi bi-shield-check"></i> 100% Proteksi MyDream Pay Escrow</li>
+                        <li><i class="bi bi-arrow-repeat"></i> Bebas reschedule acara hingga H-60</li>
+                        <li><i class="bi bi-envelope-check"></i> Konfirmasi voucher digital instan via email</li>
+                    </ul>
+
+                    <div class="detail-box__pay">
+                        <small>Metode pembayaran resmi:</small>
+                        <div>
+                            @foreach (['BCA', 'Mandiri', 'BNI', 'BRI', 'QRIS', 'Visa', 'Mastercard'] as $m)
+                                <span>{{ $m }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                </aside>
+
+                <div class="detail-organizer">
+                    <span class="detail-organizer__icon"><i class="bi bi-buildings"></i></span>
+                    <div><strong>{{ $package['organizer'] }}</strong><small><i class="bi bi-circle-fill"></i> Respon
+                            rata-rata: &lt; 15 menit</small></div>
+                    <a href="#" class="btn btn-sm btn-md-soft ms-auto">Profil</a>
                 </div>
-            </aside>
+            </div>
         </div>
-    </section>
+
+        {{-- Paket lain --}}
+        <section class="detail-related">
+            <div class="store-head">
+                <div>
+                    <span class="md-eyebrow">Inspirasi pilihan</span>
+                    <h2 class="detail-h2 mb-0">Paket Pernikahan Pilihan Lainnya</h2>
+                </div>
+                <a href="{{ route('catalog.index', ['kategori' => 'paket']) }}" class="store-link">Lihat semua paket
+                    <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="row g-4">
+                @foreach ($related as $rel)
+                    <div class="col-md-6 col-xl-4">@include('pages.catalog.partials.package-card', ['package' => $rel])</div>
+                @endforeach
+            </div>
+        </section>
+    </div>
 @endsection

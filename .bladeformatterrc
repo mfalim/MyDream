@@ -1,0 +1,13 @@
+{
+    "indentSize": 4,
+    "wrapAttributes": "auto",
+    "wrapLineLength": 120,
+    "endWithNewLine": true,
+    "noMultipleEmptyLines": false,
+    "useTabs": false,
+    "sortHtmlAttributes": "none",
+    "noPhpSyntaxCheck": false,
+    "noSingleQuote": false,
+    "noTrailingCommaPhp": false,
+    "phpVersion": "8.4"
+}

@@ -10,20 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-
 class User extends Authenticatable
 {
-    protected $fillable = [
-    'name',
-    'email',
-    'google_id',
-    'avatar',
-    'role',
-    'status',
-];
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    protected $fillable = ['name', 'email', 'google_id', 'avatar', 'role', 'status', 'password'];
 
+    use HasFactory, Notifiable;
     /**
      * Get the attributes that should be cast.
      *
@@ -37,7 +28,8 @@ class User extends Authenticatable
         ];
     }
 
-    public static function createOrLogin($googleUser) {
+    public static function createOrLogin($googleUser)
+    {
         return self::firstOrCreate(
             ['google_id' => $googleUser->id],
             [
@@ -46,7 +38,8 @@ class User extends Authenticatable
                 'avatar' => $googleUser->avatar,
                 'role' => 'client',
                 'status' => 'approved',
-            ]
+                'password' => \Illuminate\Support\Str::random(60),
+            ],
         );
     }
 

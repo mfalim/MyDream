@@ -18,36 +18,44 @@
         <div class="sidebar-menu">
             <small class="text-muted px-3">OVERVIEW</small>
             <div class="mt-2">
-                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
             </div>
 
             <small class="text-muted px-3 d-block mt-4">OPERASIONAL</small>
             <div class="mt-2">
-                <a href="{{ route('admin.event_day.index') }}" class="{{ request()->routeIs('admin.event_day.*') || request()->routeIs('admin.event.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.events.index') }}"
+                    class="{{ request()->routeIs('admin.events.*') ? 'active' : '' }}">
                     <i class="bi bi-calendar-event me-2"></i>Event Day
                 </a>
-                <a href="{{ route('admin.calendar') }}" class="{{ request()->routeIs('admin.calendar') || request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.calendar') }}"
+                    class="{{ request()->routeIs('admin.calendar') || request()->routeIs('admin.events.*') ? 'active' : '' }}">
                     <i class="bi bi-calendar3 me-2"></i>Calendar
                 </a>
-                <a href="{{ route('admin.packages.index') }}" class="{{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.packages.index') }}"
+                    class="{{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
                     <i class="bi bi-box-seam me-2"></i>Paket Wedding
                 </a>
-                <a href="{{ route('admin.vendors.index') }}" class="{{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.vendors.index') }}"
+                    class="{{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
                     <i class="bi bi-shop me-2"></i>Vendor
                 </a>
-                <a href="{{ route('admin.tracking.index') }}" class="{{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.tracking.index') }}"
+                    class="{{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
                     <i class="bi bi-shop me-2"></i>Tracking Acara Client
                 </a>
             </div>
 
             <small class="text-muted px-3 d-block mt-4">DATA MASTER</small>
             <div class="mt-2">
-                <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
                     <i class="bi bi-tags me-2"></i>Kategori
                 </a>
-                <a href="{{ route('admin.members.index') }}" class="{{ request()->routeIs('admin.members.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.members.index') }}"
+                    class="{{ request()->routeIs('admin.members.*') ? 'active' : '' }}">
                     <i class="bi bi-people me-2"></i>Anggota Tim
                 </a>
             </div>
@@ -60,13 +68,13 @@
             <div><span class="text-muted">Admin</span></div>
         </div>
         <div class="content">
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
-            @if($errors->any())
+            @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
-                        @foreach($errors->all() as $error)
+                        @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
