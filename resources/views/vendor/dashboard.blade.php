@@ -1,711 +1,600 @@
-@extends('layouts.admin')
+@extends('vendor.layouts.app')
 
 @section('title', 'Dashboard Vendor')
-@section('page-title', 'Dashboard Vendor')
 
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('css/vendor/vendor-dashboard.css') }}">
+<div class="page-header">
 
-<div class="vendor-dashboard">
+    <div class="page-header-text">
 
-    <!-- WELCOME -->
-    <div class="welcome-card">
-        <div class="welcome-info">
-            <div class="status-label">
-                <span></span>
-                VENDOR PORTAL
-            </div>
-
-            <p class="gate-info">
-                Selamat datang kembali, <strong>Vendor Partner</strong>
-            </p>
-
-            <h1>Dashboard Vendor</h1>
-
-            <p class="welcome-desc">
-                Kelola layanan, pantau jadwal, dan lihat perkembangan
-                pekerjaan Anda dalam satu tempat.
-            </p>
-        </div>
-
-        <div class="welcome-actions">
-            <button class="btn-primary">
-                + Tambah Layanan
-            </button>
-
-            <button class="btn-secondary">
-                Lihat Kalender
-            </button>
-        </div>
-    </div>
-
-
-    <!-- STATISTICS -->
-    <div class="stats-grid">
-
-        <div class="stat-card">
-            <div class="stat-top">
-                <div>
-                    <p>TOTAL LAYANAN</p>
-                    <h2>12 <small>layanan</small></h2>
-                </div>
-
-                <div class="stat-icon">
-                    ◈
-                </div>
-            </div>
-
-            <div class="event-mini">
-                <div class="event-title">
-                    <strong>Layanan Aktif</strong>
-                    <span>8 Aktif</span>
-                </div>
-
-                <div class="progress">
-                    <div style="width: 67%;"></div>
-                </div>
-
-                <small>67% dari seluruh layanan</small>
-            </div>
-        </div>
-
-
-        <div class="stat-card">
-            <div class="stat-top">
-                <div>
-                    <p>EVENT BERJALAN</p>
-                    <h2>4 <small>event</small></h2>
-                </div>
-
-                <div class="stat-icon light">
-                    ◷
-                </div>
-            </div>
-
-            <div class="schedule-number">
-                <div>
-                    <strong>2</strong>
-                    <span>MINGGU INI</span>
-                </div>
-
-                <div class="today">
-                    <strong>1</strong>
-                    <span>HARI INI</span>
-                </div>
-
-                <div>
-                    <strong>1</strong>
-                    <span>MENDATANG</span>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="stat-card">
-            <div class="stat-top">
-                <div>
-                    <p>PENDAPATAN</p>
-                    <h2>Rp 24,5jt</h2>
-                </div>
-
-                <div class="stat-icon">
-                    Rp
-                </div>
-            </div>
-
-            <div class="escrow-box">
-                <strong>✓</strong>
-
-                <span>
-                    Pembayaran aman dan tercatat
-                    dalam sistem.
-                </span>
-            </div>
-        </div>
-
-
-        <div class="stat-card">
-            <div class="stat-top">
-                <div>
-                    <p>RATING VENDOR</p>
-                    <h2>4.8 <small>/ 5.0</small></h2>
-                </div>
-
-                <div class="star-icon">
-                    ★
-                </div>
-            </div>
-
-            <div class="rating-footer">
-                <span>
-                    Berdasarkan 38 ulasan
-                </span>
-
-                <strong>
-                    Sangat Baik
-                </strong>
-            </div>
-        </div>
-
-    </div>
-
-
-    <!-- MAIN CONTENT -->
-    <div class="main-grid">
-
-        <!-- TIMELINE -->
-        <div class="panel">
-
-            <div class="panel-heading">
-                <div>
-                    <span class="section-label">
-                        WORKFLOW
-                    </span>
-
-                    <h2>
-                        Timeline Pekerjaan
-                    </h2>
-                </div>
-
-                <div class="location-badge">
-                    📍 Jember, Jawa Timur
-                </div>
-            </div>
-
-
-            <div class="director-card">
-
-                <div class="director-icon">
-                    👤
-                </div>
-
-                <div>
-                    <small>PROJECT DIRECTOR</small>
-                    <strong>Wedding Organizer Team</strong>
-                </div>
-
-                <span class="stage-captain">
-                    Event Captain
-                </span>
-
-            </div>
-
-
-            <div class="timeline">
-
-                <div class="timeline-item completed">
-
-                    <div class="timeline-dot">
-                        ✓
-                    </div>
-
-                    <div class="timeline-content">
-                        <div class="time">
-                            08:00 WIB
-                        </div>
-
-                        <strong>
-                            Persiapan Vendor
-                        </strong>
-
-                        <p>
-                            Seluruh kebutuhan vendor
-                            telah dipersiapkan.
-                        </p>
-                    </div>
-
-                    <div class="task-status">
-                        SELESAI
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item completed">
-
-                    <div class="timeline-dot">
-                        ✓
-                    </div>
-
-                    <div class="timeline-content">
-                        <div class="time">
-                            10:00 WIB
-                        </div>
-
-                        <strong>
-                            Setup Equipment
-                        </strong>
-
-                        <p>
-                            Peralatan mulai dipasang
-                            di lokasi acara.
-                        </p>
-                    </div>
-
-                    <div class="task-status">
-                        SELESAI
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item active">
-
-                    <div class="timeline-dot">
-                        •
-                    </div>
-
-                    <div class="timeline-content">
-                        <div class="time">
-                            13:00 WIB
-                        </div>
-
-                        <strong>
-                            Persiapan Acara
-                        </strong>
-
-                        <p>
-                            Vendor sedang melakukan
-                            persiapan akhir sebelum acara.
-                        </p>
-
-                        <div class="active-progress">
-                            <span></span>
-                        </div>
-                    </div>
-
-                    <div class="running-status">
-                        BERJALAN
-                    </div>
-
-                </div>
-
-
-                <div class="timeline-item">
-
-                    <div class="timeline-dot"></div>
-
-                    <div class="timeline-content">
-                        <div class="time">
-                            16:00 WIB
-                        </div>
-
-                        <strong>
-                            Acara Dimulai
-                        </strong>
-
-                        <p>
-                            Pelaksanaan acara sesuai
-                            jadwal yang telah ditentukan.
-                        </p>
-                    </div>
-
-                    <div class="task-status">
-                        MENUNGGU
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="timeline-actions">
-
-                <button class="btn-primary">
-                    Lihat Detail Event
-                </button>
-
-                <button class="btn-secondary">
-                    Buka Kalender
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- VENDOR SYNC -->
-        <div class="panel">
-
-            <div class="panel-heading">
-
-                <div>
-                    <span class="section-label">
-                        VENDOR MANAGEMENT
-                    </span>
-
-                    <h2>
-                        Vendor Sync
-                    </h2>
-                </div>
-
-                <span class="on-site">
-                    ● ON SITE
-                </span>
-
-            </div>
-
-
-            <p class="sync-desc">
-                Daftar vendor yang sedang bekerja
-                dalam event aktif.
-            </p>
-
-
-            <div class="vendor-list">
-
-                <div class="vendor-item">
-
-                    <div class="vendor-icon">
-                        ♫
-                    </div>
-
-                    <div>
-                        <strong>
-                            Sound & Music
-                        </strong>
-
-                        <small>
-                            Audio System
-                        </small>
-
-                        <span>
-                            ✓ Terverifikasi
-                        </span>
-                    </div>
-
-                    <button>
-                        →
-                    </button>
-
-                </div>
-
-
-                <div class="vendor-item">
-
-                    <div class="vendor-icon">
-                        ✦
-                    </div>
-
-                    <div>
-                        <strong>
-                            Decoration
-                        </strong>
-
-                        <small>
-                            Wedding Decoration
-                        </small>
-
-                        <span>
-                            ✓ Terverifikasi
-                        </span>
-                    </div>
-
-                    <button>
-                        →
-                    </button>
-
-                </div>
-
-
-                <div class="vendor-item">
-
-                    <div class="vendor-icon">
-                        📷
-                    </div>
-
-                    <div>
-                        <strong>
-                            Photography
-                        </strong>
-
-                        <small>
-                            Photo & Video
-                        </small>
-
-                        <span>
-                            ✓ Terverifikasi
-                        </span>
-                    </div>
-
-                    <button>
-                        →
-                    </button>
-
-                </div>
-
-
-                <div class="vendor-item">
-
-                    <div class="vendor-icon">
-                        ♨
-                    </div>
-
-                    <div>
-                        <strong>
-                            Catering
-                        </strong>
-
-                        <small>
-                            Food & Beverage
-                        </small>
-
-                        <span>
-                            ✓ Terverifikasi
-                        </span>
-                    </div>
-
-                    <button>
-                        →
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <button class="radio-button">
-                + Tambah Vendor
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <!-- PIPELINE -->
-    <div class="panel pipeline">
-
-        <div class="pipeline-header">
-
-            <div>
-                <span class="section-label">
-                    PROJECT PIPELINE
-                </span>
-
-                <h2>
-                    Daftar Event
-                </h2>
-            </div>
-
-            <div class="filter-buttons">
-
-                <button class="active">
-                    Semua
-                </button>
-
-                <button>
-                    Berjalan
-                </button>
-
-                <button>
-                    Mendatang
-                </button>
-
-                <button>
-                    Selesai
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div class="table-wrapper">
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>EVENT</th>
-                        <th>TANGGAL</th>
-                        <th>LOKASI</th>
-                        <th>LAYANAN</th>
-                        <th>STATUS</th>
-                        <th>AKSI</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <tr>
-                        <td>
-                            <strong>
-                                Wedding A & B
-                            </strong>
-                            <small>
-                                WO-2026-001
-                            </small>
-                        </td>
-
-                        <td>
-                            24 Sep 2026
-                        </td>
-
-                        <td>
-                            Jember
-                        </td>
-
-                        <td>
-                            <span class="tag">
-                                Decoration
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status orange">
-                                BERJALAN
-                            </span>
-                        </td>
-
-                        <td>
-                            <button class="detail-button">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            <strong>
-                                Wedding C & D
-                            </strong>
-                            <small>
-                                WO-2026-002
-                            </small>
-                        </td>
-
-                        <td>
-                            28 Sep 2026
-                        </td>
-
-                        <td>
-                            Bondowoso
-                        </td>
-
-                        <td>
-                            <span class="tag">
-                                Catering
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status orange">
-                                MENDATANG
-                            </span>
-                        </td>
-
-                        <td>
-                            <button class="detail-button">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            <strong>
-                                Wedding E & F
-                            </strong>
-                            <small>
-                                WO-2026-003
-                            </small>
-                        </td>
-
-                        <td>
-                            05 Okt 2026
-                        </td>
-
-                        <td>
-                            Banyuwangi
-                        </td>
-
-                        <td>
-                            <span class="tag">
-                                Photography
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status green">
-                                TERKONFIRMASI
-                            </span>
-                        </td>
-
-                        <td>
-                            <button class="detail-button">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-
-
-                    <tr>
-                        <td>
-                            <strong>
-                                Wedding G & H
-                            </strong>
-                            <small>
-                                WO-2026-004
-                            </small>
-                        </td>
-
-                        <td>
-                            12 Okt 2026
-                        </td>
-
-                        <td>
-                            Lumajang
-                        </td>
-
-                        <td>
-                            <span class="tag">
-                                Sound System
-                            </span>
-                        </td>
-
-                        <td>
-                            <span class="status green">
-                                TERKONFIRMASI
-                            </span>
-                        </td>
-
-                        <td>
-                            <button class="detail-button">
-                                Detail
-                            </button>
-                        </td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-    <!-- FOOTER -->
-    <div class="dashboard-footer">
-
-        <span>
-            © 2026 Wedding Organizer Vendor Portal
+        <span class="eyebrow">
+            LIVE ON-SITE MODE
         </span>
 
-        <div class="footer-links">
-            <span>Help Center</span>
-            <span>•</span>
-            <span>Terms</span>
-            <span>•</span>
-            <span>Privacy</span>
-        </div>
+        <h1>
+            Selamat Bekerja, Lotus Floral Atelier
+        </h1>
+
+        <p>
+            Pantau jadwal loading panggung, serah terima area pelaminan,
+            dan sinkronisasi tugas Hari H bersama tim WO PROJECT secara real-time.
+        </p>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button type="button" class="btn-light">
+            ▣ Download SPK & Floorplan
+        </button>
+
+        <button type="button" class="btn-light">
+            ⌘ Scan Gate Pass
+        </button>
+
+        <button type="button" class="btn-primary">
+            ◉ Konfirmasi Kesiapan Loading
+        </button>
 
     </div>
 
 </div>
+
+
+{{-- =========================
+     STATISTIK
+========================= --}}
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+
+        <span>ACARA HARI INI</span>
+
+        <h2>
+            1 Acara Aktif
+        </h2>
+
+        <div class="stat-info">
+            <strong>The Royal Emerald</strong>
+            <span>85% Selesai</span>
+        </div>
+
+        <small>
+            Grand Ballroom Hotel Mulia
+        </small>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>JADWAL BULAN INI</span>
+
+        <h2>
+            8 Acara Terplot
+        </h2>
+
+        <div class="mini-stats">
+
+            <div>
+                <strong>3</strong>
+                <small>SELESAI</small>
+            </div>
+
+            <div>
+                <strong>1</strong>
+                <small>HARI INI</small>
+            </div>
+
+            <div>
+                <strong>4</strong>
+                <small>MENDATANG</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>STATUS SPK & KONTRAK</span>
+
+        <h2>
+            100% Escrow
+        </h2>
+
+        <p>
+            Dana pembayaran aman dan terlindungi
+            dalam sistem WO PROJECT.
+        </p>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <span>RATING KERJASAMA WO</span>
+
+        <h2>
+            4.98 / 5.0
+        </h2>
+
+        <p>
+            98 Acara Sukses Bersama
+        </p>
+
+        <strong>
+            Gold Tier Rekanan
+        </strong>
+
+    </div>
+
+</div>
+
+
+
+{{-- =========================
+     TIMELINE + VENDOR
+========================= --}}
+
+<div class="dashboard-grid">
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    LIVE TIMELINE PRODUKSI
+                </span>
+
+                <h2>
+                    The Royal Emerald Wedding
+                </h2>
+
+            </div>
+
+            <span class="badge-gold">
+                Grand Ballroom Hotel Mulia
+            </span>
+
+        </div>
+
+
+        <div class="director-card">
+
+            <div class="director-avatar">
+                D
+            </div>
+
+            <div>
+
+                <small>
+                    SHOW DIRECTOR ON-SITE
+                </small>
+
+                <strong>
+                    Dimas Prasetyo (M TC H OI)
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="timeline">
+
+            <div class="timeline-item done">
+
+                <strong>
+                    06:00 WIB
+                </strong>
+
+                <p>
+                    Loading In & Gate Pass Ballroom
+                </p>
+
+                <span>
+                    SELESAI 100%
+                </span>
+
+            </div>
+
+
+            <div class="timeline-item done">
+
+                <strong>
+                    09:30 WIB
+                </strong>
+
+                <p>
+                    Rangka Truss & Rigging LED Screen Pelaminan
+                </p>
+
+                <span>
+                    SELESAI 100%
+                </span>
+
+            </div>
+
+
+            <div class="timeline-item active">
+
+                <strong>
+                    12:30 WIB • TAHAP KRUSIAL
+                </strong>
+
+                <p>
+                    Instalasi Bunga Segar & Flooring Pelaminan
+                </p>
+
+                <span>
+                    BERJALAN 85%
+                </span>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <strong>
+                    15:30 WIB
+                </strong>
+
+                <p>
+                    Final Lighting Cue & Handover Bersama Klien
+                </p>
+
+                <span>
+                    STANDBY
+                </span>
+
+            </div>
+
+
+            <div class="timeline-item">
+
+                <strong>
+                    22:30 WIB
+                </strong>
+
+                <p>
+                    Teardown / Loading Out Ballroom
+                </p>
+
+                <span>
+                    MENUNGGU SELESAI
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="panel">
+
+        <div class="panel-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    LIVE FLOOR SYNC
+                </span>
+
+                <h2>
+                    Rekanan Vendor Hari H
+                </h2>
+
+            </div>
+
+        </div>
+
+
+        <p class="panel-description">
+            Sinkronisasi ruang gerak panggung bersama mitra resmi
+            WO PROJECT yang beroperasi bersama.
+        </p>
+
+
+        <div class="vendor-list">
+
+            <div class="vendor-item">
+
+                <strong>
+                    The Leonardi Photography
+                </strong>
+
+                <small>
+                    PIC: King Leonardi
+                </small>
+
+                <span>
+                    Sedang Test Lighting Pelaminan
+                </span>
+
+            </div>
+
+
+            <div class="vendor-item">
+
+                <strong>
+                    Sound & Light Dynamics
+                </strong>
+
+                <small>
+                    PIC: Rian Hidayat
+                </small>
+
+                <span>
+                    Sinkronisasi Beam & Lighting
+                </span>
+
+            </div>
+
+
+            <div class="vendor-item">
+
+                <strong>
+                    Puspa Catering VIP
+                </strong>
+
+                <small>
+                    PIC: Ibu Retno
+                </small>
+
+                <span>
+                    Setup Dekorasi Table
+                </span>
+
+            </div>
+
+
+            <div class="vendor-item">
+
+                <strong>
+                    Le Novelle Cake
+                </strong>
+
+                <small>
+                    PIC: Miyama
+                </small>
+
+                <span>
+                    Koordinasi Spot Cake Utama
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+
+{{-- =========================
+     PIPELINE
+========================= --}}
+
+<section class="panel pipeline-panel">
+
+    <div class="panel-header">
+
+        <div>
+
+            <span class="eyebrow">
+                PIPELINE PROJECT
+            </span>
+
+            <h2>
+                Jadwal Acara & Status Pembayaran Mendatang
+            </h2>
+
+        </div>
+
+
+        <div class="filter-pills">
+
+            <span class="active">
+                Semua (8)
+            </span>
+
+            <span>
+                Pekan Ini (2)
+            </span>
+
+            <span>
+                Bulan Depan (5)
+            </span>
+
+            <span>
+                Selesai
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-wrapper">
+
+        <table class="vendor-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        ACARA & PENGANTIN
+                    </th>
+
+                    <th>
+                        TANGGAL & JAM LOADING
+                    </th>
+
+                    <th>
+                        VENUE / LOKASI
+                    </th>
+
+                    <th>
+                        TEMA & SPEK DEKORASI
+                    </th>
+
+                    <th>
+                        STATUS SPK & TASK
+                    </th>
+
+                    <th>
+                        AKSI
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            Aditya Wardhana & Sarah Nadia
+                        </strong>
+
+                        <small>
+                            WO-ID: #WO-2024-8812
+                        </small>
+
+                    </td>
+
+
+                    <td>
+
+                        Hari Ini, 26 Okt 2024<br>
+
+                        Loading: 06:00 WIB
+
+                    </td>
+
+
+                    <td>
+
+                        Grand Ballroom,<br>
+                        Hotel Mulia Jakarta
+
+                    </td>
+
+
+                    <td>
+
+                        Royal Emerald<br>
+                        Javanese
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="status-warning">
+                            Loading 85%
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="table-button"
+                        >
+                            Lihat Rundown
+                        </button>
+
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td>
+
+                        <strong>
+                            Raden Daniswara & Clarissa
+                        </strong>
+
+                        <small>
+                            WO-ID: #WO-2024-8840
+                        </small>
+
+                    </td>
+
+
+                    <td>
+
+                        Sabtu, 02 Nov 2024<br>
+
+                        Loading: 23:00 WIB
+
+                    </td>
+
+
+                    <td>
+
+                        Glass House,<br>
+                        Plataran Hutan Kota
+
+                    </td>
+
+
+                    <td>
+
+                        Modern White<br>
+                        Floral Arch
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="status-success">
+                            SPK Terbit / Escrow 50%
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            class="table-button"
+                        >
+                            Rincian Spek
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
 
 @endsection

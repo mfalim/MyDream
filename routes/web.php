@@ -1,74 +1,35 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\PackageController;
-use App\Http\Controllers\Admin\VendorController;
-use App\Http\Controllers\GoogleAuthController;
-use App\Http\Controllers\Client\ClientController;
+
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('vendor')->group(function () {
 
-Route::get('/', function () {
-    return view('welcome');
-});
+    Route::view('/dashboard', 'vendor.dashboard')
+        ->name('vendor.dashboard');
 
+    Route::view('/kalender', 'vendor.kalender')
+        ->name('vendor.kalender');
 
-Route::get('/login', function () {
-    return view('login.login');
-})->name('login');
+    Route::view('/tracking', 'vendor.tracking')
+        ->name('vendor.tracking');
 
+    Route::view('/konfirmasi', 'vendor.konfirmasi')
+        ->name('vendor.konfirmasi');
 
-Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+    Route::view('/katalog', 'vendor.katalog')
+        ->name('vendor.katalog');
 
-// contoh middleware login
-Route::middleware('auth')->group(function () {
+    Route::view('/invoice', 'vendor.invoice')
+        ->name('vendor.invoice');
 
-    Route::get('/login/profile', [ClientController::class, 'profile'])
-        ->name('client.profile');
+    Route::view('/kolaborasi', 'vendor.kolaborasi')
+        ->name('vendor.kolaborasi');
 
-    Route::post('/login/profile', [ClientController::class, 'storeProfile'])
-        ->name('client.profile.store');
+    Route::view('/overview', 'vendor.overview')
+        ->name('vendor.overview');
 
-});
+    Route::view('/tambah-vendor', 'vendor.tambahvendor')
+        ->name('vendor.tambahvendor');
 
-
-
-Route::prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-
-        Route::get('/dashboard', [DashboardController::class, 'index'])
-            ->name('dashboard');
-
-        Route::resource('categories', CategoryController::class)
-            ->only([
-                'index',
-                'create',
-                'store'
-            ]);
-
-        Route::resource('packages', PackageController::class)
-            ->only([
-                'index',
-                'create',
-                'store'
-            ]);
-
-        Route::resource('vendors', VendorController::class)
-            ->only([
-                'index',
-                'create',
-                'store',
-                'show',
-                'edit',
-                'update',
-                'destroy'
-            ]);
-    });
-
-
-    Route::get('/vendor/dashboard', function () {
-    return view('vendor.dashboard');
 });
