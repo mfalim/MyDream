@@ -72,13 +72,24 @@
                         @if (is_null($day))
                             <div class="rc-day is-empty"></div>
                         @else
-                            <a href="{{ $day['events'] ? route('user.rundown.detail', $day['date']) : '#' }}"
-                               class="rc-day {{ $day['is_peak'] ? 'is-peak' : '' }} {{ empty($day['events']) ? 'is-inactive' : '' }}">
-                                <span class="rc-day-num">{{ $day['num'] }}</span>
+                            <div class="rc-day {{ $day['is_peak'] ? 'is-peak' : '' }} {{ empty($day['events']) ? 'is-inactive' : '' }}">
+                                <div class="rc-day-head">
+                                    <a href="{{ $day['events'] ? route('user.rundown.detail', $day['date']) : '#' }}" class="rc-day-num" aria-label="Detail acara tanggal {{ $day['date'] }}">{{ $day['num'] }}</a>
+                                    @if (!empty($day['events']))
+                                        <div class="dropdown">
+                                            <button class="rc-day-menu" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Menu detail acara {{ $day['date'] }}"><i class="bi bi-list"></i></button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                @foreach ($day['events'] as $event)
+                                                    <li><a class="dropdown-item" href="{{ route('user.rundown.detail', $day['date']) }}"><i class="bi bi-calendar-event me-2"></i>Detail: {{ $event['label'] }}</a></li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </div>
                                 @foreach ($day['events'] as $ev)
                                     <span class="rc-pill rc-pill-{{ $ev['type'] }}">{{ $ev['label'] }}</span>
                                 @endforeach
-                            </a>
+                            </div>
                         @endif
                     @endforeach
                 </div>

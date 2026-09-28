@@ -28,7 +28,7 @@ class BookingController extends Controller
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
-        $members = \App\Models\Member::where('status', 'active')->get();
+        $members = \App\Models\Member::whereIn('status', ['standby', 'aktif'])->orderBy('name')->get();
         return view('admin.event.event_form', compact('vendors', 'packages', 'bookings', 'members'));
     }
 
@@ -105,14 +105,14 @@ class BookingController extends Controller
             $selectedPackage = Package::with('vendors')->find($request->package_id);
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
-            
+
             foreach ($selectedPackage->vendors as $index => $vendor) {
                 $startTime = $packageVendorStartTimes[$index] ?? null;
                 $endTime = $packageVendorEndTimes[$index] ?? null;
-                
+
                 if ($startTime) $vendorTimes[] = $startTime;
                 if ($endTime) $vendorTimes[] = $endTime;
-                
+
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
@@ -131,10 +131,10 @@ class BookingController extends Controller
                         $startTime = $request->vendor_start_time[$index] ?? null;
                         $endTime = $request->vendor_end_time[$index] ?? null;
                         $memberId = $request->vendor_member_id[$index] ?? null;
-                        
+
                         if ($startTime) $vendorTimes[] = $startTime;
                         if ($endTime) $vendorTimes[] = $endTime;
-                        
+
                         $vendor = Vendor::find($vendorId);
                         Schedule::create([
                             'event_id' => $event->id,
@@ -179,16 +179,21 @@ class BookingController extends Controller
         $event = Event::with(['booking', 'schedules.vendor', 'eventMembers.member'])->findOrFail($id);
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
-        $members = \App\Models\Member::where('status', 'active')->get();
+        $assignedMemberIds = $event->eventMembers->pluck('member_id');
+        $members = \App\Models\Member::query()
+            ->whereIn('status', ['standby', 'aktif'])
+            ->orWhereIn('id', $assignedMemberIds)
+            ->orderBy('name')
+            ->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
-        
+
         return view('admin.event.event_edit', compact('event', 'vendors', 'packages', 'members', 'bookings'));
     }
 
     public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
-        
+
         $validated = $request->validate([
             'event_name' => 'required|string|max:255',
             'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -253,14 +258,14 @@ class BookingController extends Controller
             $selectedPackage = Package::with('vendors')->find($request->package_id);
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
-            
+
             foreach ($selectedPackage->vendors as $index => $vendor) {
                 $startTime = $packageVendorStartTimes[$index] ?? null;
                 $endTime = $packageVendorEndTimes[$index] ?? null;
-                
+
                 if ($startTime) $vendorTimes[] = $startTime;
                 if ($endTime) $vendorTimes[] = $endTime;
-                
+
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
@@ -279,10 +284,10 @@ class BookingController extends Controller
                         $startTime = $request->vendor_start_time[$index] ?? null;
                         $endTime = $request->vendor_end_time[$index] ?? null;
                         $memberId = $request->vendor_member_id[$index] ?? null;
-                        
+
                         if ($startTime) $vendorTimes[] = $startTime;
                         if ($endTime) $vendorTimes[] = $endTime;
-                        
+
                         $vendor = Vendor::find($vendorId);
                         Schedule::create([
                             'event_id' => $event->id,
@@ -323,11 +328,11 @@ class BookingController extends Controller
         // Get referrer from session or default to index
         $referrer = session('event_detail_referrer');
         session()->forget('event_detail_referrer');
-        
+
         if ($referrer && str_contains($referrer, 'calendar')) {
             return redirect()->route('admin.calendar')->with('success', 'Event updated successfully!');
         }
-        
+
         return redirect()->route('admin.event_day.index')->with('success', 'Event updated successfully!');
     }
 
@@ -355,7 +360,7 @@ class BookingController extends Controller
             ->select('id', 'name', 'event_date', 'start_time', 'end_time')
             ->orderBy('event_date')
             ->get();
-        
+
         return response()->json($events);
     }
 }

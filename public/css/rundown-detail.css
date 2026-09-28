@@ -302,6 +302,74 @@
     color: var(--wo-text-muted);
 }
 
+.rd-breadcrumb {
+    color: var(--wo-text-muted);
+    font-size: 0.78rem;
+    margin-bottom: 4px;
+}
+.rd-date-heading {
+    color: var(--wo-green-900);
+    font-size: 1.35rem;
+    margin: 0;
+}
+.rd-overview .rd-topbar {
+    margin-bottom: 20px;
+}
+.rd-overview .rd-event-overview + .rd-event-overview {
+    border-top: 1px solid var(--wo-border);
+    margin-top: 36px;
+    padding-top: 30px;
+}
+.rd-status-scheduled {
+    background: var(--wo-green-900);
+}
+.rd-hero-subtitle {
+    margin: 4px 0 0;
+    color: rgba(255, 255, 255, 0.82);
+}
+.rd-overview-card {
+    padding: 22px;
+}
+.rd-overview-card .wo-section-head h2 {
+    margin: 3px 0 0;
+}
+.rd-empty-note {
+    color: var(--wo-text-muted);
+    font-size: 0.85rem;
+    margin: 12px 0 0;
+}
+.rd-overview .rd-finance-total {
+    margin-top: 14px;
+}
+.rd-overview .rd-finance-total strong {
+    margin-right: auto;
+}
+.rd-overview .rd-crew-grid {
+    margin-top: 16px;
+}
+
+@media (max-width: 700px) {
+    .rd-overview-card {
+        padding: 16px;
+    }
+    .rd-overview .rd-hero {
+        min-height: 240px;
+        padding: 16px;
+    }
+    .rd-overview .rd-hero-time {
+        top: 58px;
+        left: 16px;
+        right: auto;
+    }
+    .rd-overview .rd-hero-bottom h2 {
+        font-size: 1.6rem;
+    }
+    .rd-overview .rd-finance-row {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+}
+
 @media (max-width: 1100px) {
     .rd-quick-grid {
         grid-template-columns: 1fr 1fr;

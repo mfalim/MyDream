@@ -155,136 +155,67 @@ class RundownController extends Controller
     
     public function show($date)
     {
-        $event = Event::with([
-            'booking.client', 
-            'schedules.vendor.category', 
-            'eventMembers.member',
-            'package'
+        $client = Client::where('users_id', auth()->id())->first();
+
+        if (!$client) {
+            return redirect()->route('client.profile')->with('error', 'Lengkapi data mempelai terlebih dahulu');
+        }
+
+        $events = Event::with([
+            'booking.client', 'booking.package', 'schedules.vendor.category',
+            'schedules.member', 'eventMembers.member', 'package',
         ])
-        ->whereDate('event_date', $date)
-        ->where('status', 'approved')
-        ->firstOrFail();
-        
-        $schedules = $event->schedules->sortBy('start_time');
-        
-        $phases = [];
-        $currentPhase = null;
-        
-        foreach ($schedules as $schedule) {
-            $phaseKey = Carbon::parse($schedule->start_time)->format('H:i');
-            
-            if (!$currentPhase || $currentPhase['title'] !== $schedule->activity) {
-                if ($currentPhase) {
-                    $phases[] = $currentPhase;
-                }
-                
-                $now = Carbon::now();
-                $scheduleStart = Carbon::parse($schedule->start_time);
-                $scheduleEnd = Carbon::parse($schedule->end_time);
-                
-                $state = 'pending';
-                if ($now->gt($scheduleEnd)) {
-                    $state = 'done';
-                } elseif ($now->between($scheduleStart, $scheduleEnd)) {
-                    $state = 'active';
-                }
-                
-                $currentPhase = [
-                    'state' => $state,
-                    'state_label' => $state === 'done' ? 'Selesai' : ($state === 'active' ? 'Sedang Berlangsung' : 'Menunggu'),
-                    'title' => $schedule->activity,
-                    'time_range' => Carbon::parse($schedule->start_time)->format('H:i') . ' - ' . Carbon::parse($schedule->end_time)->format('H:i') . ' WIB',
-                    'items' => [],
+            ->whereDate('event_date', $date)
+            ->whereHas('booking', fn ($query) => $query->where('client_id', $client->id))
+            ->orderBy('start_time')
+            ->get();
+
+        abort_if($events->isEmpty(), 404);
+
+        $now = Carbon::now();
+        $events = $events->map(function ($event) use ($now) {
+            $eventDate = Carbon::parse($event->event_date)->toDateString();
+            $event->rundownPhases = $event->schedules->sortBy('start_time')->groupBy('activity')->map(function ($schedules, $activity) use ($now, $eventDate) {
+                $items = $schedules->map(function ($schedule) use ($now, $eventDate) {
+                    $start = Carbon::parse($eventDate . ' ' . $schedule->start_time);
+                    $end = $schedule->end_time
+                        ? Carbon::parse($eventDate . ' ' . $schedule->end_time)
+                        : $start->copy();
+
+                    return [
+                        'time' => $start->format('H:i'),
+                        'title' => $schedule->vendor?->name ?: $schedule->activity,
+                        'note' => $schedule->notes,
+                        'tag' => $schedule->vendor?->category?->name,
+                        'done' => $now->gt($end),
+                        'active' => $now->between($start, $end),
+                        'start' => $start,
+                        'end' => $end,
+                    ];
+                })->values();
+                $first = $items->first();
+                $last = $items->last();
+                $isActive = $items->contains(fn ($item) => $item['active']);
+                $isDone = $items->every(fn ($item) => $item['done']);
+
+                return [
+                    'title' => $activity ?: 'Rangkaian Acara',
+                    'state' => $isActive ? 'active' : ($isDone ? 'done' : 'pending'),
+                    'state_label' => $isActive ? 'Sedang Berlangsung' : ($isDone ? 'Selesai' : 'Menunggu'),
+                    'time_range' => $first['start']->format('H:i') . ' - ' . $last['end']->format('H:i') . ' WIB',
+                    'items' => $items,
                 ];
-            }
-            
-            $now = Carbon::now();
-            $scheduleStart = Carbon::parse($schedule->start_time);
-            $scheduleEnd = Carbon::parse($schedule->end_time);
-            
-            $currentPhase['items'][] = [
-                'time' => Carbon::parse($schedule->start_time)->format('H:i'),
-                'title' => $schedule->vendor ? $schedule->vendor->name : $schedule->activity,
-                'note' => $schedule->notes,
-                'tag' => $schedule->vendor ? $schedule->vendor->category->name ?? '' : '',
-                'done' => $now->gt($scheduleEnd),
-                'active' => $now->between($scheduleStart, $scheduleEnd),
-            ];
-        }
-        
-        if ($currentPhase) {
-            $phases[] = $currentPhase;
-        }
-        
-        $totalPrice = $event->booking->total_price ?? 0;
-        
+            })->values();
+
+            return $event;
+        });
+
         return view('user.rundown.event-detail', [
-            'event' => [
-                'date_label' => Carbon::parse($date)->isoFormat('dddd, D MMMM YYYY'),
-                'title' => $event->name,
-                'hero_image' => $event->photo ? asset('storage/' . $event->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=85',
-                'live' => Carbon::parse($event->event_date)->isToday(),
-                'session_time' => Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i') . ' WIB',
-                'venue' => $event->booking->venue_name . ', ' . $event->booking->venue_city,
-                'couple' => $event->booking->client->groom_name . ' & ' . $event->booking->client->bride_name,
-                'package' => $event->package->name ?? 'Standard Package',
-                'guests' => [
-                    'confirmed' => $event->guest_count,
-                    'total' => $event->guest_count,
-                    'percent' => 100
-                ],
-                'lead_director' => $event->eventMembers->first()->member->name ?? 'TBA',
-                'progress' => [
-                    'current_time' => Carbon::now()->format('H:i') . ' WIB',
-                    'phase_label' => 'Fase berlangsung',
-                    'phase_percent' => 50,
-                    'crew_count' => $event->eventMembers->count(),
-                    'crew_note' => $event->eventMembers->count() . ' personil on-site',
-                ],
-            ],
-            'phases' => $phases,
-            'finance' => [
-                'total' => $totalPrice,
-                'status' => 'Lunas',
-                'terms' => [
-                    ['label' => 'DP 30%', 'amount' => $totalPrice * 0.3, 'status' => 'Paid'],
-                    ['label' => 'Progress 40%', 'amount' => $totalPrice * 0.4, 'status' => 'Paid'],
-                    ['label' => 'Pelunasan 30%', 'amount' => $totalPrice * 0.3, 'status' => 'Paid'],
-                ],
-                'disbursement_status' => 'Escrow Secured',
-            ],
-            'vendorsOnSite' => [
-                'ready' => $event->schedules->count(),
-                'total' => $event->schedules->count(),
-                'list' => $event->schedules->map(function($schedule) {
-                    if (!$schedule->vendor) return null;
-                    
-                    return [
-                        'name' => $schedule->vendor->name,
-                        'status' => ucfirst($schedule->status),
-                        'icon' => 'shop',
-                        'desc' => $schedule->activity,
-                        'pic' => $schedule->member->name ?? 'TBA',
-                        'note' => $schedule->notes ?? '-',
-                    ];
-                })->filter()->toArray(),
-            ],
-            'crew' => [
-                'total' => $event->eventMembers->count(),
-                'list' => $event->eventMembers->map(function($em) {
-                    $name = $em->member->name;
-                    $initials = collect(explode(' ', $name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('');
-                    
-                    return [
-                        'initials' => $initials,
-                        'name' => $name,
-                        'role' => $em->role ?? 'Staff',
-                    ];
-                })->toArray(),
-            ],
+            'dateLabel' => Carbon::parse($date)->isoFormat('dddd, D MMMM YYYY'),
+            'events' => $events,
         ]);
     }
-    
+
     public function create()
     {
         return view('user.rundown.create');
