@@ -23,6 +23,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Kategori</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,10 +31,23 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $category->name }}</td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline"
+                                        onsubmit="return confirm('Hapus kategori ini? Vendor terkait akan menjadi tanpa kategori.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="2" class="text-center text-muted py-4">
+                                <td colspan="3" class="text-center text-muted py-4">
                                     Belum ada kategori.
                                 </td>
                             </tr>
