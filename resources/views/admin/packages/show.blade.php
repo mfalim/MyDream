@@ -9,8 +9,6 @@
 
 @section('content')
     <div class="vendor-detail-page">
-
-        ```
         {{-- Breadcrumb --}}
         <div class="vendor-breadcrumb">
             <a href="{{ route('admin.packages.index') }}">
@@ -69,15 +67,15 @@
                 {{-- Foto Paket --}}
                 <div class="vendor-main-photo">
 
-                    @if ($package->photo)
+                    @if ($package->cover_photo)
 
-                        <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                        <img src="{{ asset('storage/' . $package->cover_photo->photo) }}" alt="{{ $package->name }}">
 
                     @else
 
                         <div class="vendor-no-main-photo">
                             <span>📦</span>
-                            <p>Belum ada foto paket</p>
+                            <p>Belum ada foto vendor</p>
                         </div>
 
                     @endif
@@ -97,20 +95,6 @@
 
                         <strong>
                             {{ $package->availability_date?->format('d-m-Y') ?: '-' }}
-                        </strong>
-
-                    </div>
-
-
-                    {{-- Durasi --}}
-                    <div class="package-summary-item">
-
-                        <small>
-                            Durasi
-                        </small>
-
-                        <strong>
-                            {{ $package->duration_label }}
                         </strong>
 
                     </div>
@@ -238,6 +222,4 @@
         </div>
 
     </div>
-    ```
-
 @endsection

@@ -57,8 +57,6 @@
             <p class="overview-location">
                 <i class="bi bi-people"></i>
                 {{ $package->guest_capacity }} Tamu
-                <span>•</span>
-                {{ $package->duration }}
             </p>
 
         </div>
@@ -98,11 +96,6 @@
         <div>
             <i class="bi bi-people"></i>
             {{ $package->guest_capacity }} Tamu
-        </div>
-
-        <div>
-            <i class="bi bi-clock"></i>
-            {{ $package->duration }}
         </div>
 
         <div>
@@ -191,7 +184,7 @@
                                 $vendorPhotoUrl = $vendorPhoto ? asset('storage/' . $vendorPhoto->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=300&q=85';
                             @endphp
                             <img src="{{ $vendorPhotoUrl }}" alt="{{ $vendor->name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover;">
-                            
+
                             <div style="flex: 1;">
                                 <span class="package-label">
                                     {{ $vendor->category->name ?? 'Vendor' }}

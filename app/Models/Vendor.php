@@ -25,11 +25,6 @@ class Vendor extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function booking_vendors()
-    {
-        return $this->hasMany(BookingVendor::class);
-    }
-
     public function photos()
     {
         return $this->hasMany(VendorPhoto::class)

@@ -58,6 +58,8 @@
                         name="name"
                         class="form-control"
                         value="{{ old('name', $vendor->name) }}"
+                        pattern="^[A-Za-z0-9À-ž][A-Za-z0-9À-ž &.'-]*$"
+                        title="Gunakan huruf, angka, spasi, dan tanda baca umum saja."
                         required
                     >
 
@@ -106,9 +108,11 @@
                         class="form-control"
                         value="{{ old('price', $vendor->price) }}"
                         min="0"
-                        step="0.01"
+                        max="999999999"
+                        step="1"
                         required
                     >
+                    <small class="text-muted">Maksimal Rp 999.999.999.</small>
 
                 </div>
 

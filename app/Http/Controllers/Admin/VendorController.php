@@ -57,7 +57,13 @@ class VendorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:vendors,name',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                "regex:/^[\pL\pN][\pL\pN\s&.'-]*$/u",
+                'unique:vendors,name',
+            ],
             'category_id' => 'required|integer|exists:categories,id',
             'price' => 'required|numeric|min:0|max:999999999',
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
@@ -70,6 +76,7 @@ class VendorController extends Controller
             'name.required' => 'Nama vendor harus diisi',
             'name.unique' => 'Nama vendor sudah digunakan',
             'name.max' => 'Nama vendor maksimal 255 karakter',
+            'name.regex' => 'Nama vendor hanya boleh berisi huruf, angka, spasi, dan tanda baca umum.',
             'category_id.required' => 'Kategori harus dipilih',
             'category_id.exists' => 'Kategori tidak valid',
             'price.required' => 'Harga harus diisi',
@@ -128,7 +135,13 @@ class VendorController extends Controller
     public function update(Request $request, Vendor $vendor)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:vendors,name,' . $vendor->id,
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                "regex:/^[\pL\pN][\pL\pN\s&.'-]*$/u",
+                'unique:vendors,name,' . $vendor->id,
+            ],
             'category_id' => 'required|integer|exists:categories,id',
             'price' => 'required|numeric|min:0|max:999999999',
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
@@ -146,6 +159,7 @@ class VendorController extends Controller
             'name.required' => 'Nama vendor harus diisi',
             'name.unique' => 'Nama vendor sudah digunakan',
             'name.max' => 'Nama vendor maksimal 255 karakter',
+            'name.regex' => 'Nama vendor hanya boleh berisi huruf, angka, spasi, dan tanda baca umum.',
             'category_id.required' => 'Kategori harus dipilih',
             'category_id.exists' => 'Kategori tidak valid',
             'price.required' => 'Harga harus diisi',

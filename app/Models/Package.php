@@ -9,13 +9,10 @@ class Package extends Model
     protected $fillable = [
         'name',
         'availability_date',
-        'duration',
         'guest_capacity',
-        'photo',
     ];
 
     protected $casts = [
-        'duration' => 'decimal:2',
         'guest_capacity' => 'integer',
         'availability_date' => 'date',
     ];
@@ -26,17 +23,6 @@ class Package extends Model
 
         return is_string($availabilityDate)
             && $availabilityDate >= now()->toDateString();
-    }
-
-    public function getDurationLabelAttribute(): string
-    {
-        if (!$this->duration) {
-            return '-';
-        }
-
-        $duration = rtrim(rtrim(number_format((float) $this->duration, 2, '.', ''), '0'), '.');
-
-        return $duration . ' jam';
     }
 
     public function getPriceAttribute(): float
@@ -58,6 +44,23 @@ class Package extends Model
         return $this->belongsToMany(Vendor::class, 'package_vendor')
             ->withPivot('status')
             ->withTimestamps();
+    }
+
+    public function getCoverPhotoAttribute(): ?VendorPhoto
+    {
+        $vendors = $this->relationLoaded('vendors')
+            ? $this->vendors
+            : $this->vendors()->with('photos')->get();
+
+        foreach ($vendors as $vendor) {
+            $photo = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
+
+            if ($photo) {
+                return $photo;
+            }
+        }
+
+        return null;
     }
 
     public function orderItems()

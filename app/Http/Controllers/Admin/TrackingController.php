@@ -17,12 +17,12 @@ class TrackingController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('venue_name', 'like', "%{$search}%")
-                  ->orWhereHas('client', function($q) use ($search) {
-                      $q->where('groom_name', 'like', "%{$search}%")
-                        ->orWhere('bride_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('client', function ($q) use ($search) {
+                        $q->where('groom_name', 'like', "%{$search}%")
+                            ->orWhere('bride_name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -31,16 +31,16 @@ class TrackingController extends Controller
         }
 
         $bookings = $query->get();
-        
+
         $eventsByBooking = Event::with(['schedules'])
             ->get()
             ->groupBy('booking_id')
-            ->map(function($events) {
+            ->map(function ($events) {
                 $allSchedules = $events->flatMap->schedules;
                 $totalSchedules = $allSchedules->count();
                 $approvedSchedules = $allSchedules->where('status', 'approved')->count();
                 $progress = $totalSchedules > 0 ? ($approvedSchedules / $totalSchedules) * 100 : 0;
-                
+
                 return [
                     'events' => $events,
                     'progress' => $progress,
@@ -48,7 +48,7 @@ class TrackingController extends Controller
                     'total_count' => $totalSchedules
                 ];
             });
-        
+
         $members = \App\Models\Member::where('status', 'active')->get();
 
         return view('admin.tracking.index', compact('bookings', 'eventsByBooking', 'members'));
@@ -76,7 +76,7 @@ class TrackingController extends Controller
     public function updateScheduleStatus(Request $request, $scheduleId)
     {
         $schedule = Schedule::findOrFail($scheduleId);
-        
+
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected'
         ]);
@@ -88,26 +88,50 @@ class TrackingController extends Controller
             'message' => 'Status updated successfully'
         ]);
     }
-    
+
+    public function updateScheduleTime(Request $request, $scheduleId)
+    {
+        $schedule = Schedule::whereNotNull('vendor_id')->findOrFail($scheduleId);
+
+        if ($schedule->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Jam hanya dapat diatur untuk vendor yang sudah approved'
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i|after:start_time'
+        ]);
+
+        $schedule->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jam vendor berhasil disimpan'
+        ]);
+    }
+
     public function updateBookingStatus(Request $request, $bookingId)
     {
         $booking = Booking::findOrFail($bookingId);
-        
+
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected',
             'coordinator_id' => 'nullable|exists:members,id'
         ]);
 
         $booking->update(['status' => $validated['status']]);
-        
+
         if ($validated['status'] === 'approved' && isset($validated['coordinator_id'])) {
             $event = Event::where('booking_id', $bookingId)->first();
-            
+
             if ($event) {
                 $existingMember = \App\Models\EventMember::where('event_id', $event->id)
                     ->where('member_id', $validated['coordinator_id'])
                     ->first();
-                
+
                 if (!$existingMember) {
                     \App\Models\EventMember::create([
                         'event_id' => $event->id,

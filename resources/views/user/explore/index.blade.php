@@ -52,7 +52,7 @@
                 <h2>Paket Lengkap dengan Vendor Terkurasi</h2>
             </div>
         </div>
-        
+
         <div class="ev-grid">
             @foreach ($packages as $package)
                 <a href="{{ route('user.package-overview', $package->id) }}" class="ev-card">
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="ev-card-body">
-                        <span class="ev-card-meta">{{ $package->guest_capacity }} Tamu <span>&bull;</span> {{ $package->duration }}</span>
+                        <span class="ev-card-meta">{{ $package->guest_capacity }} Tamu</span>
                         <strong>{{ $package->name }}</strong>
                         <p>Paket lengkap dengan {{ $package->vendors->count() }} vendor terpilih</p>
 
@@ -88,7 +88,7 @@
             <h2>Pilih Vendor Satu per Satu (Custom)</h2>
         </div>
     </div>
-    
+
     <div class="ev-grid" id="evGrid">
         @foreach ($vendors as $vendor)
             <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="ev-card" data-cat="{{ $vendor->category->name ?? '' }}" data-name="{{ strtolower($vendor->name) }}">

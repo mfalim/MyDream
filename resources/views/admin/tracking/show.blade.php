@@ -160,7 +160,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <h5 class="card-title fw-bold mb-4">Checklist Schedule & Vendor</h5>
-            
+
             @if($event->schedules->isEmpty())
             <div class="text-center py-5">
                 <p class="text-muted">Belum ada schedule untuk acara ini</p>
@@ -175,7 +175,7 @@
                             </th>
                             <th>Vendor / Activity</th>
                             <th>Kategori</th>
-                            <th>Waktu</th>
+                            <th>Jam Hari H</th>
                             <th>PIC Team Kami</th>
                             <th>Status</th>
                             <th style="width: 10%;">Aksi</th>
@@ -185,7 +185,7 @@
                         @foreach($event->schedules as $schedule)
                         <tr>
                             <td>
-                                <input type="checkbox" class="form-check-input schedule-checkbox" 
+                                <input type="checkbox" class="form-check-input schedule-checkbox"
                                     data-schedule-id="{{ $schedule->id }}"
                                     {{ $schedule->status === 'approved' ? 'checked' : '' }}>
                             </td>
@@ -203,12 +203,30 @@
                                 @endif
                             </td>
                             <td>
+                                @if($schedule->status === 'approved' && $schedule->vendor)
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <input type="time" class="form-control form-control-sm schedule-time-start"
+                                        aria-label="Jam mulai {{ $schedule->vendor->name }}"
+                                        value="{{ $schedule->start_time ? date('H:i', strtotime($schedule->start_time)) : '' }}"
+                                        style="width: 125px;" required>
+                                    <span>-</span>
+                                    <input type="time" class="form-control form-control-sm schedule-time-end"
+                                        aria-label="Jam selesai {{ $schedule->vendor->name }}"
+                                        value="{{ $schedule->end_time ? date('H:i', strtotime($schedule->end_time)) : '' }}"
+                                        style="width: 125px;">
+                                    <button type="button" class="btn btn-sm btn-outline-primary save-schedule-time"
+                                        data-schedule-id="{{ $schedule->id }}" title="Simpan jam vendor">
+                                        <i class="bi bi-save"></i>
+                                    </button>
+                                </div>
+                                @else
                                 <small>
                                     {{ $schedule->start_time ? date('H:i', strtotime($schedule->start_time)) : '-' }}
                                     @if($schedule->end_time)
                                     - {{ date('H:i', strtotime($schedule->end_time)) }}
                                     @endif
                                 </small>
+                                @endif
                             </td>
                             <td>
                                 @if($schedule->member)
@@ -256,8 +274,43 @@ document.addEventListener('DOMContentLoaded', function() {
         select.addEventListener('change', function() {
             const scheduleId = this.dataset.scheduleId;
             const status = this.value;
-            
+
             updateScheduleStatus(scheduleId, status);
+        });
+    });
+
+    document.querySelectorAll('.save-schedule-time').forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const startTime = row.querySelector('.schedule-time-start').value;
+            const endTime = row.querySelector('.schedule-time-end').value;
+
+            if (!startTime || (endTime && endTime <= startTime)) {
+                alert('Isi jam mulai dan pastikan jam selesai setelah jam mulai.');
+                return;
+            }
+
+            fetch(`/admin/tracking/schedule/${this.dataset.scheduleId}/time`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ start_time: startTime, end_time: endTime || null })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert(data.message || 'Jam vendor gagal disimpan.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Jam vendor gagal disimpan.');
+            });
         });
     });
 
@@ -266,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const scheduleId = this.dataset.scheduleId;
             const status = this.checked ? 'approved' : 'pending';
             const select = document.querySelector(`.status-select[data-schedule-id="${scheduleId}"]`);
-            
+
             if (select) {
                 select.value = status;
                 updateScheduleStatus(scheduleId, status);
@@ -278,7 +331,7 @@ document.addEventListener('DOMContentLoaded', function() {
         bookingStatusSelect.addEventListener('change', function() {
             const bookingId = this.dataset.bookingId;
             const status = this.value;
-            
+
             updateBookingStatus(bookingId, status);
         });
     }

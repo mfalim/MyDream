@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.packages.update', $package) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.packages.update', $package) }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -30,7 +30,9 @@
                 <div class="mb-3">
                     <label class="form-label">Nama Paket</label>
                     <input type="text" name="name" class="form-control"
-                        value="{{ old('name', $package->name) }}" required>
+                        value="{{ old('name', $package->name) }}"
+                        pattern="^[A-Za-z0-9À-ž][A-Za-z0-9À-ž &.'-]*$"
+                        title="Gunakan huruf, angka, spasi, dan tanda baca umum saja." required>
                 </div>
 
                 <div class="mb-3">
@@ -41,15 +43,6 @@
 
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <label class="form-label">Durasi Pemakaian Paket</label>
-                        <div class="input-group">
-                            <input type="number" name="duration" class="form-control"
-                                value="{{ old('duration', $package->duration) }}" min="0.01" step="0.01" required>
-                            <span class="input-group-text">jam</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
                         <label class="form-label">Kapasitas Tamu</label>
                         <div class="input-group">
                             <input type="number" name="guest_capacity" class="form-control"
@@ -59,14 +52,6 @@
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Foto Paket</label>
-                    @if ($package->photo)
-                        <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}"
-                            class="d-block rounded mb-2" style="width: 180px; height: 110px; object-fit: cover;">
-                    @endif
-                    <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
-                </div>
             </div>
         </div>
 

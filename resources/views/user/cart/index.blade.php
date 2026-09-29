@@ -131,7 +131,7 @@
 
 @section('content')
 <main class="cart-page">
-    
+
     <div style="margin-bottom: 32px;">
         <a href="{{ route('user.explore-vendor') }}" class="wo-link"><i class="bi bi-arrow-left"></i> Lanjut Eksplor Vendor</a>
         <h1 style="font-size: 32px; font-weight: 700; margin: 16px 0 8px;">Keranjang Pemilihan</h1>
@@ -163,7 +163,7 @@
         </div>
     @else
         <div class="cart-layout">
-            
+
             <div class="cart-items">
                 @if($cart['type'] === 'package' && $package)
                     <div class="wo-card" style="padding: 24px;">
@@ -172,10 +172,10 @@
                             <div>
                                 <span class="wo-badge wo-badge-gold">PAKET LENGKAP</span>
                                 <h2 style="font-size: 24px; font-weight: 700; margin: 8px 0;">{{ $package->name }}</h2>
-                                <p style="color: #6b7280;">{{ $package->guest_capacity }} Tamu • {{ $package->duration }}</p>
+                                <p style="color: #6b7280;">{{ $package->guest_capacity }} Tamu</p>
                             </div>
                         </div>
-                        
+
                         <h3 style="margin: 20px 0 12px; font-size: 16px;">Vendor Termasuk:</h3>
                         @foreach($vendors as $vendor)
                             <div class="cart-item">
@@ -193,7 +193,7 @@
                                 </div>
                             </div>
                         @endforeach
-                        
+
                         <form action="{{ route('user.cart.clear') }}" method="POST" style="margin-top: 16px;">
                             @csrf
                             @method('DELETE')
@@ -214,7 +214,7 @@
                                 <h3>{{ $vendor->name }}</h3>
                                 <p><i class="bi bi-tag"></i> {{ $vendor->category->name ?? 'Vendor' }}</p>
                                 <p><i class="bi bi-telephone"></i> {{ $vendor->phone }}</p>
-                                
+
                                 <form action="{{ route('user.cart.remove', $vendor->id) }}" method="POST">
                                     @csrf
                                     @method('DELETE')
@@ -233,7 +233,7 @@
 
             <div class="cart-summary">
                 <h3>Ringkasan</h3>
-                
+
                 @if($cart['type'] === 'package')
                     <div class="summary-row">
                         <span>Paket {{ $package->name }}</span>
@@ -249,12 +249,12 @@
                         <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
                     </div>
                 @endif
-                
+
                 <div class="summary-row total">
                     <span>Total</span>
                     <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
                 </div>
-                
+
                 @if($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3)
                     <button type="button" class="btn-checkout" style="background: #d1d5db; cursor: not-allowed;" disabled>
                         <i class="bi bi-exclamation-circle"></i> Minimal 3 Vendor ({{ count($cart['vendor_ids']) }}/3)
@@ -264,7 +264,7 @@
                         <i class="bi bi-check-circle"></i> Lanjut ke Checkout
                     </a>
                 @endif
-                
+
                 <form action="{{ route('user.cart.clear') }}" method="POST">
                     @csrf
                     @method('DELETE')
