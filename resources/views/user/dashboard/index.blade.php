@@ -1,3 +1,4 @@
+find resources/views/login -type f | sort
 {{-- resources/views/user/dashboard/index.blade.php --}}
 @extends('user.layouts.app')
 

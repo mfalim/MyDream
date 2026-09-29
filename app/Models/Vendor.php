@@ -8,6 +8,7 @@ class Vendor extends Model
 {
     protected $fillable = [
         'name',
+        'slug',
         'category_id',
         'price',
         'phone',
@@ -24,12 +25,6 @@ class Vendor extends Model
     {
         return $this->belongsTo(Category::class);
     }
-
-    public function booking_vendors()
-    {
-        return $this->hasMany(BookingVendor::class);
-    }
-
     public function photos()
     {
         return $this->hasMany(VendorPhoto::class)
@@ -44,8 +39,4 @@ class Vendor extends Model
             ->withTimestamps();
     }
 
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
 }

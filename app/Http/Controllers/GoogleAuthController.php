@@ -15,44 +15,43 @@ class GoogleAuthController extends Controller
     }
 
     public function callback()
-{
-    $googleUser = Socialite::driver('google')->user();
+    {
+        $googleUser = Socialite::driver('google')->user();
 
-    $user = User::createOrLogin($googleUser);
+        $user = User::createOrLogin($googleUser);
 
-    Auth::login($user);
+        Auth::login($user);
 
-    if ($user->status === 'pending') {
-        Auth::logout();
+        if ($user->status === 'pending') {
+            Auth::logout();
 
-        return redirect('/login')
-            ->with('error', 'Akun Anda masih menunggu verifikasi admin.');
-    }
-
-    if ($user->status === 'rejected') {
-        Auth::logout();
-
-        return redirect('/login')
-            ->with('error', 'Akun Anda ditolak oleh admin.');
-    }
-    
-    if ($user->role == 'client' && is_null(Client::findClientByIdUser($user->id))) {
-        return redirect('/login/profile');
-    }
-
-    if ($user->role == 'member') {
-        $member = \App\Models\Member::where('user_id', $user->id)->first();
-        if (!$member) {
-            return redirect('/member/profile/complete');
+            return redirect('/login')->with('error', 'Akun Anda masih menunggu verifikasi admin.');
         }
-        return redirect('/member/dashboard');
-    }
 
-    return match ($user->role) {
-        'admin' => redirect('/admin/dashboard'),
-        'vendor' => redirect('/vendor/dashboard'),
-        'client' => redirect('/user/dashboard'),
-        default => redirect('/user/dashboard'),
-    };
-}
+        if ($user->status === 'rejected') {
+            Auth::logout();
+
+            return redirect('/login')->with('error', 'Akun Anda ditolak oleh admin.');
+        }
+
+        if ($user->role == 'client' && is_null(Client::findClientByIdUser($user->id))) {
+            return redirect('/login/profile');
+        }
+
+        if ($user->role == 'member') {
+            $member = \App\Models\Member::where('user_id', $user->id)->first();
+            if (! $member) {
+                return redirect('/member/profile/complete');
+            }
+
+            return redirect('/member/dashboard');
+        }
+
+        return match ($user->role) {
+            'admin' => redirect('/admin/dashboard'),
+            'vendor' => redirect('/vendor/dashboard'),
+            'client' => redirect('/user/dashboard'),
+            default => redirect('/user/dashboard'),
+        };
+    }
 }

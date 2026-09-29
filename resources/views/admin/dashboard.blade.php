@@ -19,7 +19,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-box-seam fs-5"></i>
                             </div>
                         </div>
@@ -37,7 +38,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-shop fs-5"></i>
                             </div>
                         </div>
@@ -55,7 +57,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-calendar-check fs-5"></i>
                             </div>
                         </div>
@@ -73,7 +76,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-heart-fill fs-5"></i>
                             </div>
                         </div>
@@ -182,7 +186,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-people-fill fs-5"></i>
                             </div>
                         </div>
@@ -200,7 +205,8 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="flex-shrink-0">
-                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 48px; height: 48px;">
                                 <i class="bi bi-person-hearts fs-5"></i>
                             </div>
                         </div>
@@ -221,7 +227,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title mb-0">Event Mendatang (7 Hari)</h5>
-                        <a href="{{ route('admin.event_day.index') }}" class="btn btn-sm btn-outline-primary">Lihat Semua</a>
+                        <a href="{{ route('admin.events.index') }}" class="btn btn-sm btn-outline-primary">Lihat
+                            Semua</a>
                     </div>
                     @forelse($upcomingEvents as $event)
                         <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
@@ -233,7 +240,8 @@
                             </div>
                             <div class="flex-grow-1">
                                 <h6 class="mb-1">{{ $event->name }}</h6>
-                                <small class="text-muted d-block">{{ $event->booking->client->groom_name ?? 'N/A' }} & {{ $event->booking->client->bride_name ?? 'N/A' }}</small>
+                                <small class="text-muted d-block">{{ $event->booking->client->groom_name ?? 'N/A' }} &
+                                    {{ $event->booking->client->bride_name ?? 'N/A' }}</small>
                                 <small class="text-muted">{{ $event->schedules->count() }} vendor</small>
                             </div>
                         </div>
@@ -249,12 +257,13 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title mb-0">Booking Terbaru</h5>
-                        <a href="{{ route('admin.event_day.index') }}" class="btn btn-sm btn-outline-success">Lihat Semua</a>
+                        <a href="{{ route('admin.events.index') }}" class="btn btn-sm btn-outline-success">Lihat
+                            Semua</a>
                     </div>
                     @forelse($recentBookings as $booking)
                         <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
                             <div class="flex-shrink-0 me-3">
-                                @if($booking->status == 'pending')
+                                @if ($booking->status == 'pending')
                                     <span class="badge bg-warning">Pending</span>
                                 @elseif($booking->status == 'approved')
                                     <span class="badge bg-success">Approved</span>
@@ -263,9 +272,11 @@
                                 @endif
                             </div>
                             <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $booking->client->groom_name ?? 'N/A' }} & {{ $booking->client->bride_name ?? 'N/A' }}</h6>
+                                <h6 class="mb-1">{{ $booking->client->groom_name ?? 'N/A' }} &
+                                    {{ $booking->client->bride_name ?? 'N/A' }}</h6>
                                 <small class="text-muted d-block">{{ $booking->venue_name }}</small>
-                                <small class="text-muted">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</small>
+                                <small class="text-muted">Rp
+                                    {{ number_format($booking->total_price, 0, ',', '.') }}</small>
                             </div>
                             <div class="flex-shrink-0 text-end">
                                 <small class="text-muted">{{ $booking->created_at->diffForHumans() }}</small>

@@ -14,7 +14,7 @@
             <p class="text-muted mb-0">Detail progress dan checklist acara</p>
         </div>
         <div>
-            <a href="{{ route('admin.event.edit', $event->id) }}" class="btn btn-primary">
+            <a href="{{ route('admin.events.edit', $event->id) }}" class="btn btn-primary">
                 <i class="bi bi-pencil"></i> Edit Acara
             </a>
         </div>
@@ -160,7 +160,7 @@
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <h5 class="card-title fw-bold mb-4">Checklist Schedule & Vendor</h5>
-            
+
             @if($event->schedules->isEmpty())
             <div class="text-center py-5">
                 <p class="text-muted">Belum ada schedule untuk acara ini</p>
@@ -185,7 +185,7 @@
                         @foreach($event->schedules as $schedule)
                         <tr>
                             <td>
-                                <input type="checkbox" class="form-check-input schedule-checkbox" 
+                                <input type="checkbox" class="form-check-input schedule-checkbox"
                                     data-schedule-id="{{ $schedule->id }}"
                                     {{ $schedule->status === 'approved' ? 'checked' : '' }}>
                             </td>
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         select.addEventListener('change', function() {
             const scheduleId = this.dataset.scheduleId;
             const status = this.value;
-            
+
             updateScheduleStatus(scheduleId, status);
         });
     });
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const scheduleId = this.dataset.scheduleId;
             const status = this.checked ? 'approved' : 'pending';
             const select = document.querySelector(`.status-select[data-schedule-id="${scheduleId}"]`);
-            
+
             if (select) {
                 select.value = status;
                 updateScheduleStatus(scheduleId, status);
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         bookingStatusSelect.addEventListener('change', function() {
             const bookingId = this.dataset.bookingId;
             const status = this.value;
-            
+
             updateBookingStatus(bookingId, status);
         });
     }

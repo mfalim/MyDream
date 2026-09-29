@@ -1,17 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
+
 use App\Http\Controllers\Controller;
-use App\Models\Vendor;
-use App\Models\Client;
-use App\Models\Package;
 use App\Models\Booking;
 use App\Models\Event;
-use App\Models\Schedule;
 use App\Models\EventMember;
-
+use App\Models\Package;
+use App\Models\Schedule;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -24,11 +22,13 @@ class BookingController extends Controller
         return view('admin.event.event_days', compact('events'));
     }
 
-    public function create() {
+    public function create()
+    {
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
         $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
+
         return view('admin.event.event_form', compact('vendors', 'packages', 'bookings', 'members'));
     }
 
@@ -37,7 +37,7 @@ class BookingController extends Controller
         $validated = $request->validate([
             'booking_id' => 'required|exists:bookings,id',
             'event_name' => 'required|string|max:255',
-            'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'event_type' => 'nullable|string',
             'event_date' => 'required|date|after_or_equal:today',
             'guest_count' => 'nullable|integer|min:1|max:10000',
@@ -105,14 +105,29 @@ class BookingController extends Controller
             $selectedPackage = Package::with('vendors')->find($request->package_id);
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
-            
+
             foreach ($selectedPackage->vendors as $index => $vendor) {
                 $startTime = $packageVendorStartTimes[$index] ?? null;
                 $endTime = $packageVendorEndTimes[$index] ?? null;
-                
-                if ($startTime) $vendorTimes[] = $startTime;
-                if ($endTime) $vendorTimes[] = $endTime;
-                
+
+                if (! $startTime) {
+                    $startTime = $request->vendor_start_time[$index] ?? null;
+                }
+
+                if (! $endTime) {
+                    $endTime = $request->vendor_end_time[$index] ?? null;
+                }
+
+                if (! $startTime) {
+                    continue;
+                }
+
+                $vendorTimes[] = $startTime;
+
+                if ($endTime) {
+                    $vendorTimes[] = $endTime;
+                }
+
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
@@ -131,10 +146,10 @@ class BookingController extends Controller
                         $startTime = $request->vendor_start_time[$index] ?? null;
                         $endTime = $request->vendor_end_time[$index] ?? null;
                         $memberId = $request->vendor_member_id[$index] ?? null;
-                        
+
                         if ($startTime) $vendorTimes[] = $startTime;
                         if ($endTime) $vendorTimes[] = $endTime;
-                        
+
                         $vendor = Vendor::find($vendorId);
                         Schedule::create([
                             'event_id' => $event->id,
@@ -151,7 +166,7 @@ class BookingController extends Controller
             }
         }
 
-        if (!empty($vendorTimes)) {
+        if (! empty($vendorTimes)) {
             sort($vendorTimes);
             $event->start_time = reset($vendorTimes);
             $event->end_time = end($vendorTimes);
@@ -182,17 +197,16 @@ class BookingController extends Controller
         $packages = Package::with('vendors')->get();
         $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
-        
+
         return view('admin.event.event_edit', compact('event', 'vendors', 'packages', 'members', 'bookings'));
     }
 
     public function update(Request $request, $id)
     {
-        $event = Event::findOrFail($id);
-        
+        $event = Event::with('schedules')->findOrFail($id);
         $validated = $request->validate([
             'event_name' => 'required|string|max:255',
-            'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'event_type' => 'nullable|string',
             'event_date' => 'required|date|after_or_equal:today',
             'guest_count' => 'nullable|integer|min:1|max:10000',
@@ -247,21 +261,48 @@ class BookingController extends Controller
             'status' => $request->event_status ?? $event->status,
         ]);
 
+        $existingSchedules = $event->schedules->keyBy('vendor_id');
         $event->schedules()->delete();
         $vendorTimes = [];
 
         if ($request->package_id) {
             $selectedPackage = Package::with('vendors')->find($request->package_id);
+
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
-            
+
             foreach ($selectedPackage->vendors as $index => $vendor) {
                 $startTime = $packageVendorStartTimes[$index] ?? null;
                 $endTime = $packageVendorEndTimes[$index] ?? null;
-                
-                if ($startTime) $vendorTimes[] = $startTime;
-                if ($endTime) $vendorTimes[] = $endTime;
-                
+
+                $existingSchedule = $existingSchedules->get($vendor->id);
+
+                if (! $startTime && $existingSchedule) {
+                    $startTime = $existingSchedule->start_time;
+                }
+
+                if (! $endTime && $existingSchedule) {
+                    $endTime = $existingSchedule->end_time;
+                }
+
+                if (! $startTime) {
+                    $startTime = $request->vendor_start_time[$index] ?? null;
+                }
+
+                if (! $endTime) {
+                    $endTime = $request->vendor_end_time[$index] ?? null;
+                }
+
+                if (! $startTime) {
+                    continue;
+                }
+
+                $vendorTimes[] = $startTime;
+
+                if ($endTime) {
+                    $vendorTimes[] = $endTime;
+                }
+
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
@@ -280,10 +321,10 @@ class BookingController extends Controller
                         $startTime = $request->vendor_start_time[$index] ?? null;
                         $endTime = $request->vendor_end_time[$index] ?? null;
                         $memberId = $request->vendor_member_id[$index] ?? null;
-                        
+
                         if ($startTime) $vendorTimes[] = $startTime;
                         if ($endTime) $vendorTimes[] = $endTime;
-                        
+
                         $vendor = Vendor::find($vendorId);
                         Schedule::create([
                             'event_id' => $event->id,
@@ -300,12 +341,17 @@ class BookingController extends Controller
             }
         }
 
-        if (!empty($vendorTimes)) {
+        if (! empty($vendorTimes)) {
             sort($vendorTimes);
+
             $event->start_time = reset($vendorTimes);
             $event->end_time = end($vendorTimes);
-            $event->save();
+        } else {
+            $event->start_time = null;
+            $event->end_time = null;
         }
+
+        $event->save();
 
         $event->eventMembers()->delete();
         $teamAssignments = [];
@@ -324,12 +370,12 @@ class BookingController extends Controller
 
         $referrer = session('event_detail_referrer');
         session()->forget('event_detail_referrer');
-        
+
         if ($referrer && str_contains($referrer, 'calendar')) {
             return redirect()->route('admin.calendar')->with('success', 'Event updated successfully!');
         }
-        
-        return redirect()->route('admin.event_day.index')->with('success', 'Event updated successfully!');
+
+        return redirect()->route('admin.events.index')->with('success', 'Event updated successfully!');
     }
 
     public function show($id)
@@ -349,13 +395,13 @@ class BookingController extends Controller
         return view('admin.event.event_detail', compact('event'));
     }
 
-    public function getEventDays($bookingId)
+    public function getEvents($bookingId)
     {
         $events = Event::where('booking_id', $bookingId)
             ->select('id', 'name', 'event_date', 'start_time', 'end_time')
             ->orderBy('event_date')
             ->get();
-        
+
         return response()->json($events);
     }
 
@@ -374,7 +420,7 @@ class BookingController extends Controller
             }
 
             $member = \App\Models\Member::find($memberId);
-            if (!$member) {
+            if (! $member) {
                 continue;
             }
 
