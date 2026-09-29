@@ -162,6 +162,38 @@
     font-size: 0.78rem;
     font-weight: 700;
     color: var(--wo-green-900);
+    text-decoration: none;
+}
+.rc-day-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 22px;
+}
+.rc-day-menu {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--wo-green-900);
+    font-size: 1rem;
+}
+.rc-day-menu:hover,
+.rc-day-menu[aria-expanded="true"] {
+    background: rgba(22, 48, 42, 0.1);
+}
+.rc-day .dropdown-menu {
+    min-width: 220px;
+    border-color: var(--wo-border);
+    box-shadow: 0 10px 26px rgba(22, 48, 42, 0.12);
+}
+.rc-day .dropdown-item {
+    font-size: 0.78rem;
+    white-space: normal;
 }
 
 .rc-pill {

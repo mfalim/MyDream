@@ -30,6 +30,13 @@ class Booking extends Model
         return $this->belongsTo(Package::class);
     }
 
+    public function vendors()
+    {
+        return $this->belongsToMany(Vendor::class, 'package_vendor', 'package_id', 'vendor_id', 'package_id', 'id')
+            ->withPivot('status')
+            ->withTimestamps();
+    }
+
     public function events()
     {
         return $this->hasMany(Event::class);
