@@ -22,7 +22,7 @@
 
         <div class="card-body">
 
-            <form action="{{ route('admin.packages.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.packages.store') }}" method="POST">
 
                 @csrf
 
@@ -33,7 +33,9 @@
                         Nama Paket
                     </label>
 
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}"
+                            pattern="^[A-Za-z0-9À-ž][A-Za-z0-9À-ž &.'-]*$"
+                            title="Gunakan huruf, angka, spasi, dan tanda baca umum saja." required>
 
                 </div>
 
@@ -52,15 +54,6 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label class="form-label">Durasi Pemakaian Paket</label>
-                        <div class="input-group">
-                            <input type="number" name="duration" class="form-control"
-                                value="{{ old('duration') }}" min="0.01" step="0.01" required>
-                            <span class="input-group-text">jam</span>
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
                         <label class="form-label">Kapasitas Tamu</label>
                         <div class="input-group">
                             <input type="number" name="guest_capacity" class="form-control"
@@ -68,17 +61,6 @@
                             <span class="input-group-text">tamu</span>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="mb-4">
-
-                    <label class="form-label">
-                        Foto Paket
-                    </label>
-
-                    <input type="file" name="photo" class="form-control">
-
                 </div>
 
 

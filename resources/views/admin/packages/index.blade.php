@@ -28,12 +28,12 @@
             @forelse ($packages as $package)
                 <div class="vendor-card">
                     <div class="vendor-image">
-                        @if ($package->photo)
-                            <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                        @if ($package->cover_photo)
+                            <img src="{{ asset('storage/' . $package->cover_photo->photo) }}" alt="{{ $package->name }}">
                         @else
                             <div class="vendor-no-image">
                                 <span>📦</span>
-                                <small>Tidak ada foto</small>
+                                <small>Foto vendor belum tersedia</small>
                             </div>
                         @endif
 
@@ -54,7 +54,6 @@
                         </div>
 
                         <div class="vendor-phone">
-                            {{ $package->duration_label }} ·
                             {{ $package->guest_capacity ? number_format($package->guest_capacity, 0, ',', '.') . ' tamu' : '-' }}
                         </div>
 

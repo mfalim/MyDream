@@ -9,10 +9,8 @@
 @endpush
 
 @section('content')
-
     <main class="vendor-overview-page">
 
-        {{-- BACK --}}
         <div class="overview-back">
             <a href="{{ route('user.explore-vendor') }}">
                 <i class="bi bi-arrow-left"></i>
@@ -20,8 +18,6 @@
             </a>
         </div>
 
-
-        {{-- BREADCRUMB --}}
         <div class="overview-breadcrumb">
             Eksplor
             <span>›</span>
@@ -30,14 +26,9 @@
             {{ $package->name }}
         </div>
 
-
-        {{-- HEADER --}}
         <section class="overview-header">
-
             <div class="overview-title">
-
                 <div class="overview-tags">
-
                     <span class="overview-tag gold">
                         <i class="bi bi-gem"></i>
                         Paket Lengkap
@@ -47,7 +38,6 @@
                         <i class="bi bi-patch-check-fill"></i>
                         {{ $package->vendors->count() }} Vendor
                     </span>
-
                 </div>
 
                 <h1>
@@ -58,14 +48,11 @@
                     <i class="bi bi-people"></i>
                     {{ $package->guest_capacity }} Tamu
                     <span>•</span>
-                    {{ $package->duration }}
+                    {{ $package->duration ?? 'Sesuai paket' }}
                 </p>
-
             </div>
 
-
             <div class="overview-actions">
-
                 <button type="button" class="outline-action">
                     <i class="bi bi-heart"></i>
                 </button>
@@ -81,15 +68,10 @@
                         Pilih Paket Ini
                     </button>
                 </form>
-
             </div>
-
         </section>
 
-
-        {{-- QUICK INFO --}}
         <section class="overview-quick-info">
-
             <div>
                 <i class="bi bi-gem"></i>
                 Paket Lengkap
@@ -102,20 +84,16 @@
 
             <div>
                 <i class="bi bi-clock"></i>
-                {{ $package->duration }}
+                {{ $package->duration ?? 'Sesuai paket' }}
             </div>
 
             <div>
                 <i class="bi bi-calendar"></i>
                 {{ \Carbon\Carbon::parse($package->availability_date)->isoFormat('D MMMM YYYY') }}
             </div>
-
         </section>
 
-
-        {{-- GALLERY --}}
         <section class="overview-gallery">
-
             <div class="gallery-main">
                 @php
                     $photoUrl = $package->photo
@@ -128,9 +106,7 @@
                     <span>Paket Wedding</span>
                     <strong>{{ $package->name }}</strong>
                 </div>
-
             </div>
-
 
             <div class="gallery-small">
                 @foreach ($package->vendors->take(4) as $vendor)
@@ -145,36 +121,22 @@
                     </div>
                 @endforeach
             </div>
-
         </section>
 
-
-        {{-- CONTENT --}}
         <div class="overview-layout">
-
-
-            {{-- LEFT --}}
             <div class="overview-main-content">
-
                 <section class="overview-section">
-
                     <h2>
                         Tentang Paket {{ $package->name }}
                     </h2>
 
                     <p>
-                        Paket lengkap dengan {{ $package->vendors->count() }} vendor terpilih untuk pernikahan Anda dengan
-                        kapasitas {{ $package->guest_capacity }} tamu.
+                        Paket lengkap dengan {{ $package->vendors->count() }} vendor terpilih untuk pernikahan Anda dengan kapasitas {{ $package->guest_capacity }} tamu.
                     </p>
-
                 </section>
 
-
-                {{-- VENDOR LIST --}}
                 <section class="overview-section">
-
                     <div class="section-heading">
-
                         <div>
                             <span class="section-kicker">
                                 VENDOR TERMASUK
@@ -184,13 +146,10 @@
                                 {{ $package->vendors->count() }} Vendor dalam Paket
                             </h2>
                         </div>
-
                     </div>
 
                     @foreach ($package->vendors as $vendor)
-                        <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="package-card"
-                            style="display: block; color: inherit; text-decoration: none;">
-
+                        <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="package-card" style="display: block; color: inherit; text-decoration: none;">
                             <div style="display: flex; gap: 20px; align-items: start;">
                                 @php
                                     $vendorPhoto = $vendor->photos->where('is_cover', true)->first();
@@ -198,8 +157,7 @@
                                         ? asset('storage/' . $vendorPhoto->photo)
                                         : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=300&q=85';
                                 @endphp
-                                <img src="{{ $vendorPhotoUrl }}" alt="{{ $vendor->name }}"
-                                    style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover;">
+                                <img src="{{ $vendorPhotoUrl }}" alt="{{ $vendor->name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover;">
 
                                 <div style="flex: 1;">
                                     <span class="package-label">
@@ -215,33 +173,22 @@
                                     </p>
 
                                     <div class="package-price">
-
                                         <div>
                                             <span>Harga Vendor</span>
-
                                             <strong>
                                                 Rp {{ number_format($vendor->price, 0, ',', '.') }}
                                             </strong>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
-
                         </a>
                     @endforeach
-
                 </section>
-
             </div>
 
-
-            {{-- RIGHT SIDEBAR --}}
             <aside class="overview-sidebar">
-
-                {{-- BOOKING --}}
                 <div class="booking-card">
-
                     <span class="booking-badge">
                         <i class="bi bi-gem"></i>
                         HARGA PAKET
@@ -252,48 +199,35 @@
                         <strong>Rp {{ number_format($package->price, 0, ',', '.') }}</strong>
                     </div>
 
-
                     <div class="booking-row">
-
                         <span>
                             <i class="bi bi-shop"></i>
                             Vendor Termasuk
                         </span>
-
                         <strong>
                             {{ $package->vendors->count() }} Vendor
                         </strong>
-
                     </div>
 
-
                     <div class="booking-row">
-
                         <span>
                             <i class="bi bi-people"></i>
                             Kapasitas
                         </span>
-
                         <strong>
                             {{ $package->guest_capacity }} Tamu
                         </strong>
-
                     </div>
 
-
                     <div class="booking-row">
-
                         <span>
                             <i class="bi bi-clock"></i>
                             Durasi
                         </span>
-
                         <strong>
-                            {{ $package->duration }}
+                            {{ $package->duration ?? 'Sesuai paket' }}
                         </strong>
-
                     </div>
-
 
                     <form action="{{ route('user.cart.add-package', $package->id) }}" method="POST">
                         @csrf
@@ -303,29 +237,22 @@
                         </button>
                     </form>
 
-
                     <a href="{{ route('user.cart') }}" class="booking-secondary">
                         <i class="bi bi-cart"></i>
                         Lihat Keranjang
                     </a>
 
-
                     <small class="booking-note">
                         Semua vendor dalam paket akan masuk ke keranjang
                     </small>
-
                 </div>
 
-
-                {{-- TRUST --}}
                 <div class="trust-card">
-
                     <div class="trust-icon">
                         <i class="bi bi-shield-check"></i>
                     </div>
 
                     <div>
-
                         <strong>
                             Paket Terverifikasi
                         </strong>
@@ -333,14 +260,9 @@
                         <p>
                             WO PROJECT memastikan kualitas semua vendor dalam paket ini.
                         </p>
-
                     </div>
-
                 </div>
-
             </aside>
-
         </div>
-
     </main>
 @endsection

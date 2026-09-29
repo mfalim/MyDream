@@ -126,6 +126,9 @@
             font-size: 16px;
             cursor: pointer;
             margin-top: 20px;
+            display: block;
+            text-align: center;
+            text-decoration: none;
         }
 
         .btn-checkout:hover {
@@ -148,10 +151,8 @@
 
 @section('content')
     <main class="cart-page">
-
         <div style="margin-bottom: 32px;">
-            <a href="{{ route('user.explore-vendor') }}" class="wo-link"><i class="bi bi-arrow-left"></i> Lanjut Eksplor
-                Vendor</a>
+            <a href="{{ route('user.explore-vendor') }}" class="wo-link"><i class="bi bi-arrow-left"></i> Lanjut Eksplor Vendor</a>
             <h1 style="font-size: 32px; font-weight: 700; margin: 16px 0 8px;">Keranjang Pemilihan</h1>
             <p style="color: #6b7280;">Review paket atau vendor yang sudah Anda pilih sebelum checkout.</p>
         </div>
@@ -161,8 +162,7 @@
         @endif
 
         @if (session('error'))
-            <div class="wo-badge" style="margin-bottom: 20px; background: #fecaca; color: #dc2626;">{{ session('error') }}
-            </div>
+            <div class="wo-badge" style="margin-bottom: 20px; background: #fecaca; color: #dc2626;">{{ session('error') }}</div>
         @endif
 
         @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3)
@@ -183,7 +183,6 @@
             </div>
         @else
             <div class="cart-layout">
-
                 <div class="cart-items">
                     @if ($cart['type'] === 'package' && $package)
                         <div class="wo-card" style="padding: 24px;">
@@ -192,8 +191,7 @@
                                 <div>
                                     <span class="wo-badge wo-badge-gold">PAKET LENGKAP</span>
                                     <h2 style="font-size: 24px; font-weight: 700; margin: 8px 0;">{{ $package->name }}</h2>
-                                    <p style="color: #6b7280;">{{ $package->guest_capacity }} Tamu •
-                                        {{ $package->duration_label }}</p>
+                                    <p style="color: #6b7280;">{{ $package->guest_capacity }} Tamu • {{ $package->duration ?? 'Sesuai paket' }}</p>
                                 </div>
                             </div>
 
@@ -281,8 +279,7 @@
                     </div>
 
                     @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3)
-                        <button type="button" class="btn-checkout" style="background: #d1d5db; cursor: not-allowed;"
-                            disabled>
+                        <button type="button" class="btn-checkout" style="background: #d1d5db; cursor: not-allowed;" disabled>
                             <i class="bi bi-exclamation-circle"></i> Minimal 3 Vendor ({{ count($cart['vendor_ids']) }}/3)
                         </button>
                     @else
@@ -299,9 +296,7 @@
                         </button>
                     </form>
                 </div>
-
             </div>
         @endif
-
     </main>
 @endsection

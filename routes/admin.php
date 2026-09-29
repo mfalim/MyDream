@@ -32,6 +32,9 @@ Route::prefix('admin')
             'index',
             'create',
             'store',
+            'edit',
+            'update',
+            'destroy',
         ]);
 
 

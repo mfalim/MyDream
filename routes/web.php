@@ -32,7 +32,6 @@ Route::middleware('auth')->group(function () {
 Route::prefix('member')->name('member.')->middleware('auth')->group(function () {
     Route::get('/profile/complete', [MemberProfileController::class, 'showCompleteForm'])->name('profile.complete');
     Route::post('/profile/complete', [MemberProfileController::class, 'storeProfile'])->name('profile.store');
-
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/schedule/{id}/status', [MemberDashboardController::class, 'updateScheduleStatus'])->name('schedule.status');
 });

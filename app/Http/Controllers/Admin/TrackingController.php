@@ -89,6 +89,30 @@ class TrackingController extends Controller
         ]);
     }
 
+    public function updateScheduleTime(Request $request, $scheduleId)
+    {
+        $schedule = Schedule::whereNotNull('vendor_id')->findOrFail($scheduleId);
+
+        if ($schedule->status !== 'approved') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Jam hanya dapat diatur untuk vendor yang sudah approved',
+            ], 422);
+        }
+
+        $validated = $request->validate([
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i|after:start_time',
+        ]);
+
+        $schedule->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Jam vendor berhasil disimpan',
+        ]);
+    }
+
     public function updateBookingStatus(Request $request, $bookingId)
     {
         $booking = Booking::findOrFail($bookingId);

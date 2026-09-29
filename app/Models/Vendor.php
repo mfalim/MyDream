@@ -25,6 +25,7 @@ class Vendor extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
     public function photos()
     {
         return $this->hasMany(VendorPhoto::class)
@@ -38,5 +39,4 @@ class Vendor extends Model
             ->withPivot('status')
             ->withTimestamps();
     }
-
 }

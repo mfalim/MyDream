@@ -3,6 +3,24 @@
 @section('title', 'Edit Vendor')
 @section('page-title', 'Edit Vendor')
 
+@push('styles')
+    <style>
+        .edit-photo-card {
+            overflow: hidden;
+            border: 1px solid #e4ebe8;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .edit-photo-card > img {
+            display: block;
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+    </style>
+@endpush
+
 @section('content')
 
     <div class="mb-4">
@@ -58,6 +76,8 @@
                         name="name"
                         class="form-control"
                         value="{{ old('name', $vendor->name) }}"
+                        pattern="^[A-Za-z0-9À-ž][A-Za-z0-9À-ž &.'-]*$"
+                        title="Gunakan huruf, angka, spasi, dan tanda baca umum saja."
                         required
                     >
 
@@ -106,9 +126,11 @@
                         class="form-control"
                         value="{{ old('price', $vendor->price) }}"
                         min="0"
-                        step="0.01"
+                        max="999999999"
+                        step="1"
                         required
                     >
+                    <small class="text-muted">Maksimal Rp 999.999.999.</small>
 
                 </div>
 

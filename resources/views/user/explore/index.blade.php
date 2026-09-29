@@ -15,8 +15,7 @@
             <div>
                 <span class="wo-eyebrow"><i class="bi bi-geo-alt-fill"></i> Vendor Marketplace &amp; Curation</span>
                 <h1>Eksplor &amp; Tambah Vendor Baru</h1>
-                <p>Tambahkan vendor rekanan terakreditasi atau daftarkan vendor pilihan pribadi Anda ke dalam susunan hari
-                    pernikahan ({{ $eventDateLabel }}). Tim WO akan mengoordinasikan kontrak dan rundown teknis.</p>
+                <p>Tambahkan vendor rekanan terakreditasi atau daftarkan vendor pilihan pribadi Anda ke dalam susunan hari pernikahan ({{ $eventDateLabel }}). Tim WO akan mengoordinasikan kontrak dan rundown teknis.</p>
             </div>
 
             <div class="ev-mode-switch">
@@ -25,12 +24,10 @@
             </div>
         </div>
 
-
         <div class="ev-toolbar">
             <div class="ev-search">
                 <i class="bi bi-search"></i>
-                <input type="text" id="evSearch"
-                    placeholder="Cari vendor berdasarkan nama, gaya estetika dekorasi, atau anggaran...">
+                <input type="text" id="evSearch" placeholder="Cari vendor berdasarkan nama, gaya estetika dekorasi, atau anggaran...">
             </div>
 
             <button type="button" class="wo-btn wo-btn-outline">
@@ -45,8 +42,6 @@
             @endforeach
         </div>
 
-
-        {{-- PAKET SECTION --}}
         <div class="wo-card" style="margin-bottom: 32px;">
             <div class="wo-section-head">
                 <div>
@@ -57,20 +52,15 @@
 
             <div class="ev-grid">
                 @foreach ($packages as $package)
-                    <a href="{{ route('user.package-overview', $package->id) }}" class="ev-card" data-cat="paket"
-                        data-name="{{ strtolower($package->name) }}">
+                    <a href="{{ route('user.package-overview', $package->id) }}" class="ev-card" data-cat="paket" data-name="{{ strtolower($package->name) }}">
                         <div class="ev-card-media">
-                            <img src="{{ $package->photo ? asset('storage/' . $package->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85' }}"
-                                alt="{{ $package->name }}">
+                            <img src="{{ $package->photo ? asset('storage/' . $package->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85' }}" alt="{{ $package->name }}">
                             <span class="ev-card-cat"><i class="bi bi-gem"></i> Paket</span>
-                            <span class="wo-badge wo-badge-gold"
-                                style="position: absolute; top: 12px; left: 12px;">{{ $package->vendors->count() }}
-                                Vendor</span>
+                            <span class="wo-badge wo-badge-gold" style="position: absolute; top: 12px; left: 12px;">{{ $package->vendors->count() }} Vendor</span>
                         </div>
 
                         <div class="ev-card-body">
-                            <span class="ev-card-meta">{{ $package->guest_capacity }} Tamu <span>&bull;</span>
-                                {{ $package->duration_label }}</span>
+                            <span class="ev-card-meta">{{ $package->guest_capacity }} Tamu <span>&bull;</span> {{ $package->duration ?? 'Sesuai paket' }}</span>
                             <strong>{{ $package->name }}</strong>
                             <p>Paket lengkap dengan {{ $package->vendors->count() }} vendor terpilih</p>
 
@@ -88,7 +78,6 @@
             </div>
         </div>
 
-        {{-- VENDOR INDIVIDUAL --}}
         <div class="wo-section-head" style="margin-bottom: 24px;">
             <div>
                 <span class="wo-eyebrow"><i class="bi bi-shop"></i> Vendor Individual</span>
@@ -98,9 +87,7 @@
 
         <div class="ev-grid" id="evGrid">
             @foreach ($vendors as $vendor)
-                <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="ev-card"
-                    data-cat="{{ $vendor->category->name ?? '' }}" data-name="{{ strtolower($vendor->name) }}">
-
+                <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="ev-card" data-cat="{{ $vendor->category->name ?? '' }}" data-name="{{ strtolower($vendor->name) }}">
                     <div class="ev-card-media">
                         @php
                             $coverPhoto = $vendor->photos->where('is_cover', true)->first();
@@ -109,8 +96,7 @@
                                 : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85';
                         @endphp
                         <img src="{{ $photoUrl }}" alt="{{ $vendor->name }}">
-                        <span class="ev-card-cat"><i class="bi bi-tag"></i>
-                            {{ $vendor->category->name ?? 'Uncategorized' }}</span>
+                        <span class="ev-card-cat"><i class="bi bi-tag"></i> {{ $vendor->category->name ?? 'Uncategorized' }}</span>
                     </div>
 
                     <div class="ev-card-body">
@@ -127,22 +113,16 @@
                             <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
                         </span>
                     </div>
-
                 </a>
             @endforeach
         </div>
 
-
-        {{-- CUSTOM VENDOR --}}
         <div class="wo-card ev-custom">
             <span class="wo-badge wo-badge-gold"><i class="bi bi-gift"></i> Bebas Pilih Vendor Pribadi</span>
             <h2>Punya vendor langganan sendiri di luar rekanan WO PROJECT?</h2>
-            <p>Tidak masalah! Anda dapat mendaftarkan vendor independen pilihan keluarga. Tim kami akan melakukan validasi
-                kelayakan teknis panggung, mengoordinasikan loading barang dengan pihak venue, serta memasukkannya ke dalam
-                Rundown Resmi Hari H.</p>
+            <p>Tidak masalah! Anda dapat mendaftarkan vendor independen pilihan keluarga. Tim kami akan melakukan validasi kelayakan teknis panggung, mengoordinasikan loading barang dengan pihak venue, serta memasukkannya ke dalam Rundown Resmi Hari H.</p>
 
-            <form class="ev-custom-form"
-                onsubmit="event.preventDefault(); alert('Pengajuan vendor custom terkirim ke Tim WO untuk kurasi (dummy).');">
+            <form class="ev-custom-form" onsubmit="event.preventDefault(); alert('Pengajuan vendor custom terkirim ke Tim WO untuk kurasi (dummy).');">
                 <div class="ev-form-row">
                     <div>
                         <label>Nama Brand / Vendor</label>
@@ -171,8 +151,7 @@
                 </div>
 
                 <div class="ev-form-footer">
-                    <small><i class="bi bi-info-circle"></i> WO Project tidak memungut komisi dari vendor bawaan
-                        pribadi.</small>
+                    <small><i class="bi bi-info-circle"></i> WO Project tidak memungut komisi dari vendor bawaan pribadi.</small>
                     <button type="submit" class="wo-btn wo-btn-dark">
                         <i class="bi bi-send"></i> Ajukan ke Tim WO untuk Kurasi
                     </button>
@@ -198,15 +177,10 @@
                     var name = card.dataset.name || '';
                     var category = card.dataset.cat || '';
 
-                    var matchesCat =
-                        activeCat === 'all' ||
-                        category === activeCat;
+                    var matchesCat = activeCat === 'all' || category === activeCat;
+                    var matchesQuery = name.indexOf(query) !== -1;
 
-                    var matchesQuery =
-                        name.indexOf(query) !== -1;
-
-                    card.style.display =
-                        (matchesCat && matchesQuery) ? '' : 'none';
+                    card.style.display = (matchesCat && matchesQuery) ? '' : 'none';
                 });
             }
 
@@ -220,7 +194,9 @@
                 });
             });
 
-            search.addEventListener('input', applyFilters);
+            if (search) {
+                search.addEventListener('input', applyFilters);
+            }
         });
     </script>
 @endpush

@@ -104,7 +104,7 @@
 
 @section('content')
 <main class="checkout-page">
-    
+
     <div style="margin-bottom: 32px;">
         <a href="{{ route('user.cart') }}" class="wo-link"><i class="bi bi-arrow-left"></i> Kembali ke Keranjang</a>
         <h1 style="font-size: 32px; font-weight: 700; margin: 16px 0 8px;">Checkout Booking</h1>
@@ -117,14 +117,14 @@
 
     <form action="{{ route('user.checkout.store') }}" method="POST">
         @csrf
-        
+
         <div class="checkout-layout">
-            
+
             <div>
                 {{-- Data Venue --}}
                 <div class="form-section">
                     <h3><i class="bi bi-building"></i> Informasi Venue & Acara</h3>
-                    
+
                     <div class="form-group">
                         <label for="event_date">Tanggal Acara <span style="color: red;">*</span></label>
                         <input type="date" name="event_date" id="event_date" value="{{ old('event_date') }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}" required>
@@ -132,7 +132,7 @@
                             <small style="color: #ef4444;">{{ $message }}</small>
                         @enderror
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="venue_name">Nama Venue <span style="color: red;">*</span></label>
                         <input type="text" name="venue_name" id="venue_name" value="{{ old('venue_name') }}" placeholder="Contoh: Hotel Mulia Senayan" required>
@@ -140,7 +140,7 @@
                             <small style="color: #ef4444;">{{ $message }}</small>
                         @enderror
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="venue_address">Alamat Lengkap Venue <span style="color: red;">*</span></label>
                         <textarea name="venue_address" id="venue_address" required>{{ old('venue_address') }}</textarea>
@@ -148,7 +148,7 @@
                             <small style="color: #ef4444;">{{ $message }}</small>
                         @enderror
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="venue_city">Kota <span style="color: red;">*</span></label>
@@ -157,7 +157,7 @@
                                 <small style="color: #ef4444;">{{ $message }}</small>
                             @enderror
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="venue_province">Provinsi <span style="color: red;">*</span></label>
                             <input type="text" name="venue_province" id="venue_province" value="{{ old('venue_province') }}" required>
@@ -166,10 +166,15 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="guest_count">Perkiraan Jumlah Tamu <span style="color: red;">*</span></label>
-                        <input type="number" name="guest_count" id="guest_count" value="{{ old('guest_count') }}" min="1" placeholder="Contoh: 500" required>
+                        <input type="number" name="guest_count" id="guest_count" value="{{ old('guest_count') }}"
+                            min="1" max="{{ $package?->guest_capacity ?: 10000 }}"
+                            placeholder="Contoh: 500" required>
+                        @if ($package?->guest_capacity)
+                            <small style="color: #6b7280;">Maksimal {{ number_format($package->guest_capacity, 0, ',', '.') }} tamu sesuai kapasitas paket.</small>
+                        @endif
                         @error('guest_count')
                             <small style="color: #ef4444;">{{ $message }}</small>
                         @enderror
@@ -180,7 +185,7 @@
             {{-- Order Summary --}}
             <div class="order-summary">
                 <h3>Ringkasan Pesanan</h3>
-                
+
                 @if($cart['type'] === 'package' && $package)
                     <div class="summary-item">
                         <div>
@@ -200,16 +205,16 @@
                         </div>
                     @endforeach
                 @endif
-                
+
                 <div class="summary-total">
                     <span>Total</span>
                     <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
                 </div>
-                
+
                 <button type="submit" class="btn-submit">
                     <i class="bi bi-check-circle"></i> Buat Booking & Lanjut Pembayaran
                 </button>
-                
+
                 <p style="font-size: 13px; color: #6b7280; text-align: center; margin-top: 16px;">
                     Dengan melanjutkan, Anda menyetujui syarat dan ketentuan WO PROJECT
                 </p>

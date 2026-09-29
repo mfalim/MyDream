@@ -48,7 +48,7 @@ class CheckoutController extends Controller
             }
         }
 
-        if ($cart['type'] === 'custom' && !empty($cart['vendor_ids'])) {
+        if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
             $vendors = Vendor::with('category')
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
@@ -58,7 +58,7 @@ class CheckoutController extends Controller
 
         $client = Client::where('users_id', Auth::id())->first();
 
-        return view('pages.checkout.index', [
+        return view('user.checkout.index', [
             'cart' => $cart,
             'package' => $package,
             'vendors' => $vendors,
@@ -69,29 +69,33 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate(
-            [
-                'venue_name' => 'required|string|max:255',
-                'venue_address' => 'required|string|max:1000',
-                'venue_city' => 'required|string|max:100',
-                'venue_province' => 'required|string|max:100',
-                'guest_count' => 'required|integer|min:10|max:10000',
-                'event_date' => 'required|date|after:today',
-            ],
-            [
-                'venue_name.required' => 'Nama venue wajib diisi',
-                'venue_address.required' => 'Alamat venue wajib diisi',
-                'venue_city.required' => 'Kota venue wajib diisi',
-                'venue_province.required' => 'Provinsi venue wajib diisi',
-                'guest_count.required' => 'Jumlah tamu wajib diisi',
-                'guest_count.min' => 'Jumlah tamu minimal 10 orang',
-                'guest_count.max' => 'Jumlah tamu maksimal 10.000 orang',
-                'event_date.required' => 'Tanggal acara wajib diisi',
-                'event_date.after' => 'Tanggal acara harus setelah hari ini',
-            ],
-        );
-
         $cart = session()->get('cart');
+        $package = null;
+        $guestCapacity = 10000;
+
+        if (($cart['type'] ?? null) === 'package' && ! empty($cart['package_id'])) {
+            $package = Package::find($cart['package_id']);
+            $guestCapacity = $package?->guest_capacity ?: $guestCapacity;
+        }
+
+        $validated = $request->validate([
+            'venue_name' => 'required|string|max:255',
+            'venue_address' => 'required|string|max:1000',
+            'venue_city' => 'required|string|max:100',
+            'venue_province' => 'required|string|max:100',
+            'guest_count' => 'required|integer|min:1|max:' . $guestCapacity,
+            'event_date' => 'required|date|after:today',
+        ], [
+            'venue_name.required' => 'Nama venue wajib diisi',
+            'venue_address.required' => 'Alamat venue wajib diisi',
+            'venue_city.required' => 'Kota venue wajib diisi',
+            'venue_province.required' => 'Provinsi venue wajib diisi',
+            'guest_count.required' => 'Jumlah tamu wajib diisi',
+            'guest_count.min' => 'Jumlah tamu minimal 1 orang',
+            'guest_count.max' => 'Jumlah tamu tidak boleh melebihi kapasitas paket (:max orang)',
+            'event_date.required' => 'Tanggal acara wajib diisi',
+            'event_date.after' => 'Tanggal acara harus setelah hari ini',
+        ]);
 
         if (empty($cart['type'])) {
             return redirect()
@@ -106,19 +110,17 @@ class CheckoutController extends Controller
             $package = Package::with('vendors')
                 ->find($cart['package_id']);
 
-            if (!$package) {
+            if (! $package) {
                 return redirect()
                     ->route('cart.index')
                     ->with('error', 'Paket tidak ditemukan.');
             }
 
             $packageId = $package->id;
-
-            // Harga paket = total harga seluruh vendor dalam paket.
             $totalPrice = $package->vendors->sum('price');
         }
 
-        if ($cart['type'] === 'custom' && !empty($cart['vendor_ids'])) {
+        if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
             $vendors = Vendor::whereIn('id', $cart['vendor_ids'])->get();
 
             if ($vendors->count() < 3) {
@@ -132,7 +134,7 @@ class CheckoutController extends Controller
 
         $client = Client::where('users_id', Auth::id())->first();
 
-        if (!$client) {
+        if (! $client) {
             return redirect()
                 ->route('client.profile')
                 ->with('error', 'Lengkapi data mempelai terlebih dahulu');
@@ -178,7 +180,7 @@ class CheckoutController extends Controller
                 }
             }
 
-            if ($cart['type'] === 'custom' && !empty($cart['vendor_ids'])) {
+            if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
                 $vendors = Vendor::whereIn('id', $cart['vendor_ids'])->get();
 
                 foreach ($vendors as $vendor) {
@@ -193,7 +195,6 @@ class CheckoutController extends Controller
             }
 
             $event->refresh();
-
             $schedules = $event->schedules;
 
             if ($schedules->isNotEmpty()) {
@@ -211,7 +212,6 @@ class CheckoutController extends Controller
             return redirect()
                 ->route('payment.index', $booking->id)
                 ->with('success', 'Booking berhasil dibuat. Silakan lakukan pembayaran.');
-
         } catch (\Throwable $e) {
             DB::rollBack();
 
