@@ -49,7 +49,7 @@ class TrackingController extends Controller
                 ];
             });
         
-        $members = \App\Models\Member::where('status', 'active')->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
 
         return view('admin.tracking.index', compact('bookings', 'eventsByBooking', 'members'));
     }

@@ -20,13 +20,16 @@ class DashboardController extends Controller
             abort(403, 'Akses ditolak. Anda bukan member organizer.');
         }
 
-        $schedules = Schedule::where('member_id', $member->id)
+        $eventIds = EventMember::where('member_id', $member->id)->pluck('event_id');
+
+        $schedules = Schedule::whereIn('event_id', $eventIds)
+            ->whereNotNull('vendor_id')
             ->with(['event.booking.client', 'vendor'])
             ->orderBy('start_time', 'asc')
             ->get();
 
         $eventMembers = EventMember::where('member_id', $member->id)
-            ->with(['event.booking.client', 'event.schedules'])
+            ->with(['event.booking.client', 'event.schedules.vendor'])
             ->get();
 
         $stats = [
@@ -46,7 +49,29 @@ class DashboardController extends Controller
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
-        if (!$member || $schedule->member_id !== $member->id) {
+        if (!$member) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $allowed = false;
+
+        if ($schedule->member_id !== null) {
+            if ($schedule->member_id === $member->id) {
+                $allowed = true;
+            }
+        } else {
+            // If schedule has no explicit member assigned, allow update
+            // for members who are part of the event (assigned via event_members).
+            $isEventMember = EventMember::where('event_id', $schedule->event_id)
+                ->where('member_id', $member->id)
+                ->exists();
+
+            if ($isEventMember) {
+                $allowed = true;
+            }
+        }
+
+        if (!$allowed) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 

@@ -7,6 +7,7 @@ use App\Models\Package;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class PackageController extends Controller
 {
@@ -58,13 +59,24 @@ class PackageController extends Controller
             $photo = $request->file('photo')->store('packages', 'public');
         }
 
-        $package = Package::create([
+        $payload = [
             'name' => $request->name,
-            'availability_date' => $request->availability_date,
-            'duration' => $request->duration,
-            'guest_capacity' => $request->guest_capacity,
             'photo' => $photo,
-        ]);
+        ];
+
+        if (Schema::hasColumn('packages', 'availability_date')) {
+            $payload['availability_date'] = $request->availability_date;
+        }
+
+        if (Schema::hasColumn('packages', 'duration')) {
+            $payload['duration'] = $request->duration;
+        }
+
+        if (Schema::hasColumn('packages', 'guest_capacity')) {
+            $payload['guest_capacity'] = $request->guest_capacity;
+        }
+
+        $package = Package::create($payload);
 
         if ($request->vendors) {
             $package->vendors()->attach(
@@ -121,12 +133,23 @@ class PackageController extends Controller
             'vendors.*.exists' => 'Vendor tidak valid',
         ]);
 
-        $package->update([
+        $updatePayload = [
             'name' => $request->name,
-            'availability_date' => $request->availability_date,
-            'duration' => $request->duration,
-            'guest_capacity' => $request->guest_capacity,
-        ]);
+        ];
+
+        if (Schema::hasColumn('packages', 'availability_date')) {
+            $updatePayload['availability_date'] = $request->availability_date;
+        }
+
+        if (Schema::hasColumn('packages', 'duration')) {
+            $updatePayload['duration'] = $request->duration;
+        }
+
+        if (Schema::hasColumn('packages', 'guest_capacity')) {
+            $updatePayload['guest_capacity'] = $request->guest_capacity;
+        }
+
+        $package->update($updatePayload);
 
         if ($request->hasFile('photo')) {
             if ($package->photo) {

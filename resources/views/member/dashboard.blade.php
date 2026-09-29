@@ -499,7 +499,10 @@
                 @endif
 
                 @php
-                    $eventSchedules = $eventMember->event->schedules->where('member_id', $member->id);
+                    $eventSchedules = $eventMember->event->schedules
+                        ->filter(function ($task) {
+                            return $task->vendor_id !== null;
+                        });
                     $totalTasks = $eventSchedules->count();
                     $completedTasks = $eventSchedules->where('status', 'approved')->count();
                     $progressPercent = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
@@ -509,7 +512,7 @@
                     <div class="task-checklist">
                         <div class="task-header">
                             <span class="task-progress-text">
-                                <i class="bi bi-list-check"></i> Checklist Tugas ({{ $completedTasks }}/{{ $totalTasks }})
+                                <i class="bi bi-list-check"></i> Checklist Vendor ({{ $completedTasks }}/{{ $totalTasks }})
                             </span>
                             <span class="task-progress-text">{{ $progressPercent }}%</span>
                         </div>
@@ -527,6 +530,11 @@
                                     </div>
                                     <div class="task-text {{ $task->status === 'approved' ? 'completed' : '' }}" id="text-{{ $task->id }}">
                                         {{ $task->activity }}
+                                        @if($task->vendor)
+                                            <small class="d-block text-muted mt-1">
+                                                <i class="bi bi-shop"></i> {{ $task->vendor->name }}
+                                            </small>
+                                        @endif
                                         <small class="d-block text-muted mt-1">
                                             <i class="bi bi-clock"></i> {{ \Carbon\Carbon::parse($task->start_time)->format('d M Y, H:i') }}
                                         </small>
@@ -534,6 +542,10 @@
                                 </div>
                             @endforeach
                         </div>
+                    </div>
+                @else
+                    <div class="text-muted mt-3 small">
+                        <i class="bi bi-info-circle"></i> Belum ada vendor schedule untuk event ini.
                     </div>
                 @endif
             </div>

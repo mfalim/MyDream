@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $totalBookings = Booking::count();
         $totalEvents = Event::count();
         $totalClients = Client::count();
-        $totalMembers = Member::where('status', 'active')->count();
+        $totalMembers = Member::whereIn('status', ['active', 'aktif'])->count();
         
         // Statistik booking berdasarkan status
         $pendingBookings = Booking::where('status', 'pending')->count();

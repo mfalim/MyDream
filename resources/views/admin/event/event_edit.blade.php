@@ -25,30 +25,11 @@
                 <!-- Section 1: Info Booking (Read Only) -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body p-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
-                                <i class="bi bi-calendar-check"></i>
-                            </div>
-                            <div>
-                                <h5 class="fw-bold mb-0">Info Booking</h5>
-                                <small class="text-muted">Booking yang terkait dengan event ini</small>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <small class="text-muted d-block">Client:</small>
-                                    <span class="fw-semibold">{{ $event->booking->client->groom_name }} & {{ $event->booking->client->bride_name }}</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <small class="text-muted d-block">Venue:</small>
-                                    <span class="fw-semibold">{{ $event->booking->venue_name }}</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <small class="text-muted d-block">Package:</small>
-                                    <span class="fw-semibold">{{ $event->booking->package->name ?? 'N/A' }}</span>
-                                </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Booking</label>
+                                <input type="text" class="form-control" value="{{ $event->booking->client->name ?? 'N/A' }}" readonly>
+                                <small class="text-muted">Informasi booking (read-only)</small>
                             </div>
                         </div>
                     </div>
@@ -78,7 +59,15 @@
                                 <label class="form-label fw-semibold">Foto Event</label>
                                 <input type="file" class="form-control" name="event_photo" accept="image/*">
                                 @if($event->photo)
-                                    <small class="text-muted">Foto saat ini: <a href="{{ asset('storage/' . $event->photo) }}" target="_blank">Lihat foto</a></small>
+                                    <?php
+                                        $photoPath = $event->photo;
+                                        $storagePath = storage_path('app/public/' . $photoPath);
+                                        $photoUrl = $photoPath ? asset('storage/' . $photoPath) : '';
+                                        if ($photoPath && file_exists($storagePath)) {
+                                            $photoUrl .= '?v=' . filemtime($storagePath);
+                                        }
+                                    ?>
+                                    <small class="text-muted">Foto saat ini: <a href="{{ $photoUrl }}" target="_blank">Lihat foto</a></small>
                                 @else
                                     <small class="text-muted">Belum ada foto</small>
                                 @endif

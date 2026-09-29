@@ -74,7 +74,7 @@ class ProfileController extends Controller
             'emergency_name' => $validated['emergency_name'],
             'emergency_phone' => $validated['emergency_phone'],
             'daily_fee' => 0,
-            'status' => 'active',
+            'status' => 'aktif',
         ]);
 
         $member->update([

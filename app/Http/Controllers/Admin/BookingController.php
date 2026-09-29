@@ -28,7 +28,7 @@ class BookingController extends Controller
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
-        $members = \App\Models\Member::where('status', 'active')->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
         return view('admin.event.event_form', compact('vendors', 'packages', 'bookings', 'members'));
     }
 
@@ -158,18 +158,19 @@ class BookingController extends Controller
             $event->save();
         }
 
+        $teamAssignments = [];
         if ($request->has('team_member_id') && is_array($request->team_member_id)) {
             foreach ($request->team_member_id as $index => $memberId) {
                 if ($memberId) {
-                    EventMember::create([
-                        'event_id' => $event->id,
+                    $teamAssignments[] = [
                         'member_id' => $memberId,
-                        'role' => $request->team_member_role[$index] ?? null,
-                        'status' => 'assigned',
-                    ]);
+                        'role' => $request->team_member_role[$index] ?? 'Team Member',
+                    ];
                 }
             }
         }
+
+        $this->syncTeamMemberSchedules($event, $teamAssignments);
 
         return redirect()->route('admin.event_day.index')->with('success', 'Event created successfully!');
     }
@@ -179,7 +180,7 @@ class BookingController extends Controller
         $event = Event::with(['booking', 'schedules.vendor', 'eventMembers.member'])->findOrFail($id);
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
-        $members = \App\Models\Member::where('status', 'active')->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
         
         return view('admin.event.event_edit', compact('event', 'vendors', 'packages', 'members', 'bookings'));
@@ -307,20 +308,20 @@ class BookingController extends Controller
         }
 
         $event->eventMembers()->delete();
+        $teamAssignments = [];
         if ($request->has('team_member_id') && is_array($request->team_member_id)) {
             foreach ($request->team_member_id as $index => $memberId) {
                 if ($memberId) {
-                    EventMember::create([
-                        'event_id' => $event->id,
+                    $teamAssignments[] = [
                         'member_id' => $memberId,
-                        'role' => $request->team_member_role[$index] ?? null,
-                        'status' => 'assigned',
-                    ]);
+                        'role' => $request->team_member_role[$index] ?? 'Team Member',
+                    ];
                 }
             }
         }
 
-        // Get referrer from session or default to index
+        $this->syncTeamMemberSchedules($event, $teamAssignments);
+
         $referrer = session('event_detail_referrer');
         session()->forget('event_detail_referrer');
         
@@ -341,7 +342,6 @@ class BookingController extends Controller
             'eventMembers.member'
         ])->findOrFail($id);
 
-        // Store the referrer in session for back navigation
         if (request()->headers->get('referer')) {
             session(['event_detail_referrer' => request()->headers->get('referer')]);
         }
@@ -357,5 +357,56 @@ class BookingController extends Controller
             ->get();
         
         return response()->json($events);
+    }
+
+    private function syncTeamMemberSchedules(Event $event, array $teamAssignments): void
+    {
+        if (empty($teamAssignments)) {
+            return;
+        }
+
+        $eventDate = $event->event_date ? \Carbon\Carbon::parse($event->event_date) : \Carbon\Carbon::now();
+
+        foreach ($teamAssignments as $assignment) {
+            $memberId = (int) ($assignment['member_id'] ?? 0);
+            if ($memberId <= 0) {
+                continue;
+            }
+
+            $member = \App\Models\Member::find($memberId);
+            if (!$member) {
+                continue;
+            }
+
+            $role = $assignment['role'] ?? 'Team Member';
+
+            $event->eventMembers()->updateOrCreate(
+                ['member_id' => $memberId],
+                [
+                    'role' => $role,
+                    'status' => 'assigned',
+                ]
+            );
+
+            $existingTask = Schedule::where('event_id', $event->id)
+                ->where('member_id', $memberId)
+                ->first();
+
+            if ($existingTask) {
+                continue;
+            }
+
+            Schedule::create([
+                'event_id' => $event->id,
+                'vendor_id' => null,
+                'member_id' => $memberId,
+                'activity' => 'Tugas ' . ($member->call_sign ?: $member->name),
+                'location' => $event->booking?->venue_name ?? 'Venue acara',
+                'start_time' => $eventDate->copy()->setTime(8, 0, 0),
+                'end_time' => $eventDate->copy()->setTime(17, 0, 0),
+                'notes' => 'Checklist tugas untuk ' . ($member->call_sign ?: $member->name) . ' sebagai ' . $role,
+                'status' => 'pending',
+            ]);
+        }
     }
 }

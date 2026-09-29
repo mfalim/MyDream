@@ -49,19 +49,34 @@
                 'completed' => 'success',
                 'cancelled' => 'danger'
             ][$event->status] ?? 'secondary';
-            
+
+            $eventPhotoUrl = null;
+            if (!empty($event->photo)) {
+                $eventPhotoFile = storage_path('app/public/' . $event->photo);
+                $eventPhotoUrl = asset('storage/' . $event->photo);
+                if (file_exists($eventPhotoFile)) {
+                    $eventPhotoUrl .= '?v=' . filemtime($eventPhotoFile);
+                }
+            }
+
             $vendorPhotos = $event->schedules ? $event->schedules->map(function($schedule) {
-                return $schedule->vendor && $schedule->vendor->photos && $schedule->vendor->photos->count() > 0 ? 
+                return $schedule->vendor && $schedule->vendor->photos && $schedule->vendor->photos->count() > 0 ?
                     ($schedule->vendor->photos->where('is_cover', true)->first() ?? $schedule->vendor->photos->first()) : null;
             })->filter()->take(3) : collect();
+
+            $fallbackVendorPhoto = $vendorPhotos->count() > 0 ? $vendorPhotos->first() : null;
+            $fallbackVendorPhotoUrl = $fallbackVendorPhoto ? asset('storage/' . $fallbackVendorPhoto->photo) : null;
+            if ($fallbackVendorPhotoUrl && $fallbackVendorPhoto && file_exists(storage_path('app/public/' . $fallbackVendorPhoto->photo))) {
+                $fallbackVendorPhotoUrl .= '?v=' . filemtime(storage_path('app/public/' . $fallbackVendorPhoto->photo));
+            }
         @endphp
         <div class="col-md-6 col-lg-3">
             <div class="card border-0 shadow-sm h-100">
                 <div class="position-relative">
-                    @if($vendorPhotos->count() > 0)
-                        <img src="{{ asset('storage/' . $vendorPhotos->first()->photo) }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
-                    @elseif($event->photo)
-                        <img src="{{ asset('storage/' . $event->photo) }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
+                    @if($eventPhotoUrl)
+                        <img src="{{ $eventPhotoUrl }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
+                    @elseif($fallbackVendorPhotoUrl)
+                        <img src="{{ $fallbackVendorPhotoUrl }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
                     @else
                         <img src="https://images.unsplash.com/photo-1519167758481-83f29da8fd4e?w=400" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
                     @endif

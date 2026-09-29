@@ -232,7 +232,7 @@
 
                             <div class="vendor-list" id="vendorList">
                                 <div class="row g-3 mb-3 vendor-item">
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <label class="form-label fw-semibold">Pilih Vendor</label>
                                         <select class="form-select" name="vendor_id[]">
                                             <option value="">Pilih Vendor</option>
@@ -243,15 +243,24 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label fw-semibold">Tanggung Jawab Member</label>
+                                        <select class="form-select" name="vendor_member_id[]">
+                                            <option value="">Tidak ditugaskan</option>
+                                            @foreach($members as $member)
+                                                <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="col-md-2">
                                         <label class="form-label fw-semibold">Waktu Mulai</label>
                                         <input type="time" class="form-control" name="vendor_start_time[]">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <label class="form-label fw-semibold">Waktu Selesai</label>
                                         <input type="time" class="form-control" name="vendor_end_time[]">
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-1">
                                         <label class="form-label fw-semibold">Status</label>
                                          <select class="form-select" name="vendor_status[]">
                                             <option value="pending">Pending</option>

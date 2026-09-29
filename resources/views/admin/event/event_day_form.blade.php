@@ -85,28 +85,37 @@
                             <div id="bookingInfo" class="col-12" style="display: none;">
                                 <div class="alert alert-info">
                                     <h6 class="fw-bold mb-2">Info Booking:</h6>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Client:</small>
-                                            <span id="bookingClient" class="fw-semibold">-</span>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Venue:</small>
-                                            <span id="bookingVenue" class="fw-semibold">-</span>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <small class="text-muted d-block">Package:</small>
-                                            <span id="bookingPackage" class="fw-semibold">-</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 2: Pilih Event Day -->
-                <div class="card border-0 shadow-sm mb-4" id="eventDaySection" style="display: none;">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label fw-semibold">Pilih Vendor</label>
+                                                        <select class="form-select team-select" name="vendor_id[]">
+                                                            <option value="">Pilih Vendor</option>
+                                                            @foreach($vendors as $vendor)
+                                                                <option value="{{ $vendor->id }}">{{ $vendor->name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <label class="form-label fw-semibold">Tanggung Jawab Member</label>
+                                                        <select class="form-select" name="vendor_member_id[]">
+                                                            <option value="">Tidak ditugaskan</option>
+                                                            @foreach($members as $member)
+                                                                <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <label class="form-label fw-semibold">Waktu Mulai</label>
+                                                        <input type="time" class="form-control" name="vendor_start_time[]">
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <label class="form-label fw-semibold">Waktu Selesai</label>
+                                                        <input type="time" class="form-control" name="vendor_end_time[]">
+                                                    </div>
+                                                    <div class="col-md-1 d-flex align-items-end">
+                                                        <button type="button" class="btn btn-outline-danger w-100 remove-vendor-btn">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </div>
                     <div class="card-body p-4">
                         <div class="d-flex align-items-center mb-4">
                             <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; flex-shrink: 0;">
