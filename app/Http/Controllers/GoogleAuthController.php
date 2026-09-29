@@ -40,11 +40,18 @@ class GoogleAuthController extends Controller
         return redirect('/login/profile');
     }
 
+    if ($user->role == 'member') {
+        $member = \App\Models\Member::where('user_id', $user->id)->first();
+        if (!$member) {
+            return redirect('/member/profile/complete');
+        }
+        return redirect('/member/dashboard');
+    }
+
     return match ($user->role) {
         'admin' => redirect('/admin/dashboard'),
         'vendor' => redirect('/vendor/dashboard'),
         'client' => redirect('/user/dashboard'),
-        'member' => redirect('/user/dashboard'),
         default => redirect('/user/dashboard'),
     };
 }

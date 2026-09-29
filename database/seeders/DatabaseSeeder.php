@@ -221,35 +221,41 @@ class DatabaseSeeder extends Seeder
             'notes' => 'Evening reception',
         ]);
 
-        // Add vendors to event via schedules
+        // Add vendors to event via schedules with member assignments
         Schedule::create([
             'event_id' => $event1->id,
             'vendor_id' => 1,
+            'member_id' => 1,
             'activity' => 'Delicious Catering',
-            'location' => null,
-            'start_time' => '18:00:00',
-            'end_time' => '22:00:00',
-            'status' => 'approved',
+            'location' => 'Grand Ballroom Hotel',
+            'start_time' => now()->addDays(30)->setTime(18, 0),
+            'end_time' => now()->addDays(30)->setTime(22, 0),
+            'status' => 'pending',
+            'notes' => 'Koordinasi setup catering dan menu tamu',
         ]);
 
         Schedule::create([
             'event_id' => $event1->id,
             'vendor_id' => 2,
+            'member_id' => 2,
             'activity' => 'Golden Moments Photography',
-            'location' => null,
-            'start_time' => '18:00:00',
-            'end_time' => '22:00:00',
-            'status' => 'approved',
+            'location' => 'Grand Ballroom Hotel',
+            'start_time' => now()->addDays(30)->setTime(17, 0),
+            'end_time' => now()->addDays(30)->setTime(23, 0),
+            'status' => 'pending',
+            'notes' => 'Koordinasi setup foto dan videografi',
         ]);
 
         Schedule::create([
             'event_id' => $event1->id,
             'vendor_id' => 3,
+            'member_id' => 3,
             'activity' => 'Elegant Decor',
-            'location' => null,
-            'start_time' => '16:00:00',
-            'end_time' => '22:00:00',
+            'location' => 'Grand Ballroom Hotel',
+            'start_time' => now()->addDays(30)->setTime(14, 0),
+            'end_time' => now()->addDays(30)->setTime(22, 0),
             'status' => 'pending',
+            'notes' => 'Setup dekorasi dan lighting stage',
         ]);
 
         // Add members to event

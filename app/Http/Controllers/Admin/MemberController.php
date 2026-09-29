@@ -32,6 +32,7 @@ class MemberController extends Controller
         $status = $request->input('status');
 
         $members = Member::query()
+            ->with('user')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")

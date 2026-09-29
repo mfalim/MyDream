@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function generateCalendarDays(year, month) {
         const firstDay = new Date(year, month, 1);
         const numDays = new Date(year, month + 1, 0).getDate();
-        const firstDayOfWeek = firstDay.getDay();
+        const firstDayOfWeek = (firstDay.getDay() + 6) % 7;
         const prevMonthDays = new Date(year, month, 0).getDate();
         const tbody = document.querySelector('#calendar-table tbody');
         

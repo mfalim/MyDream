@@ -38,16 +38,25 @@ class User extends Authenticatable
     }
 
     public static function createOrLogin($googleUser) {
-        return self::firstOrCreate(
-            ['google_id' => $googleUser->id],
-            [
+        $user = self::where('email', $googleUser->email)->first();
+
+        if ($user) {
+            $user->update([
+                'google_id' => $googleUser->id,
                 'name' => $googleUser->name,
-                'email' => $googleUser->email,
                 'avatar' => $googleUser->avatar,
-                'role' => 'client',
-                'status' => 'approved',
-            ]
-        );
+            ]);
+            return $user;
+        }
+
+        return self::create([
+            'google_id' => $googleUser->id,
+            'name' => $googleUser->name,
+            'email' => $googleUser->email,
+            'avatar' => $googleUser->avatar,
+            'role' => 'client',
+            'status' => 'approved',
+        ]);
     }
 
     public function client()

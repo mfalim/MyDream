@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('google_id')->unique();
-            $table->string('avatar');
+            $table->string('google_id')->unique()->nullable();
+            $table->string('avatar')->nullable();
             $table->string('email')->unique();
             $table->enum('role', ['admin', 'client', 'vendor', 'member'])->default('client');
             $table->enum('status', ['approved', 'pending', 'rejected'])->default('approved');

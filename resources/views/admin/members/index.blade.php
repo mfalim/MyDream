@@ -155,7 +155,7 @@
             </form>
 
 
-            <a href="{{ route('admin.members.create') }}"
+            <a href="{{ route('admin.user-members.create') }}"
                 class="btn-add-member">
                 + Rekrut / Tambah Anggota
             </a>
@@ -250,6 +250,11 @@
                                         src="{{ asset('storage/' . $member->photo) }}"
                                         alt="{{ $member->name }}"
                                     >
+                                @elseif($member->user && $member->user->avatar)
+                                    <img
+                                        src="{{ $member->user->avatar }}"
+                                        alt="{{ $member->name }}"
+                                    >
                                 @else
                                     👤
                                 @endif
@@ -260,6 +265,11 @@
 
                                 <h4>
                                     {{ $member->name }}
+                                    @if($member->user)
+                                        <small style="color: #10b981; font-size: 0.75rem; font-weight: normal;">
+                                            <i class="bi bi-check-circle-fill"></i> OAuth
+                                        </small>
+                                    @endif
                                 </h4>
 
                                 <p>
@@ -331,11 +341,19 @@
                                 ◉ Overview
                             </a>
 
-                            <a href="{{ route('admin.members.edit', $member) }}"
-                                class="member-action"
-                                title="Edit anggota">
-                                ✎
-                            </a>
+                            @if($member->user)
+                                <a href="{{ route('admin.members.edit', $member) }}"
+                                    class="member-action"
+                                    title="Edit anggota">
+                                    ✎
+                                </a>
+                            @else
+                                <a href="{{ route('admin.members.edit', $member) }}"
+                                    class="member-action"
+                                    title="Edit anggota">
+                                    ✎
+                                </a>
+                            @endif
 
                             <form action="{{ route('admin.members.destroy', $member) }}"
                                 method="POST"
@@ -372,7 +390,7 @@
                         penugasan dan aktivitas kru.
                     </p>
 
-                    <a href="{{ route('admin.members.create') }}"
+                    <a href="{{ route('admin.user-members.create') }}"
                         class="btn-add-member">
                         + Tambah Anggota
                     </a>
