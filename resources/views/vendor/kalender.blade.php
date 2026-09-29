@@ -4,667 +4,731 @@
 
 @section('content')
 
-<div class="calendar-page">
-
-    <div class="calendar-module-banner">
-        <div>
-            <span class="eyebrow">VENDOR WORKSPACE CALENDAR MODULE</span>
-            <p>Sinkronisasi Jadwal Acara & Kolaborasi Lintas Vendor resmi WO PROJECT</p>
-        </div>
-
-        <div class="banner-actions">
-            <span class="soft-badge">◉ Lihat Blueprint Desain Asli</span>
-            <span class="gold-badge">Live Operational View</span>
-        </div>
-    </div>
-
-
-    <div class="calendar-heading">
-
-        <div>
-            <span class="eyebrow">OPERASIONAL & PENJADWALAN MITRA</span>
-
-            <h1>
-                Kalender & Jadwal Pelaksanaan
-                <br>
-                Acara Vendor
-            </h1>
-
-            <p>
-                Kelola jadwal booking, plotting kru instalasi dekorasi,
-                dan detail kolaborasi lintas mitra rekanan WO PROJECT.
-            </p>
-        </div>
-
-
-        <div class="calendar-controls">
-
-            <div class="month-selector">
-                <button type="button">‹</button>
-                <strong>Oktober 2025</strong>
-                <button type="button">›</button>
-            </div>
-
-            <div class="view-buttons">
-                <button class="view-active" type="button">
-                    ▦ Tampilan Kalender
-                </button>
-
-                <button type="button">
-                    ☷ Agenda (List)
-                </button>
-            </div>
-
-            <button class="sync-button" type="button">
-                ⟳ Sinkron ke Google Calendar
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div class="calendar-filter">
-
-        <div class="filter-pills">
-
-            <span class="active">
-                Semua Status 8
-            </span>
-
-            <span>
-                ● Hari H Terkunci 5
-            </span>
-
-            <span>
-                ● Draft Loading 2
-            </span>
-
-            <span>
-                ● Opsi Cadangan 1
-            </span>
-
-        </div>
-
-        <div class="calendar-search">
-            🔍
-            <input
-                type="text"
-                placeholder="Cari nama klien pengantin, venue, atau rekanan..."
-            >
-        </div>
-
-    </div>
-
-
-    {{-- CALENDAR --}}
-
-    <section class="calendar-card">
-
-        <div class="calendar-weekdays">
-
-            <div>SEN</div>
-            <div>SEL</div>
-            <div>RAB</div>
-            <div>KAM</div>
-            <div>JUM</div>
-            <div class="weekend">SAB</div>
-            <div class="weekend">MIN</div>
-
-        </div>
-
-
-        <div class="calendar-grid">
-
-            <div class="calendar-day muted">
-                <span>29</span>
-            </div>
-
-            <div class="calendar-day muted">
-                <span>30</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>01</span>
-
-                <div class="calendar-note">
-                    Plotting
-                    <br>
-                    Tim
-                    <br>
-                    Workshop
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>02</span>
-
-                <div class="calendar-note">
-                    Loading
-                    <br>
-                    In 22:00
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>03</span>
-
-                <div class="calendar-note">
-                    Loading
-                    <br>
-                    22:00
-                </div>
-            </div>
-
-
-            <div class="calendar-day event-day">
-                <span>04</span>
-
-                <div class="calendar-event completed">
-                    <strong>Kevin & Michelle</strong>
-                    <small>The Dharmawangsa</small>
-                    <em>Selesai</em>
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>05</span>
-
-                <div class="calendar-note">
-                    Maintenance
-                    <br>
-                    Alat
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>06</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>07</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>08</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>09</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>10</span>
-
-                <div class="calendar-note">
-                    Loading
-                    <br>
-                    Plataran
-                </div>
-            </div>
-
-
-            <div class="calendar-day event-day">
-                <span>11</span>
-
-                <div class="calendar-event completed">
-                    <strong>Arya & Anindita</strong>
-                    <small>Plataran Cilandak</small>
-                    <em>Selesai</em>
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>12</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>13</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>14</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>15</span>
-
-                <div class="calendar-note">
-                    Technical
-                    <br>
-                    Meeting
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>16</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>17</span>
-
-                <div class="calendar-note">
-                    Loading
-                    <br>
-                    Ritz 21:00
-                </div>
-            </div>
-
-
-            <div class="calendar-day event-day">
-                <span>18</span>
-
-                <div class="calendar-event completed">
-                    <strong>Clarissa & Danis</strong>
-                    <small>Ritz-Carlton Mega K</small>
-                    <em>Selesai</em>
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>19</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>20</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>21</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>22</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>23</span>
-
-                <div class="calendar-note">
-                    Bunga
-                    <br>
-                    Segar
-                    <br>
-                    Tiba
-                </div>
-            </div>
-
-
-            <div class="calendar-day loading-day">
-                <span>24</span>
-
-                <div class="stage-label">
-                    STAGE
-                    <br>
-                    1
-                </div>
-
-                <div class="calendar-note">
-                    Loading In 23:00
-                    <br>
-                    Ballroom Mulia
-                </div>
-            </div>
-
-
-            <a
-                href="{{ route('vendor.overview') }}"
-                class="calendar-day selected-day"
-            >
-
-                <span>25</span>
-
-                <div class="calendar-event main-event">
-
-                    <strong>
-                        HARI H
-                        <br>
-                        UTAMA
-                    </strong>
-
-                    <b>
-                        Aditya & Sarah
-                    </b>
-
-                    <small>
-                        Grand Ballroom Mulia
-                    </small>
-
-                </div>
-
-            </a>
-
-
-            <div class="calendar-day">
-                <span>26</span>
-
-                <div class="calendar-event standby">
-                    <strong>Standby & Bongkar</strong>
-                    <small>Daniel & Flora</small>
-                </div>
-
-            </div>
-
-
-            <div class="calendar-day">
-                <span>27</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>28</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>29</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>30</span>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>31</span>
-
-                <div class="calendar-note">
-                    Loading
-                    <br>
-                    Blokdara
-                </div>
-            </div>
-
-
-            <div class="calendar-day">
-                <span>01 Nov</span>
-
-                <div class="calendar-event completed">
-                    <strong>Fauzan & Gina</strong>
-                    <small>Bidakara Grand Hall</small>
-                </div>
-            </div>
-
-
-            <div class="calendar-day muted">
-                <span>02</span>
-            </div>
-
-        </div>
-
-
-        <div class="calendar-legend">
-
-            <span>
-                <i class="legend-dot dark"></i>
-                Hari H Berlangsung
-            </span>
-
-            <span>
-                <i class="legend-dot gold"></i>
-                Jadwal Loading In / Out
-            </span>
-
-            <span>
-                <i class="legend-dot gray"></i>
-                Selesai & Closed
-            </span>
-
-        </div>
-
-        <p class="calendar-helper">
-            ✥ Klik tanggal mana saja untuk melihat detail pesanan & tim
-        </p>
-
-    </section>
-
-
-    {{-- SELECTED DATE --}}
-
-    <div class="selected-date-banner">
-
-        <div class="selected-date-icon">
+@php
+$bulan = (int) request('bulan', 10);
+$tahun = (int) request('tahun', 2025);
+
+if ($bulan < 1) {
+    $bulan = 12;
+    $tahun--;
+}
+
+if ($bulan > 12) {
+    $bulan = 1;
+    $tahun++;
+}
+
+$namaBulan = [
+    1 => 'Januari',
+    2 => 'Februari',
+    3 => 'Maret',
+    4 => 'April',
+    5 => 'Mei',
+    6 => 'Juni',
+    7 => 'Juli',
+    8 => 'Agustus',
+    9 => 'September',
+    10 => 'Oktober',
+    11 => 'November',
+    12 => 'Desember',
+];
+
+$namaHari = [
+    'SEN',
+    'SEL',
+    'RAB',
+    'KAM',
+    'JUM',
+    'SAB',
+    'MIN',
+];
+
+$events = [
+    '2025-10-01' => [
+        'title' => 'Plotting Tim Workshop',
+        'venue' => 'Tim Workshop',
+        'type' => 'loading',
+        'status' => 'Draft Loading',
+    ],
+
+    '2025-10-02' => [
+        'title' => 'Loading In 22:00',
+        'venue' => 'Ballroom Mulia',
+        'type' => 'loading',
+        'status' => 'Draft Loading',
+    ],
+
+    '2025-10-03' => [
+        'title' => 'Loading 22:00',
+        'venue' => 'Ballroom Mulia',
+        'type' => 'loading',
+        'status' => 'Draft Loading',
+    ],
+
+    '2025-10-04' => [
+        'title' => 'Kevin & Michelle',
+        'venue' => 'The Dharmawangsa',
+        'type' => 'closed',
+        'status' => 'Selesai',
+        'overview' => true,
+    ],
+
+    '2025-10-05' => [
+        'title' => 'Maintenance Alat',
+        'venue' => 'Workshop',
+        'type' => 'option',
+        'status' => 'Opsi Cadangan',
+    ],
+
+    '2025-10-08' => [
+        'title' => 'Meeting Vendor',
+        'venue' => 'Vendor Meeting',
+        'type' => 'option',
+        'status' => 'Opsi Cadangan',
+    ],
+
+    '2025-10-10' => [
+        'title' => 'Loading',
+        'venue' => 'Plataran',
+        'type' => 'loading',
+        'status' => 'Loading',
+    ],
+
+    '2025-10-12' => [
+        'title' => 'Arya & Anindita',
+        'venue' => 'Plataran Cilandak',
+        'type' => 'closed',
+        'status' => 'Selesai',
+        'overview' => true,
+    ],
+
+    '2025-10-15' => [
+        'title' => 'Technical Meeting',
+        'venue' => 'Technical Meeting',
+        'type' => 'loading',
+        'status' => 'Persiapan',
+    ],
+
+    '2025-10-17' => [
+        'title' => 'Loading',
+        'venue' => 'Ritz 21:00',
+        'type' => 'loading',
+        'status' => 'Loading',
+    ],
+
+    '2025-10-18' => [
+        'title' => 'Clarissa & Danis',
+        'venue' => 'Ritz-Carlton Mega K',
+        'type' => 'closed',
+        'status' => 'Selesai',
+        'overview' => true,
+    ],
+
+    '2025-10-22' => [
+        'title' => 'Bunga Segar',
+        'venue' => 'Tiba',
+        'type' => 'loading',
+        'status' => 'Persiapan',
+    ],
+
+    '2025-10-24' => [
+        'title' => 'Loading In 23:00',
+        'venue' => 'Ballroom Mulia',
+        'type' => 'loading',
+        'status' => 'STAGE 1',
+    ],
+
+    '2025-10-25' => [
+        'title' => 'Aditya & Sarah',
+        'venue' => 'Grand Ballroom Hotel Mulia',
+        'type' => 'hari-h',
+        'status' => 'HARI UTAMA',
+        'overview' => true,
+    ],
+
+    '2025-10-26' => [
+        'title' => 'Standby & Bongkaran',
+        'venue' => 'Daniel & Fiora',
+        'type' => 'closed',
+        'status' => 'Selesai',
+    ],
+
+    '2025-10-31' => [
+        'title' => 'Loading',
+        'venue' => 'Blokdara',
+        'type' => 'loading',
+        'status' => 'Loading',
+    ],
+];
+
+$firstDate = \Carbon\Carbon::create($tahun, $bulan, 1);
+
+$daysInMonth = $firstDate->daysInMonth;
+
+$startOffset = $firstDate->dayOfWeekIso - 1;
+
+$previousMonthDays = $firstDate->copy()->subMonth()->daysInMonth;
+
+$totalCells = (int) ceil(($startOffset + $daysInMonth) / 7) * 7;
+
+$prev = $firstDate->copy()->subMonth();
+
+$next = $firstDate->copy()->addMonth();
+
+$selectedDate = request('tanggal');
+
+$search = strtolower(trim(request('q', '')));
+
+@endphp
+
+<div class="vendor-calendar-page">
+
+{{-- MODULE BAR --}}
+<div class="calendar-module-bar">
+
+    <div class="module-left">
+
+        <div class="module-icon">
             ▣
         </div>
 
         <div>
-            <span>TANGGAL TERPILIH SAAT INI</span>
+            <div class="module-title">
+                VENDOR WORKSPACE CALENDAR MODULE
+            </div>
 
-            <strong>
-                Sabtu, 25 Oktober 2025 • Acara
-                <br>
-                Hari H
-            </strong>
+            <div class="module-subtitle">
+                Sinkronisasi Jadwal Acara & Kolaborasi Lintas Vendor Resmi WO PROJECT
+            </div>
         </div>
 
-        <span class="selected-status">
-            Status: Terkunci & Aktif
+    </div>
+
+    <div class="module-right">
+
+        <span class="module-badge">
+            ◉ Lihat Blueprint Desain Asli
+        </span>
+
+        <span class="module-live">
+            Live Operational View
+        </span>
+
+    </div>
+
+</div>
+
+
+{{-- HEADER --}}
+<section class="calendar-intro">
+
+    <div>
+
+        <div class="calendar-eyebrow">
+            ● OPERASIONAL & PENJADWALAN MITRA
+        </div>
+
+        <h1>
+            Kalender & Jadwal Pelaksanaan
+            <br>
+            Acara Vendor
+        </h1>
+
+        <p>
+            Kelola jadwal booking, plotting kru instalasi dekorasi,
+            dan detail kolaborasi lintas mitra rekanan WO PROJECT.
+        </p>
+
+    </div>
+
+
+    <div class="calendar-controls">
+
+        {{-- PILIH BULAN --}}
+        <div class="month-picker">
+
+            <a
+                class="month-arrow"
+                href="{{ route('vendor.kalender', [
+                    'bulan' => $prev->month,
+                    'tahun' => $prev->year
+                ]) }}"
+            >
+                ‹
+            </a>
+
+            <form
+                method="GET"
+                action="{{ route('vendor.kalender') }}"
+                class="month-form"
+            >
+
+                <span class="calendar-small-icon">
+                    ▦
+                </span>
+
+                <select
+                    name="bulan"
+                    aria-label="Pilih bulan"
+                >
+
+                    @foreach ($namaBulan as $nomor => $nama)
+
+                        <option
+                            value="{{ $nomor }}"
+                            @selected($nomor == $bulan)
+                        >
+                            {{ $nama }}
+                        </option>
+
+                    @endforeach
+
+                </select>
+
+
+                <select
+                    name="tahun"
+                    aria-label="Pilih tahun"
+                >
+
+                    @for ($y = 2024; $y <= 2035; $y++)
+
+                        <option
+                            value="{{ $y }}"
+                            @selected($y == $tahun)
+                        >
+                            {{ $y }}
+                        </option>
+
+                    @endfor
+
+                </select>
+
+
+                <button
+                    type="submit"
+                    class="month-apply"
+                >
+                    Tampilkan
+                </button>
+
+            </form>
+
+
+            <a
+                class="month-arrow"
+                href="{{ route('vendor.kalender', [
+                    'bulan' => $next->month,
+                    'tahun' => $next->year
+                ]) }}"
+            >
+                ›
+            </a>
+
+        </div>
+
+
+        {{-- VIEW BUTTON --}}
+        <div class="calendar-view-buttons">
+
+            <span class="view-active">
+                ▦ Tampilan Kalender
+            </span>
+
+            <span>
+                ☷ Agenda (List)
+            </span>
+
+        </div>
+
+
+        {{-- GOOGLE CALENDAR --}}
+        <a
+            class="sync-button"
+            href="#"
+        >
+            ↻ &nbsp; Sinkron ke Google Calendar
+        </a>
+
+    </div>
+
+</section>
+
+
+{{-- FILTER --}}
+<section class="calendar-filter-card">
+
+    <div class="filter-pills">
+
+        <span class="filter-active">
+            Semua Status {{ count($events) }}
+        </span>
+
+        <span>
+            <i class="dot dot-hari-h"></i>
+            Hari H Terkunci (5)
+        </span>
+
+        <span>
+            <i class="dot dot-loading"></i>
+            Draft Loading (2)
+        </span>
+
+        <span>
+            <i class="dot dot-option"></i>
+            Opsi Cadangan (1)
         </span>
 
     </div>
 
 
-    {{-- DETAIL --}}
+    {{-- SEARCH --}}
+    <form
+        method="GET"
+        action="{{ route('vendor.kalender') }}"
+        class="calendar-search"
+    >
 
-    <div class="calendar-detail-grid">
+        <input
+            type="hidden"
+            name="bulan"
+            value="{{ $bulan }}"
+        >
 
-        <section class="detail-client-card">
+        <input
+            type="hidden"
+            name="tahun"
+            value="{{ $tahun }}"
+        >
 
-            <div class="section-label">
-                ▣ DETAIL KLIEN PEMESAN
-                <span>ID: #WO-2025-081</span>
-            </div>
+        <span>
+            ⌕
+        </span>
 
-            <div class="client-highlight">
+        <input
+            type="text"
+            name="q"
+            value="{{ request('q') }}"
+            placeholder="Cari nama klien pengantin, venue, atau rekanan..."
+        >
 
-                <small>
-                    Pasangan Pengantin:
-                </small>
+    </form>
 
-                <h2>
-                    Aditya Wardhana
-                    &
-                    Sarah Nadia
-                </h2>
-
-                <p>
-                    Paket Layanan:
-                    The Royal Emerald Wedding Series
-                </p>
-
-            </div>
-
-
-            <div class="client-info">
-
-                <div>
-                    <strong>⌖ Lokasi Venue & Ruangan</strong>
-                    <p>
-                        Grand Ballroom Hotel Mulia Senayan,
-                        Jakarta Pusat (Lt. 2)
-                    </p>
-                </div>
+</section>
 
 
-                <div>
-                    <strong>◷ Waktu Pelaksanaan</strong>
-                    <p>
-                        Akad Nikah: 08:00 - 10:30 WIB
-                        <br>
-                        Resepsi: 19:00 - 22:00 WIB
-                    </p>
-                </div>
+{{-- CALENDAR --}}
+<section class="calendar-card">
 
+    <div class="calendar-scroll">
+
+        {{-- NAMA HARI --}}
+        <div class="calendar-weekdays">
+
+            @foreach ($namaHari as $hari)
 
                 <div>
-                    <strong>♙ Show Director WO</strong>
-                    <p>
-                        Dimas Prasetyo, S.I.Kom
-                    </p>
+                    {{ $hari }}
                 </div>
 
+            @endforeach
 
-                <div>
-                    <strong>▣ Ruang Lingkup Pekerjaan</strong>
-                    <p>
-                        Paket Dekorasi Pelaminan Adat Modern
-                        Emerald 18 Meter, Gazebo Kirab Bunga
-                        Segar, Photo Booth & Gallery.
-                    </p>
+        </div>
+
+
+        {{-- GRID --}}
+        <div class="calendar-grid">
+
+            @for ($cell = 0; $cell < $totalCells; $cell++)
+
+                @php
+
+                    if ($cell < $startOffset) {
+
+                        $dayNumber =
+                            $previousMonthDays -
+                            $startOffset +
+                            $cell +
+                            1;
+
+                        $cellDate =
+                            $prev->copy()->day($dayNumber);
+
+                        $inMonth = false;
+
+                    } elseif (
+                        $cell >= $startOffset + $daysInMonth
+                    ) {
+
+                        $dayNumber =
+                            $cell -
+                            ($startOffset + $daysInMonth) +
+                            1;
+
+                        $cellDate =
+                            $next->copy()->day($dayNumber);
+
+                        $inMonth = false;
+
+                    } else {
+
+                        $dayNumber =
+                            $cell -
+                            $startOffset +
+                            1;
+
+                        $cellDate =
+                            $firstDate->copy()->day($dayNumber);
+
+                        $inMonth = true;
+                    }
+
+
+                    $dateKey = $cellDate->format('Y-m-d');
+
+                    $event = $events[$dateKey] ?? null;
+
+                    $isSelected =
+                        $selectedDate === $dateKey;
+
+                    $isToday =
+                        $dateKey === now()->format('Y-m-d');
+
+                    $eventText = '';
+
+                    if ($event) {
+
+                        $eventText = strtolower(
+                            $event['title'] .
+                            ' ' .
+                            ($event['venue'] ?? '') .
+                            ' ' .
+                            ($event['status'] ?? '')
+                        );
+                    }
+
+                    $showEvent =
+                        $event &&
+                        (
+                            $search === '' ||
+                            str_contains($eventText, $search)
+                        );
+
+                @endphp
+
+
+                <div
+                    class="
+                        calendar-day
+                        {{ !$inMonth ? 'outside' : '' }}
+                        {{ $showEvent ? 'has-event' : '' }}
+                        {{ $event && $event['type'] === 'hari-h' ? 'hari-h' : '' }}
+                        {{ $isSelected ? 'selected-day' : '' }}
+                    "
+                >
+
+                    @if (
+                        $showEvent &&
+                        !empty($event['overview']) &&
+                        Route::has('vendor.overview')
+                    )
+
+                        <a
+                            class="day-link"
+                            href="{{ route('vendor.overview', [
+                                'tanggal' => $dateKey
+                            ]) }}"
+                        >
+
+                    @else
+
+                        <a
+                            class="day-link"
+                            href="{{ route('vendor.kalender', [
+                                'bulan' => $bulan,
+                                'tahun' => $tahun,
+                                'tanggal' => $dateKey
+                            ]) }}"
+                        >
+
+                    @endif
+
+
+                        {{-- NOMOR TANGGAL --}}
+                        <div class="day-number">
+
+                            <span>
+                                {{ str_pad($dayNumber, 2, '0', STR_PAD_LEFT) }}
+                            </span>
+
+
+                            @if ($isToday)
+
+                                <b class="today-dot"></b>
+
+                            @elseif ($showEvent)
+
+                                <b
+                                    class="event-dot {{ $event['type'] }}"
+                                ></b>
+
+                            @endif
+
+                        </div>
+
+
+                        {{-- EVENT --}}
+                        @if ($showEvent)
+
+                            @if ($event['status'] === 'HARI UTAMA')
+
+                                <span class="main-event-badge">
+                                    HARI UTAMA
+                                </span>
+
+                            @endif
+
+
+                            @if (
+                                $event['type'] === 'loading' &&
+                                $dateKey === '2025-10-24'
+                            )
+
+                                <span class="stage-badge">
+                                    STAGE
+                                    <br>
+                                    1
+                                </span>
+
+                            @endif
+
+
+                            <div class="calendar-event-title">
+                                {{ $event['title'] }}
+                            </div>
+
+
+                            <div class="calendar-event-venue">
+                                {{ $event['venue'] }}
+                            </div>
+
+
+                            @if ($event['status'] === 'Selesai')
+
+                                <span class="done-badge">
+                                    Selesai
+                                </span>
+
+                            @elseif ($event['type'] === 'hari-h')
+
+                                <span class="done-badge dark">
+                                    Aktif
+                                </span>
+
+                            @endif
+
+                        @endif
+
+                    </a>
+
                 </div>
 
+            @endfor
 
-                <div>
-                    <strong>▤ Nilai SPK Kontrak Vendor</strong>
-                    <p class="contract-value">
-                        Rp 45.000.000
-                    </p>
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <section class="vendor-partners-card">
-
-            <div class="partner-grid">
-
-                <div class="partner-card">
-                    <strong>The Leonardi Photography</strong>
-                    <small>Dokumentasi</small>
-                    <p>
-                        PIC: King Leonardi
-                    </p>
-                    <span>
-                        Sinkronisasi spot lighting
-                    </span>
-                </div>
-
-
-                <div class="partner-card">
-                    <strong>Bennu Sorumba MUA & Attire</strong>
-                    <small>Rias & Busana</small>
-                    <p>
-                        PIC: Mas Danar
-                    </p>
-                    <span>
-                        Standby cermin rias
-                    </span>
-                </div>
-
-
-                <div class="partner-card">
-                    <strong>Sound & Light Dynamics</strong>
-                    <small>Tata Cahaya</small>
-                    <p>
-                        PIC: Rian Hidayat
-                    </p>
-                    <span>
-                        Beam follow spot
-                    </span>
-                </div>
-
-
-                <div class="partner-card">
-                    <strong>Puspa Catering VIP</strong>
-                    <small>Katering & Buffet</small>
-                    <p>
-                        PIC: Ibu Retno
-                    </p>
-                    <span>
-                        Setup meja keluarga
-                    </span>
-                </div>
-
-
-                <div class="partner-card">
-                    <strong>MC Choky Sitohang & Dwiki Jazz</strong>
-                    <small>Show & Music</small>
-                    <p>
-                        PIC: Tommy
-                    </p>
-                    <span>
-                        Sound monitor panggung
-                    </span>
-                </div>
-
-
-                <div class="partner-card">
-                    <strong>MC Choky Sitohang & Dwiki Jazz</strong>
-                    <small>Show & Music</small>
-                    <p>
-                        PIC: Tommy
-                    </p>
-                    <span>
-                        Koordinasi cue music
-                    </span>
-                </div>
-
-            </div>
-
-
-            <div class="collaboration-box">
-
-                <strong>
-                    Mitra Vendor Bekerja Bersama
-                </strong>
-
-                <p>
-                    Rekan Tim & Vendor Lapangan Hari H
-                </p>
-
-                <span>
-                    5 Vendor Rekanan
-                </span>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="btn-primary full-button"
-            >
-                ◈ Buka Lembar Koordinasi Bersama
-            </button>
-
-
-            <div class="two-buttons">
-
-                <button type="button">
-                    ▣ WA Group Hari H
-                </button>
-
-                <button type="button">
-                    ⇩ Floorplan (PDF)
-                </button>
-
-            </div>
-
-        </section>
+        </div>
 
     </div>
+
+
+    {{-- LEGEND --}}
+    <div class="calendar-legend">
+
+        <span>
+            <i class="legend-dot hari-h"></i>
+            Hari H Berlangsung
+        </span>
+
+        <span>
+            <i class="legend-dot loading"></i>
+            Jadwal Loading In / Out
+        </span>
+
+        <span>
+            <i class="legend-dot closed"></i>
+            Selesai & Closed
+        </span>
+
+        <span>
+            ⌁ Klik tanggal acara untuk membuka Overview
+        </span>
+
+    </div>
+
+</section>
+
+
+{{-- SELECTED DATE --}}
+@if ($selectedDate)
+
+    <div class="selected-date-banner">
+
+        <div>
+
+            <span class="selected-label">
+                TANGGAL TERPILIH
+            </span>
+
+            <strong>
+                {{ \Carbon\Carbon::parse($selectedDate)->translatedFormat('l, d F Y') }}
+            </strong>
+
+        </div>
+
+
+        <a
+            href="{{ route('vendor.kalender', [
+                'bulan' => $bulan,
+                'tahun' => $tahun
+            ]) }}"
+        >
+            Kembali ke Kalender
+        </a>
+
+    </div>
+
+@else
+
+    <div class="selected-date-banner">
+
+        <div>
+
+            <span class="selected-label">
+                TANGGAL PILIHAN UTAMA
+            </span>
+
+            <strong>
+                Sabtu, 25 Oktober 2025 • Acara Hari H
+            </strong>
+
+        </div>
+
+
+        @if (Route::has('vendor.overview'))
+
+            <a
+                href="{{ route('vendor.overview', [
+                    'tanggal' => '2025-10-25'
+                ]) }}"
+            >
+                Buka Overview Acara →
+            </a>
+
+        @endif
+
+    </div>
+
+@endif
+```
 
 </div>
 

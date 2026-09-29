@@ -1,35 +1,47 @@
 <?php
 
-
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('vendor')->group(function () {
+Route::get('/', function () {
+    return redirect()->route('vendor.dashboard');
+});
 
-    Route::view('/dashboard', 'vendor.dashboard')
-        ->name('vendor.dashboard');
+Route::prefix('vendor')->name('vendor.')->group(function () {
 
-    Route::view('/kalender', 'vendor.kalender')
-        ->name('vendor.kalender');
+    Route::get('/dashboard', function () {
+        return view('vendor.dashboard');
+    })->name('dashboard');
 
-    Route::view('/tracking', 'vendor.tracking')
-        ->name('vendor.tracking');
+    Route::get('/kalender', function () {
+        return view('vendor.kalender');
+    })->name('kalender');
 
-    Route::view('/konfirmasi', 'vendor.konfirmasi')
-        ->name('vendor.konfirmasi');
+    Route::get('/tracking', function () {
+        return view('vendor.tracking');
+    })->name('tracking');
 
-    Route::view('/katalog', 'vendor.katalog')
-        ->name('vendor.katalog');
+    Route::get('/konfirmasi', function () {
+        return view('vendor.konfirmasi');
+    })->name('konfirmasi');
 
-    Route::view('/invoice', 'vendor.invoice')
-        ->name('vendor.invoice');
+    Route::get('/katalog', function () {
+        return view('vendor.katalog');
+    })->name('katalog');
 
-    Route::view('/kolaborasi', 'vendor.kolaborasi')
-        ->name('vendor.kolaborasi');
+    Route::get('/tambahlayanan', function () {
+        return view('vendor.tambahlayanan');
+    })->name('tambahlayanan');
 
-    Route::view('/overview', 'vendor.overview')
-        ->name('vendor.overview');
+    Route::get('/invoice', function () {
+        return view('vendor.invoice');
+    })->name('invoice');
 
-    Route::view('/tambah-vendor', 'vendor.tambahvendor')
-        ->name('vendor.tambahvendor');
+    Route::get('/kolaborasi', function () {
+        return view('vendor.kolaborasi');
+    })->name('kolaborasi');
+
+    Route::get('/overview', function () {
+        return view('vendor.overview');
+    })->name('overview');
 
 });

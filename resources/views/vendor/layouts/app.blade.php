@@ -6,20 +6,31 @@
 
     <title>@yield('title', 'Vendor Workspace')</title>
 
-    @vite('resources/css/vendor/vendor-dashboard.css')
+    {{-- CSS LANGSUNG DARI PUBLIC --}}
+    <link rel="stylesheet" href="{{ asset('css/vendor/vendor-dashboard.css') }}">
 </head>
 
 <body>
 
-    <div class="vendor-layout">
+<div class="vendor-layout">
 
-        @include('vendor.layouts.sidebar')
+    {{-- SIDEBAR --}}
+    @include('vendor.layouts.sidebar')
 
+    {{-- AREA KANAN --}}
+    <div class="vendor-content">
+
+        {{-- TOPBAR --}}
+        @include('vendor.layouts.topbar')
+
+        {{-- CONTENT --}}
         <main class="vendor-main">
             @yield('content')
         </main>
 
     </div>
+
+</div>
 
 </body>
 </html>
