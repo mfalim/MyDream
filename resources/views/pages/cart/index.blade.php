@@ -153,6 +153,7 @@
 
                             <form action="{{ route('user.cart.clear') }}" method="POST" style="align-self:flex-start;">
                                 @csrf
+                                @method('DELETE')
 
                                 <button type="submit" class="icon-btn" aria-label="Hapus paket">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"

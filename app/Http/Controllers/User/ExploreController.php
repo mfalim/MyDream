@@ -26,11 +26,16 @@ class ExploreController extends Controller
 
     public function show($id)
     {
-        $vendor = Vendor::with(['category', 'photos'])->findOrFail($id);
+        $vendor = Vendor::with(['category', 'photos', 'packages'])
+            ->findOrFail($id);
 
-        $coverPhoto = $vendor->photos->where('is_cover', true)->first();
+        $coverPhoto = $vendor->photos
+            ->where('is_cover', true)
+            ->first();
 
-        $otherPhotos = $vendor->photos->where('is_cover', false)->sortBy('sort_order');
+        $otherPhotos = $vendor->photos
+            ->where('is_cover', false)
+            ->sortBy('sort_order');
 
         return view('user.explore.overview', [
             'vendor' => $vendor,

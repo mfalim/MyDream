@@ -179,9 +179,28 @@
                     @endforelse
 
 
+                    {{-- TAMBAHKAN VENDOR KE KERANJANG --}}
+                    <form action="{{ route('user.cart.add-vendor', $vendor->id) }}" method="POST" class="mt-3">
+                        @csrf
+
+                        <button type="submit" class="btn btn-dark btn-block w-100">
+                            <i class="bi bi-cart-plus"></i>
+                            Tambah ke Keranjang
+                        </button>
+                    </form>
+
+                    {{-- LIHAT KERANJANG --}}
+                    <a href="{{ route('user.cart') }}" class="btn btn-outline-dark btn-block w-100 mt-2">
+                        <i class="bi bi-cart"></i>
+                        Lihat Keranjang
+                    </a>
+
+                    {{-- KONTAK WHATSAPP --}}
                     @if ($vendor->phone)
-                        <a href="https://wa.me/{{ $vendor->phone }}" class="btn btn-dark btn-block mt-2" target="_blank">
-                            Booking Vendor Ini
+                        <a href="https://wa.me/{{ preg_replace('/\D/', '', $vendor->phone) }}"
+                            class="btn btn-outline-success btn-block w-100 mt-2" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-whatsapp"></i>
+                            Chat Vendor
                         </a>
                     @endif
 
