@@ -3,6 +3,24 @@
 @section('title', 'Edit Vendor')
 @section('page-title', 'Edit Vendor')
 
+@push('styles')
+    <style>
+        .edit-photo-card {
+            overflow: hidden;
+            border: 1px solid #e4ebe8;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .edit-photo-card > img {
+            display: block;
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+    </style>
+@endpush
+
 @section('content')
 
     <div class="mb-4">
