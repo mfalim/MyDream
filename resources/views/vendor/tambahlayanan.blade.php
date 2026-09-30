@@ -6,53 +6,78 @@
 
 <div class="vendor-service-page">
 
-    {{-- =====================================================
-         HEADER
-    ====================================================== --}}
+{{-- SUCCESS MESSAGE --}}
+@if (session('success'))
+    <div class="vendor-alert vendor-alert-success">
+        ✓ {{ session('success') }}
+    </div>
+@endif
 
-    <div class="vendor-service-header">
+{{-- VALIDATION ERROR --}}
+@if ($errors->any())
+    <div class="vendor-alert vendor-alert-error">
+        <strong>Data belum dapat disimpan.</strong>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-        <div class="vendor-service-title-wrap">
+{{-- =====================================================
+     HEADER
+====================================================== --}}
 
-            <span class="vendor-service-eyebrow">
-                MANAJEMEN KATALOG
-                <span class="vendor-breadcrumb-arrow">›</span>
-                TAMBAH LAYANAN & PORTOFOLIO BARU
-            </span>
+<div class="vendor-service-header">
 
-            <h1 class="vendor-service-title">
-                Tambah Layanan & Detail Portofolio
-            </h1>
+    <div class="vendor-service-title-wrap">
 
-            <p class="vendor-service-description">
-                Lengkapi detail paket dekorasi panggung, spesifikasi teknis instalasi fisik,
-                portofolio visual resolusi tinggi, serta estimasi rincian biaya untuk proses
-                kurasi kurator WO PROJECT.
-            </p>
+        <span class="vendor-service-eyebrow">
+            MANAJEMEN KATALOG
+            <span class="vendor-breadcrumb-arrow">›</span>
+            TAMBAH LAYANAN & PORTOFOLIO BARU
+        </span>
 
-        </div>
+        <h1 class="vendor-service-title">
+            Tambah Layanan & Detail Portofolio
+        </h1>
 
-
-        <div class="vendor-service-status">
-
-            <span class="status-dot"></span>
-
-            <span>
-                Status Form:
-            </span>
-
-            <strong>
-                Draft Vendor
-            </strong>
-
-        </div>
+        <p class="vendor-service-description">
+            Lengkapi detail paket dekorasi panggung, spesifikasi teknis instalasi fisik,
+            portofolio visual resolusi tinggi, serta estimasi rincian biaya untuk proses
+            kurasi kurator WO PROJECT.
+        </p>
 
     </div>
 
+    <div class="vendor-service-status">
+        <span class="status-dot"></span>
 
-    {{-- =====================================================
+        <span>Status Form:</span>
+
+        <strong>Draft Vendor</strong>
+    </div>
+
+</div>
+
+
+{{-- =====================================================
+     FORM DATABASE
+====================================================== --}}
+
+<form
+    action="{{ route('vendor.layanan.store') }}"
+    method="POST"
+    enctype="multipart/form-data"
+>
+
+    @csrf
+
+
+    {{-- =================================================
          MAIN LAYOUT
-    ====================================================== --}}
+    ================================================== --}}
 
     <div class="vendor-service-layout">
 
@@ -98,8 +123,10 @@
 
                     <input
                         type="text"
+                        name="nama_layanan"
                         class="vendor-form-input"
-                        value="Paket Pelaminan Botanical Opulence Luxury 18m"
+                        value="{{ old('nama_layanan', 'Paket Pelaminan Botanical Opulence Luxury 18m') }}"
+                        required
                     >
 
                 </div>
@@ -114,24 +141,26 @@
                             <span class="vendor-required">*</span>
                         </label>
 
-                        <select class="vendor-form-select">
-
-                            <option>
+                        <select
+                            name="kategori"
+                            class="vendor-form-select"
+                            required
+                        >
+                            <option value="Dekorasi Pelaminan & Stage">
                                 Dekorasi Pelaminan & Stage
                             </option>
 
-                            <option>
+                            <option value="Floral Decoration">
                                 Floral Decoration
                             </option>
 
-                            <option>
+                            <option value="Wedding Decoration">
                                 Wedding Decoration
                             </option>
 
-                            <option>
+                            <option value="Garden Wedding">
                                 Garden Wedding
                             </option>
-
                         </select>
 
                     </div>
@@ -146,13 +175,14 @@
 
                         <div class="vendor-price-input">
 
-                            <span>
-                                Rp
-                            </span>
+                            <span>Rp</span>
 
                             <input
-                                type="text"
-                                value="125.000.000"
+                                type="number"
+                                name="harga"
+                                value="{{ old('harga', 125000000) }}"
+                                min="0"
+                                required
                             >
 
                         </div>
@@ -209,8 +239,9 @@
 
                         <input
                             type="text"
+                            name="dimensi_panggung"
                             class="vendor-form-input"
-                            value="18 m × 6 m × 4.8 m"
+                            value="{{ old('dimensi_panggung', '18 m × 6 m × 4.8 m') }}"
                         >
 
                     </div>
@@ -230,8 +261,9 @@
 
                         <input
                             type="text"
+                            name="daya_listrik_rigging"
                             class="vendor-form-input"
-                            value="16.000 Watt / 4 Titik Gantung Truss"
+                            value="{{ old('daya_listrik_rigging', '16.000 Watt / 4 Titik Gantung Truss') }}"
                         >
 
                     </div>
@@ -246,14 +278,14 @@
                         </div>
 
                         <p class="vendor-spec-help">
-                            Termasuk lead florist, carpenter &
-                            lighting
+                            Termasuk lead florist, carpenter & lighting
                         </p>
 
                         <input
                             type="text"
+                            name="alokasi_kru"
                             class="vendor-form-input"
-                            value="24 Personel Berseragam"
+                            value="{{ old('alokasi_kru', '24 Personel Berseragam') }}"
                         >
 
                     </div>
@@ -273,8 +305,9 @@
 
                         <input
                             type="text"
+                            name="durasi_loading_teardown"
                             class="vendor-form-input"
-                            value="Loading: 10 Jam | Bongkaran: 3.5 Jam"
+                            value="{{ old('durasi_loading_teardown', 'Loading: 10 Jam | Bongkaran: 3.5 Jam') }}"
                         >
 
                     </div>
@@ -298,11 +331,9 @@
                     </span>
 
                     <div>
-
                         <h2>
                             Deskripsi Konsep & Ruang Lingkup Fasilitas
                         </h2>
-
                     </div>
 
                 </div>
@@ -314,7 +345,10 @@
                         DETAIL KOMPOSISI MATERIAL & DESKRIPSI ARTISTIK
                     </label>
 
-                    <textarea class="vendor-form-textarea">Struktur pelaminan megah dengan arsitektur lengkung neo-klasik dibuat 85% rangkaian bunga segar Grade-A impor (Ecuador Roses, Hydrangea Belanda, Phalaenopsis Putih, Delphinium, serta dedaunan Eucalyptus cinerea). Termasuk panel backdrop berudru premium warna ivory, chandelier kristal gantung bertingkat, serta instalasi floor carpet mirror anti-slip seluas panggung.</textarea>
+                    <textarea
+                        name="deskripsi"
+                        class="vendor-form-textarea"
+                    >{{ old('deskripsi', 'Struktur pelaminan megah dengan arsitektur lengkung neo-klasik dibuat 85% rangkaian bunga segar Grade-A impor (Ecuador Roses, Hydrangea Belanda, Phalaenopsis Putih, Delphinium, serta dedaunan Eucalyptus cinerea). Termasuk panel backdrop berudru premium warna ivory, chandelier kristal gantung bertingkat, serta instalasi floor carpet mirror anti-slip seluas panggung.') }}</textarea>
 
                 </div>
 
@@ -333,6 +367,8 @@
 
                             <input
                                 type="checkbox"
+                                name="grand_entrance_gate"
+                                value="1"
                                 checked
                             >
 
@@ -353,6 +389,8 @@
 
                             <input
                                 type="checkbox"
+                                name="meja_akad"
+                                value="1"
                                 checked
                             >
 
@@ -373,6 +411,8 @@
 
                             <input
                                 type="checkbox"
+                                name="aisle_carpet"
+                                value="1"
                                 checked
                             >
 
@@ -393,6 +433,8 @@
 
                             <input
                                 type="checkbox"
+                                name="photo_booth"
+                                value="1"
                                 checked
                             >
 
@@ -425,10 +467,7 @@
         <aside class="vendor-service-side">
 
 
-            {{-- =================================================
-                 HERO PHOTO
-            ================================================== --}}
-
+            {{-- HERO PHOTO --}}
             <section class="vendor-side-card">
 
                 <div class="vendor-side-heading-row">
@@ -499,10 +538,7 @@
 
 
 
-            {{-- =================================================
-                 GALLERY
-            ================================================== --}}
-
+            {{-- GALLERY --}}
             <section class="vendor-side-card">
 
                 <div class="vendor-gallery-heading">
@@ -528,7 +564,6 @@
 
 
                 <div class="vendor-gallery">
-
 
                     <div class="vendor-gallery-item">
 
@@ -595,10 +630,7 @@
 
 
 
-            {{-- =================================================
-                 STANDARD CARD
-            ================================================== --}}
-
+            {{-- STANDARD CARD --}}
             <section class="vendor-standard-card">
 
                 <div class="vendor-standard-icon">
@@ -644,7 +676,6 @@
 
     <div class="vendor-service-actions">
 
-
         <div class="vendor-action-information">
 
             <span class="vendor-action-icon">
@@ -668,7 +699,9 @@
 
 
         <button
-            type="button"
+            type="submit"
+            name="action"
+            value="draft"
             class="vendor-btn vendor-btn-secondary"
         >
             Simpan Draf
@@ -678,19 +711,24 @@
         <button
             type="button"
             class="vendor-btn vendor-btn-secondary"
+            onclick="window.print()"
         >
             ◉ &nbsp; Preview
         </button>
 
 
         <button
-            type="button"
+            type="submit"
+            name="action"
+            value="publish"
             class="vendor-btn vendor-btn-primary"
         >
             ⚙ &nbsp; Terbitkan & Ajukan ke Katalog
         </button>
 
     </div>
+
+</form>
 
 </div>
 

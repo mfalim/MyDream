@@ -1,11 +1,15 @@
 <?php
 
+use App\Http\Controllers\Vendor\LayananController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('vendor.dashboard');
 });
 
+Route::post('/vendor/layanan/store', [LayananController::class, 'store'])
+    ->name('vendor.layanan.store');
+    
 Route::prefix('vendor')->name('vendor.')->group(function () {
 
     Route::get('/dashboard', function () {
