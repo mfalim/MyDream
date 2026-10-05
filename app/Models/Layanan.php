@@ -28,12 +28,4 @@ class Layanan extends Model
         'gallery_4',
         'status',
     ];
-
-    protected $casts = [
-        'harga' => 'decimal:2',
-        'grand_entrance_gate' => 'boolean',
-        'meja_akad' => 'boolean',
-        'aisle_carpet' => 'boolean',
-        'photo_booth' => 'boolean',
-    ];
 }

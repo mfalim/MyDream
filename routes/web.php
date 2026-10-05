@@ -1,15 +1,12 @@
 <?php
 
-use App\Http\Controllers\Vendor\LayananController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Vendor\LayananController;
 
 Route::get('/', function () {
     return redirect()->route('vendor.dashboard');
 });
 
-Route::post('/vendor/layanan/store', [LayananController::class, 'store'])
-    ->name('vendor.layanan.store');
-    
 Route::prefix('vendor')->name('vendor.')->group(function () {
 
     Route::get('/dashboard', function () {
@@ -28,13 +25,24 @@ Route::prefix('vendor')->name('vendor.')->group(function () {
         return view('vendor.konfirmasi');
     })->name('konfirmasi');
 
-    Route::get('/katalog', function () {
-        return view('vendor.katalog');
-    })->name('katalog');
+    Route::get('/katalog', [LayananController::class, 'index'])
+        ->name('katalog');
 
     Route::get('/tambahlayanan', function () {
         return view('vendor.tambahlayanan');
     })->name('tambahlayanan');
+
+    Route::post('/layanan/store', [LayananController::class, 'store'])
+        ->name('layanan.store');
+
+    Route::get('/layanan/{id}/edit', [LayananController::class, 'edit'])
+        ->name('layanan.edit');
+
+    Route::put('/layanan/{id}', [LayananController::class, 'update'])
+        ->name('layanan.update');
+
+    Route::delete('/layanan/{id}', [LayananController::class, 'destroy'])
+        ->name('layanan.destroy');
 
     Route::get('/invoice', function () {
         return view('vendor.invoice');
