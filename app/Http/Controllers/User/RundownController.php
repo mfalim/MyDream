@@ -37,6 +37,8 @@ class RundownController extends Controller
                 $query->where('client_id', $client->id);
             })
             ->whereBetween('event_date', [$startDate, $endDate])
+            ->orderBy('event_date')
+            ->orderBy('start_time')
             ->get()
             ->groupBy(function ($event) {
                 return $event->event_date->format('Y-m-d');
@@ -117,6 +119,32 @@ class RundownController extends Controller
             ->whereDate('event_date', $selectedDate)
             ->get();
 
+        $monthEvents = $events->flatten(1)
+            ->map(function ($event) {
+                $startTime = $event->start_time
+                    ? Carbon::parse($event->start_time)->format('H.i')
+                    : '-';
+
+                $endTime = $event->end_time
+                    ? Carbon::parse($event->end_time)->format('H.i')
+                    : '-';
+
+                return [
+                    'date' => $event->event_date->format('Y-m-d'),
+                    'date_label' => $event->event_date->isoFormat('D MMM'),
+                    'session' => $event->start_time && Carbon::parse($event->start_time)->hour < 16 ? 'Siang' : 'Malam',
+                    'time' => $startTime . ' - ' . $endTime,
+                    'couple' => ($event->booking->client->groom_name ?? '-') . ' & ' . ($event->booking->client->bride_name ?? '-'),
+                    'venue' => $event->booking->venue_name ?? 'Venue',
+                    'hall' => $event->booking->venue_address ?? '',
+                    'lead' => $event->eventMembers->first()?->member?->name ?? 'TBA',
+                    'crew' => $event->eventMembers->count() . ' Personil',
+                    'progress_label' => 'Status: ' . ucfirst($event->status),
+                ];
+            })
+            ->values()
+            ->toArray();
+
         $crewTotal = $selectedEvents->sum(fn ($event) => $event->eventMembers->count());
 
         $monthLabel = Carbon::create($year, $month, 1)->isoFormat('MMMM YYYY');
@@ -159,29 +187,8 @@ class RundownController extends Controller
                 'leads' => $selectedEvents->count(),
                 'mcs' => $selectedEvents->count(),
                 'floor' => max(0, $crewTotal - $selectedEvents->count() * 2),
-                'events' => $selectedEvents
-                    ->map(function ($event) {
-                        $startTime = $event->start_time
-                            ? Carbon::parse($event->start_time)->format('H.i')
-                            : '-';
-
-                        $endTime = $event->end_time
-                            ? Carbon::parse($event->end_time)->format('H.i')
-                            : '-';
-
-                        return [
-                            'session' => $event->start_time && Carbon::parse($event->start_time)->hour < 16 ? 'Siang' : 'Malam',
-                            'time' => $startTime . ' - ' . $endTime,
-                            'couple' => ($event->booking->client->groom_name ?? '-') . ' & ' . ($event->booking->client->bride_name ?? '-'),
-                            'venue' => $event->booking->venue_name ?? 'Venue',
-                            'hall' => $event->booking->venue_address ?? '',
-                            'lead' => $event->eventMembers->first()?->member?->name ?? 'TBA',
-                            'crew' => $event->eventMembers->count() . ' Personil',
-                            'progress_label' => 'Status: ' . ucfirst($event->status),
-                        ];
-                    })
-                    ->toArray(),
             ],
+            'monthEvents' => $monthEvents,
         ]);
     }
 

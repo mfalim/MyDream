@@ -60,26 +60,16 @@
                         }
                     }
 
-                    $vendorPhotos = $event->schedules ? $event->schedules->map(function ($schedule) {
-                        return $schedule->vendor && $schedule->vendor->photos && $schedule->vendor->photos->count() > 0 ?
-                            ($schedule->vendor->photos->where('is_cover', true)->first() ?? $schedule->vendor->photos->first()) : null;
-                    })->filter()->take(3) : collect();
-
-                    $fallbackVendorPhoto = $vendorPhotos->count() > 0 ? $vendorPhotos->first() : null;
-                    $fallbackVendorPhotoUrl = $fallbackVendorPhoto ? asset('storage/' . $fallbackVendorPhoto->photo) : null;
-                    if ($fallbackVendorPhotoUrl && $fallbackVendorPhoto && file_exists(storage_path('app/public/' . $fallbackVendorPhoto->photo))) {
-                        $fallbackVendorPhotoUrl .= '?v=' . filemtime(storage_path('app/public/' . $fallbackVendorPhoto->photo));
-                    }
                 @endphp
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm h-100">
                         <div class="position-relative">
                             @if ($eventPhotoUrl)
                                 <img src="{{ $eventPhotoUrl }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
-                            @elseif($fallbackVendorPhotoUrl)
-                                <img src="{{ $fallbackVendorPhotoUrl }}" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
                             @else
-                                <img src="https://images.unsplash.com/photo-1519167758481-83f29da8fd4e?w=400" class="card-img-top" alt="Event" style="height: 200px; object-fit: cover;">
+                                <div class="d-flex align-items-center justify-content-center bg-light text-secondary" style="height: 200px;">
+                                    <i class="bi bi-calendar-event fs-1" aria-label="Foto acara belum tersedia"></i>
+                                </div>
                             @endif
                             <span class="badge bg-{{ $statusBadge }} text-white position-absolute top-0 start-0 m-2">
                                 @if ($event->status === 'ongoing')

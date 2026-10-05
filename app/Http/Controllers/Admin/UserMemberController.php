@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\MemberPosition;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class UserMemberController extends Controller
 {
@@ -46,12 +47,12 @@ class UserMemberController extends Controller
             'avatar' => null,
         ]);
 
-        session(['member_setup_' . $user->id => [
+        Cache::forever('member_setup_' . $user->id, [
             'position' => $validated['position'],
             'division' => $validated['division'],
-        ]]);
+        ]);
 
-        return redirect()->route('admin.user-members.index')
+        return redirect()->route('admin.members.index')
             ->with('success', 'Member user berhasil ditambahkan. Member dapat login dengan Google OAuth menggunakan email tersebut.');
     }
 

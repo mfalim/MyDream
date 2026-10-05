@@ -67,15 +67,15 @@
                 {{-- Foto Paket --}}
                 <div class="vendor-main-photo">
 
-                    @if ($package->cover_photo)
+                    @if ($package->photo)
 
-                        <img src="{{ asset('storage/' . $package->cover_photo->photo) }}" alt="{{ $package->name }}">
+                        <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
 
                     @else
 
                         <div class="vendor-no-main-photo">
                             <span>📦</span>
-                            <p>Belum ada foto vendor</p>
+                            <p>Foto paket belum tersedia</p>
                         </div>
 
                     @endif

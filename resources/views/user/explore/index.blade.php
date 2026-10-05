@@ -54,7 +54,11 @@
                 @foreach ($packages as $package)
                     <a href="{{ route('user.package-overview', $package->id) }}" class="ev-card" data-cat="paket" data-name="{{ strtolower($package->name) }}">
                         <div class="ev-card-media">
-                            <img src="{{ $package->photo ? asset('storage/' . $package->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85' }}" alt="{{ $package->name }}">
+                            @if ($package->photo)
+                                <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                            @else
+                                <div class="ev-package-no-photo" aria-label="Foto paket belum tersedia"><i class="bi bi-gem"></i></div>
+                            @endif
                             <span class="ev-card-cat"><i class="bi bi-gem"></i> Paket</span>
                             <span class="wo-badge wo-badge-gold" style="position: absolute; top: 12px; left: 12px;">{{ $package->vendors->count() }} Vendor</span>
                         </div>

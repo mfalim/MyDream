@@ -60,18 +60,6 @@
 
         </a>
 
-        {{-- ANGGARAN --}}
-        <a href="#" class="nav-item">
-            <i class="bi bi-wallet2"></i>
-            <span>Anggaran &amp; Pembayaran</span>
-        </a>
-
-        {{-- TAMU --}}
-        <a href="#" class="nav-item">
-            <i class="bi bi-people"></i>
-            <span>Tamu &amp; Meja VIP</span>
-        </a>
-
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
             @csrf

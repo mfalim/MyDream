@@ -134,13 +134,13 @@
 
             <div class="rc-event-list">
                 <div class="wo-section-head">
-                    <strong>Daftar Acara Terpasang ({{ count($selected['events']) }})</strong>
-                    <span class="wo-badge wo-badge-neutral">Sesi Siang &amp; Malam</span>
+                    <strong>Daftar Acara Terpasang ({{ count($monthEvents) }})</strong>
+                    <span class="wo-badge wo-badge-neutral">{{ $monthLabel }}</span>
                 </div>
 
-                @foreach ($selected['events'] as $ev)
+                @forelse ($monthEvents as $ev)
                     <div class="rc-event-card">
-                        <span class="wo-badge wo-badge-neutral">{{ $ev['session'] }} ({{ $ev['time'] }})</span>
+                        <span class="wo-badge wo-badge-neutral">{{ $ev['date_label'] }} &bull; {{ $ev['session'] }} ({{ $ev['time'] }})</span>
                         <strong>{{ $ev['couple'] }}</strong>
                         <span class="rc-event-venue"><i class="bi bi-building"></i> {{ $ev['venue'] }} &bull; {{ $ev['hall'] }}</span>
                         <span class="rc-event-meta"><i class="bi bi-person-badge"></i> Lead: {{ $ev['lead'] }}</span>
@@ -148,10 +148,12 @@
 
                         <div class="rc-event-footer">
                             <span>{{ $ev['progress_label'] }}</span>
-                            <a href="{{ route('user.rundown.detail', $selected['date']) }}" class="wo-link">Rincian Acara <i class="bi bi-chevron-right"></i></a>
+                            <a href="{{ route('user.rundown.detail', $ev['date']) }}" class="wo-link">Rincian Acara <i class="bi bi-chevron-right"></i></a>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="rc-event-card">Belum ada acara pada bulan ini.</div>
+                @endforelse
             </div>
 
         </aside>

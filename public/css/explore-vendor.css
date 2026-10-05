@@ -130,6 +130,15 @@
     object-fit: cover;
     display: block;
 }
+.ev-card-media .ev-package-no-photo {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background: var(--wo-surface-soft);
+    color: var(--wo-text-muted);
+    font-size: 2rem;
+}
 .ev-card-cat {
     position: absolute;
     top: 10px;

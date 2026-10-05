@@ -95,12 +95,11 @@
 
         <section class="overview-gallery">
             <div class="gallery-main">
-                @php
-                    $photoUrl = $package->photo
-                        ? asset('storage/' . $package->photo)
-                        : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85';
-                @endphp
-                <img src="{{ $photoUrl }}" alt="{{ $package->name }}">
+                @if ($package->photo)
+                    <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                @else
+                    <div class="ev-package-no-photo" aria-label="Foto paket belum tersedia"><i class="bi bi-gem"></i></div>
+                @endif
 
                 <div class="gallery-main-caption">
                     <span>Paket Wedding</span>

@@ -8,12 +8,13 @@ use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::with('vendors.photos')->latest()->get();
+        $packages = Package::with('vendors')->latest()->get();
 
         return view('admin.packages.index', compact('packages'));
     }
@@ -63,6 +64,7 @@ class PackageController extends Controller
 
         $payload = [
             'name' => $request->name,
+            'slug' => $this->uniqueSlug($request->name),
             'photo' => $photo,
         ];
 
@@ -176,5 +178,18 @@ class PackageController extends Controller
         return redirect()
             ->route('admin.packages.index')
             ->with('success', 'Paket berhasil dihapus.');
+    }
+
+    private function uniqueSlug(string $name): string
+    {
+        $baseSlug = Str::slug($name) ?: 'paket';
+        $slug = $baseSlug;
+        $suffix = 1;
+
+        while (Package::where('slug', $slug)->exists()) {
+            $slug = $baseSlug . '-' . $suffix++;
+        }
+
+        return $slug;
     }
 }

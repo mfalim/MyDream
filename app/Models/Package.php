@@ -47,23 +47,6 @@ class Package extends Model
             ->withTimestamps();
     }
 
-    public function getCoverPhotoAttribute(): ?VendorPhoto
-    {
-        $vendors = $this->relationLoaded('vendors')
-            ? $this->vendors
-            : $this->vendors()->with('photos')->get();
-
-        foreach ($vendors as $vendor) {
-            $photo = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
-
-            if ($photo) {
-                return $photo;
-            }
-        }
-
-        return null;
-    }
-
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);

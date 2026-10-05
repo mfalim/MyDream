@@ -17,6 +17,10 @@ class DashboardController extends Controller
         $member = Member::where('user_id', $user->id)->first();
 
         if (!$member) {
+            if ($user->role === 'member') {
+                return redirect()->route('member.profile.complete');
+            }
+
             abort(403, 'Akses ditolak. Anda bukan member organizer.');
         }
 

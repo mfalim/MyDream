@@ -33,7 +33,7 @@
         @endphp
 
         <section class="rd-event-overview">
-            <div class="rd-hero" style="background-image: linear-gradient(180deg, rgba(22,48,42,0.12), rgba(22,48,42,0.88)), url('{{ $event->photo ? asset('storage/' . $event->photo) : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1600&q=85' }}');">
+            <div class="rd-hero" style="background-image: linear-gradient(180deg, rgba(22,48,42,0.12), rgba(22,48,42,0.88)){{ $event->photo ? ", url('" . asset('storage/' . $event->photo) . "')" : '' }};">
                 <span class="rd-hero-status {{ \Illuminate\Support\Carbon::parse($event->event_date)->isToday() ? '' : 'rd-status-scheduled' }}">
                     <i class="bi bi-record-circle-fill"></i> {{ \Illuminate\Support\Carbon::parse($event->event_date)->isToday() ? 'Sedang Berlangsung (Live)' : ucfirst($event->status ?? 'Terjadwal') }}
                 </span>
