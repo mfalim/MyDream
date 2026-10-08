@@ -728,7 +728,6 @@ $search = strtolower(trim(request('q', '')));
     </div>
 
 @endif
-```
 
 </div>
 
