@@ -9,16 +9,20 @@ class Package extends Model
     protected $fillable = [
         'name',
         'slug',
+        'description',
         'availability_date',
-        'duration',
         'guest_capacity',
+        'duration',
+        'event_period',
         'photo',
+        'is_featured',
     ];
 
     protected $casts = [
-        'duration' => 'decimal:2',
         'guest_capacity' => 'integer',
         'availability_date' => 'date',
+        'duration' => 'decimal:2',
+        'is_featured' => 'boolean',
     ];
 
     public function getIsActiveAttribute(): bool
@@ -26,17 +30,6 @@ class Package extends Model
         $availabilityDate = $this->getRawOriginal('availability_date');
 
         return is_string($availabilityDate) && $availabilityDate >= now()->toDateString();
-    }
-
-    public function getDurationLabelAttribute(): string
-    {
-        if (!$this->duration) {
-            return '-';
-        }
-
-        $duration = rtrim(rtrim(number_format((float) $this->duration, 2, '.', ''), '0'), '.');
-
-        return $duration . ' jam';
     }
 
     public function getPriceAttribute(): float
@@ -56,5 +49,10 @@ class Package extends Model
         return $this->belongsToMany(Vendor::class, 'package_vendor')
             ->withPivot('status')
             ->withTimestamps();
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }
