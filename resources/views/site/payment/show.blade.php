@@ -81,7 +81,7 @@
                             <div class="grid gap-4 {{ count($options) > 1 ? 'sm:grid-cols-2' : '' }}">
                                 @foreach ($options as $key => $option)
                                     <label class="cursor-pointer rounded-2xl border-2 border-black/10 p-5 transition-colors has-[:checked]:border-maroon has-[:checked]:bg-maroon-light">
-                                        <input type="radio" name="scheme" value="{{ $key }}" class="sr-only" @checked(old('scheme', array_key_first($options)) === $key)>
+                                        <input type="radio" name="scheme" value="{{ $key }}" data-label="{{ $option['label'] }}" data-amount="{{ $option['amount'] }}" class="sr-only" @checked(old('scheme', array_key_first($options)) === $key)>
                                         <p class="font-display text-lg font-semibold">{{ $option['label'] }}</p>
                                         <p class="font-display text-2xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($option['amount']) }}</p>
                                         <p class="mt-2 text-xs text-ink/50">{{ $option['note'] }}</p>
@@ -154,13 +154,51 @@
                     @if ($pending > 0)
                         <div class="flex justify-between"><dt class="text-ink/60">Menunggu verifikasi</dt><dd class="font-medium">{{ \App\Support\Format::rupiah($pending) }}</dd></div>
                     @endif
-                    <div class="flex justify-between border-t border-black/5 pt-2"><dt class="font-semibold">Sisa pembayaran</dt><dd class="font-display text-lg font-semibold text-maroon">{{ \App\Support\Format::rupiah($remaining) }}</dd></div>
+                    @unless (count($options))
+                        <div class="flex justify-between border-t border-black/5 pt-2"><dt class="font-semibold">Sisa pembayaran</dt><dd class="font-display text-lg font-semibold text-maroon">{{ \App\Support\Format::rupiah($remaining) }}</dd></div>
+                    @endunless
                 </dl>
+
+                @if (count($options))
+                    @php
+                        $selected = $options[old('scheme', array_key_first($options))] ?? reset($options);
+                    @endphp
+                    {{-- Diperbarui otomatis saat skema DP / Lunas dipilih (lihat script di bawah) --}}
+                    <div class="space-y-2 rounded-2xl bg-maroon-light p-4 text-sm">
+                        <div class="flex justify-between"><span class="text-ink/60">Skema dipilih</span><span id="sum-scheme" class="font-semibold">{{ $selected['label'] }}</span></div>
+                        <div class="flex items-end justify-between"><span class="text-ink/60">Dibayar sekarang</span><span id="sum-pay" class="font-display text-xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($selected['amount']) }}</span></div>
+                        <div class="flex justify-between border-t border-maroon/10 pt-2"><span class="text-ink/60">Sisa setelah pembayaran ini</span><span id="sum-left" class="font-medium">{{ \App\Support\Format::rupiah(max(0, $remaining - $selected['amount'])) }}</span></div>
+                    </div>
+                @endif
 
                 <x-site.button :href="\App\Support\Format::waLink(config('mydream.whatsapp'), 'Halo MyDream, saya butuh bantuan soal pembayaran reservasi #' . $booking->id . '.')" variant="ghost" class="w-full">Bantuan via WhatsApp</x-site.button>
                 <x-site.button :href="route('user.dashboard')" variant="outline" class="w-full">Ke Dashboard</x-site.button>
             </aside>
         </div>
     </section>
+
+    @if (count($options))
+        @push('scripts')
+            <script>
+                (function () {
+                    var remaining = {{ (int) round($remaining) }};
+                    var radios = document.querySelectorAll('input[name="scheme"]');
+                    var rupiah = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
+
+                    function update() {
+                        var chosen = document.querySelector('input[name="scheme"]:checked');
+                        if (!chosen) { return; }
+                        var amount = Number(chosen.dataset.amount);
+                        document.getElementById('sum-scheme').textContent = chosen.dataset.label;
+                        document.getElementById('sum-pay').textContent = rupiah(amount);
+                        document.getElementById('sum-left').textContent = rupiah(Math.max(0, remaining - amount));
+                    }
+
+                    radios.forEach(function (radio) { radio.addEventListener('change', update); });
+                    update();
+                })();
+            </script>
+        @endpush
+    @endif
 
 @endsection
