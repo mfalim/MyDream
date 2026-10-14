@@ -9,6 +9,7 @@
         ['Inspirasi', route('inspiration.index'), request()->routeIs('inspiration.*')],
         ['Event', route('event.index'), request()->routeIs('event.*')],
         ['Artikel', route('blog.index'), request()->routeIs('blog.*')],
+        ['Tentang', route('about'), request()->routeIs('about')],
     ];
 @endphp
 

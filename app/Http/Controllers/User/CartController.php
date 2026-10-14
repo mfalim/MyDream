@@ -39,7 +39,7 @@ class CartController extends Controller
             $totalPrice = $vendors->sum('price');
         }
 
-        return view('pages.cart.index', [
+        return view('site.cart.index', [
             'cart' => $cart,
             'package' => $package,
             'vendors' => $vendors,

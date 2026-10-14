@@ -11,6 +11,7 @@
                 <li><a href="{{ route('catalog.index') }}" class="hover:text-cream">Paket &amp; Vendor</a></li>
                 <li><a href="{{ route('inspiration.index') }}" class="hover:text-cream">Inspirasi</a></li>
                 <li><a href="{{ route('blog.index') }}" class="hover:text-cream">Artikel</a></li>
+                <li><a href="{{ route('about') }}" class="hover:text-cream">Tentang Kami</a></li>
             </ul>
         </div>
         <div>
