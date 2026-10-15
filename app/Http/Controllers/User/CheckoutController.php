@@ -58,7 +58,7 @@ class CheckoutController extends Controller
 
         $client = Client::where('users_id', Auth::id())->first();
 
-        return view('pages.checkout.index', [
+        return view('site.checkout.index', [
             'cart' => $cart,
             'package' => $package,
             'vendors' => $vendors,
