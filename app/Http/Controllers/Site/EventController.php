@@ -2,33 +2,34 @@
 
 namespace App\Http\Controllers\Site;
 
-use App\Data\Site\EventData;
 use App\Http\Controllers\Controller;
-use App\Models\Vendor;
+use App\Models\PublicEvent;
 use Illuminate\View\View;
 
-/** Event publik MyDream (bukan acara pernikahan klien; itu ada di tabel events). */
+/** Halaman event publik. Datanya dikelola admin (tabel public_events), bukan tabel events milik client. */
 class EventController extends Controller
 {
     public function index(): View
     {
         $order = ['ongoing' => 0, 'upcoming' => 1, 'finished' => 2];
 
-        return view('site.event.index', [
-            'events' => collect(EventData::all())
-                ->sortBy(fn ($event) => [$order[$event['status']], $event['starts_on']->timestamp])
-                ->values(),
-        ]);
+        $events = PublicEvent::published()->get()
+            ->sortBy(fn ($event) => [
+                $order[$event->status],
+                $event->status === 'finished' ? -$event->starts_on->timestamp : $event->starts_on->timestamp,
+            ])
+            ->values();
+
+        return view('site.event.index', ['events' => $events]);
     }
 
     public function show(string $slug): View
     {
-        $event = EventData::find($slug);
-        abort_if(! $event, 404);
+        $event = PublicEvent::published()
+            ->with(['vendors.category', 'vendors.photos'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
-        return view('site.event.show', [
-            'event' => $event,
-            'vendors' => Vendor::with(['category', 'photos'])->whereIn('slug', $event['vendor_slugs'])->get(),
-        ]);
+        return view('site.event.show', ['event' => $event, 'vendors' => $event->vendors]);
     }
 }
