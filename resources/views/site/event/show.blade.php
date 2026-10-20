@@ -6,7 +6,7 @@
 @section('content')
 
     @php
-        $labels = ['upcoming' => ['Akan Datang', 'category'], 'ongoing' => ['Sedang Berlangsung', 'maroon'], 'finished' => ['Selesai', 'neutral']];
+        $labels = ['upcoming' => ['Akan Datang', 'category'], 'ongoing' => ['Sedang Berlangsung', 'maroon'], 'finished' => ['Selesai', 'dark']];
         [$label, $variant] = $labels[$event->status];
     @endphp
 

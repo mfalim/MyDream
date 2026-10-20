@@ -48,6 +48,14 @@
                 </a>
             </div>
 
+            <small class="text-muted px-3 d-block mt-4">KONTEN WEBSITE</small>
+            <div class="mt-2">
+                <a href="{{ route('admin.public-events.index') }}"
+                    class="{{ request()->routeIs('admin.public-events.*') ? 'active' : '' }}">
+                    <i class="bi bi-megaphone me-2"></i>Event Publik
+                </a>
+            </div>
+
             <small class="text-muted px-3 d-block mt-4">DATA MASTER</small>
             <div class="mt-2">
                 <a href="{{ route('admin.categories.index') }}"

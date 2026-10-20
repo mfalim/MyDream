@@ -1,10 +1,11 @@
-@props(['variant' => 'neutral']) {{-- category | gold | maroon | neutral --}}
+@props(['variant' => 'neutral']) {{-- category | gold | maroon | dark | neutral --}}
 
 @php
     $variants = [
         'category' => 'bg-emerald text-white',
         'gold' => 'bg-gold text-white',
         'maroon' => 'bg-maroon text-white',
+        'dark' => 'bg-ink text-white',
         'neutral' => 'bg-black/5 text-ink/70',
     ];
 @endphp
