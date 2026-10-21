@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\MemberPosition;
 use App\Models\MemberSpecialization;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -21,8 +23,7 @@ class MemberController extends Controller
     private const STATUSES = [
         'standby',
         'aktif',
-        'resiko',
-        'selesai',
+        'inaktif',
     ];
 
     public function index(Request $request)
@@ -33,6 +34,8 @@ class MemberController extends Controller
 
         $members = Member::query()
             ->with('user')
+            ->whereNotNull('call_sign')
+            ->where('call_sign', '!=', '')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -58,6 +61,7 @@ class MemberController extends Controller
         return view('admin.members.create', [
             'positions' => MemberPosition::orderBy('name')->get(),
             'specializations' => MemberSpecialization::orderBy('name')->get(),
+            'divisions' => self::DIVISIONS,
         ]);
     }
 
@@ -86,23 +90,48 @@ class MemberController extends Controller
 
     public function store(Request $request)
     {
-        $data = $this->validatedData($request);
-        $data['member_code'] = 'TEMP';
-        $data['photo'] = $request->hasFile('photo')
-            ? $request->file('photo')->store('members', 'public')
-            : null;
-        $data['certification'] = $request->hasFile('certification')
-            ? $request->file('certification')->store('member-certifications', 'public')
-            : null;
-
-        $member = Member::create($data);
-        $member->update([
-            'member_code' => 'WO-KRU-' . str_pad($member->id, 3, '0', STR_PAD_LEFT),
+        $validated = $request->validate([
+            'email' => 'required|email|max:255|unique:users,email',
+            'position' => 'required|string|max:100',
+            'specialization' => 'nullable|string|max:255',
+            'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
+        ], [
+            'email.required' => 'Email member wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email tersebut sudah terdaftar.',
+            'position.required' => 'Posisi atau jabatan wajib dipilih.',
+            'specialization.string' => 'Spesialisasi tidak valid.',
+            'division.required' => 'Divisi wajib dipilih.',
+            'division.in' => 'Divisi yang dipilih tidak valid.',
         ]);
+
+        DB::transaction(function () use ($validated) {
+            $user = User::create([
+                'email' => $validated['email'],
+                'name' => explode('@', $validated['email'])[0],
+                'role' => 'member',
+                'status' => 'approved',
+                'google_id' => null,
+                'avatar' => null,
+            ]);
+
+            Member::create([
+                'user_id' => $user->id,
+                'position' => $validated['position'],
+                'specialization' => $validated['specialization'] ?? null,
+                'division' => $validated['division'],
+            ]);
+        });
+
+        // Penugasan member akan disimpan ke tabel members
+        // setelah struktur tabel dan relasinya dipastikan.
 
         return redirect()
             ->route('admin.members.index')
-            ->with('success', 'Anggota berhasil ditambahkan.');
+            ->with(
+                'success',
+                'Akun member berhasil didaftarkan. Member dapat login melalui Google OAuth menggunakan email tersebut.'
+            );
     }
 
     public function edit(Member $member)
@@ -111,33 +140,45 @@ class MemberController extends Controller
             'member' => $member,
             'positions' => MemberPosition::orderBy('name')->get(),
             'specializations' => MemberSpecialization::orderBy('name')->get(),
+            'divisions' => self::DIVISIONS,
         ]);
     }
 
     public function update(Request $request, Member $member)
     {
-        $data = $this->validatedData($request, $member);
+        $validated = $request->validate([
+            'email' => 'required|email|max:255|unique:users,email,' . $member->user_id,
+            'position' => 'required|string|max:100',
+            'specialization' => 'nullable|string|max:255',
+            'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
+        ], [
+            'email.required' => 'Email member wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email tersebut sudah digunakan.',
+            'position.required' => 'Posisi atau jabatan wajib dipilih.',
+            'division.required' => 'Divisi wajib dipilih.',
+            'division.in' => 'Divisi yang dipilih tidak valid.',
+        ]);
 
-        if ($request->hasFile('photo')) {
-            $this->deleteStoredFile($member->photo);
-            $data['photo'] = $request->file('photo')->store('members', 'public');
+        $member->update([
+            'position' => $validated['position'],
+            'specialization' => $validated['specialization'] ?? null,
+            'division' => $validated['division'],
+        ]);
+
+        if ($member->user) {
+            $member->user->update([
+                'email' => $validated['email'],
+            ]);
         }
-
-        if ($request->hasFile('certification')) {
-            $this->deleteStoredFile($member->certification);
-            $data['certification'] = $request->file('certification')->store('member-certifications', 'public');
-        }
-
-        $member->update($data);
 
         return redirect()
-            ->route('admin.members.show', $member)
-            ->with('success', 'Data anggota berhasil diperbarui.');
+            ->route('admin.members.index')
+            ->with('success', 'Data awal member berhasil diperbarui.');
     }
 
     public function destroy(Member $member)
     {
-        $this->deleteStoredFile($member->photo);
         $this->deleteStoredFile($member->certification);
         $member->delete();
 
@@ -146,35 +187,53 @@ class MemberController extends Controller
             ->with('success', 'Anggota berhasil dihapus.');
     }
 
-    private function validatedData(Request $request, ?Member $member = null): array
-    {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'call_sign' => 'required|string|max:100',
-            'phone' => 'required|string|max:30',
-            'email' => 'nullable|email|max:255',
-            'domicile' => 'nullable|string|max:500',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-            'division' => 'required|string|max:100',
-            'position' => 'required|string|max:100',
-            'specialization' => 'nullable|string|max:255',
-            'certification' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'ht_code' => 'nullable|string|max:50',
-            'emergency_name' => 'nullable|string|max:255',
-            'emergency_phone' => 'nullable|string|max:30',
-            'daily_fee' => 'required|numeric|min:0',
-            'status' => 'required|string|in:standby,aktif,resiko,selesai',
-        ]);
+    // private function validatedData(Request $request, ?Member $member = null): array
+    // {
+    //     $data = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'call_sign' => 'required|string|max:100',
+    //         'phone' => 'required|string|max:30',
+    //         'email' => 'nullable|email|max:255',
+    //         'domicile' => 'nullable|string|max:500',
+    //         'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    //         'division' => 'required|string|max:100',
+    //         'position' => 'required|string|max:100',
+    //         'specialization' => 'nullable|string|max:255',
+    //         'certification' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+    //         'ht_code' => 'nullable|string|max:50',
+    //         'emergency_name' => 'nullable|string|max:255',
+    //         'emergency_phone' => 'nullable|string|max:30',
+    //         'daily_fee' => 'required|numeric|min:0',
+    //         'status' => 'required|string|in:standby,aktif,resiko,selesai',
+    //     ], [
+    //         'name.required' => 'Nama anggota wajib diisi.',
+    //         'call_sign.required' => 'Nama panggilan wajib diisi.',
+    //         'phone.required' => 'Nomor telepon wajib diisi.',
+    //         'email.email' => 'Format alamat email tidak valid.',
+    //         'division.required' => 'Divisi wajib dipilih.',
+    //         'position.required' => 'Posisi atau jabatan wajib dipilih.',
+    //         'daily_fee.required' => 'Biaya harian wajib diisi.',
+    //         'daily_fee.numeric' => 'Biaya harian harus berupa angka.',
+    //         'daily_fee.min' => 'Biaya harian tidak boleh kurang dari nol.',
+    //         'status.required' => 'Status anggota wajib dipilih.',
+    //         'status.in' => 'Status anggota yang dipilih tidak valid.',
+    //         'photo.image' => 'Foto anggota harus berupa gambar.',
+    //         'photo.mimes' => 'Foto anggota harus berformat JPG, JPEG, PNG, atau WEBP.',
+    //         'photo.max' => 'Ukuran foto anggota maksimal 2 MB.',
+    //         'certification.image' => 'Sertifikasi harus berupa gambar.',
+    //         'certification.mimes' => 'Sertifikasi harus berformat JPG, JPEG, PNG, atau WEBP.',
+    //         'certification.max' => 'Ukuran sertifikasi maksimal 4 MB.',
+    //     ]);
 
-        unset($data['photo'], $data['certification']);
+    //     unset($data['photo'], $data['certification']);
 
-        if ($member) {
-            $data['photo'] = $member->photo;
-            $data['certification'] = $member->certification;
-        }
+    //     if ($member) {
+    //         $data['photo'] = $member->photo;
+    //         $data['certification'] = $member->certification;
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
     private function deleteStoredFile(?string $path): void
     {

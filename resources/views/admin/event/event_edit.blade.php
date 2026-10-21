@@ -405,8 +405,8 @@
                     if (vendors.length > 0) {
                         vendors.forEach((vendor, index) => {
                             const existingVendor = existingVendors[vendor.id];
-                            const startTime = existingVendor && existingVendor.start_time ? existingVendor.start_time.substring(0, 5) : '';
-                            const endTime = existingVendor && existingVendor.end_time ? existingVendor.end_time.substring(0, 5) : '';
+                            const startTime = existingVendor && existingVendor.start_time ? existingVendor.start_time.substring(11, 16) : '';
+                            const endTime = existingVendor && existingVendor.end_time ? existingVendor.end_time.substring(11, 16) : '';
 
                             vendorHTML += `
                                 <div class="row g-3 mb-3 p-3 border-bottom">

@@ -49,7 +49,9 @@ class TrackingController extends Controller
                 ];
             });
 
-        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif', 'standby'])
+            ->orderBy('name')
+            ->get();
 
         return view('admin.tracking.index', compact('bookings', 'eventsByBooking', 'members'));
     }
@@ -120,26 +122,27 @@ class TrackingController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected',
             'coordinator_id' => 'nullable|exists:members,id',
+            'coordinator_role' => 'nullable|in:Lead Coordinator,Coordinator',
         ]);
 
         $booking->update(['status' => $validated['status']]);
 
-        if ($validated['status'] === 'approved' && isset($validated['coordinator_id'])) {
+        if ($validated['status'] === 'approved' && ! empty($validated['coordinator_id'])) {
             $event = Event::where('booking_id', $bookingId)->first();
 
             if ($event) {
-                $existingMember = \App\Models\EventMember::where('event_id', $event->id)
-                    ->where('member_id', $validated['coordinator_id'])
-                    ->first();
+                $role = $validated['coordinator_role'] ?? 'Coordinator';
 
-                if (! $existingMember) {
-                    \App\Models\EventMember::create([
+                \App\Models\EventMember::updateOrCreate(
+                    [
                         'event_id' => $event->id,
                         'member_id' => $validated['coordinator_id'],
-                        'role' => 'Lead Coordinator',
+                    ],
+                    [
+                        'role' => $role,
                         'status' => 'assigned',
-                    ]);
-                }
+                    ]
+                );
             }
         }
 

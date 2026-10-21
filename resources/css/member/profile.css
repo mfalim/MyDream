@@ -1,0 +1,132 @@
+.membership-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 18px;
+    background: linear-gradient(135deg, rgba(17, 63, 58, 0.98) 0%, rgba(38, 91, 82, 0.94) 40%, rgba(19, 127, 106, 0.86) 100%);
+}
+
+.profile-shell {
+    width: min(760px, 100%);
+}
+
+.profile-card {
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 28px 70px rgba(7, 34, 31, 0.28);
+}
+
+.profile-card .card-header {
+    padding: 1.1rem 1.35rem;
+    border: 0;
+    background: linear-gradient(135deg, var(--wo-primary) 0%, #1d4f49 100%);
+    color: #fff;
+}
+
+.profile-card .card-header h4 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.profile-card .card-body {
+    padding: clamp(1.2rem, 2vw, 2rem);
+}
+
+.profile-banner {
+    margin-bottom: 1.25rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #dfeef1;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(111, 170, 153, 0.12), rgba(198, 154, 76, 0.08));
+    color: var(--wo-ink-soft);
+}
+
+.profile-banner strong {
+    color: var(--wo-primary);
+}
+
+.form-section {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+    color: var(--wo-primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.form-control,
+.form-select {
+    min-height: 48px;
+    border: 1px solid var(--wo-border-strong);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--wo-ink);
+    box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: rgba(18, 91, 82, 0.6);
+    box-shadow: 0 0 0 0.2rem rgba(18, 91, 82, 0.12);
+}
+
+.form-control:disabled {
+    background: #f3f7f6;
+    color: var(--wo-text-muted);
+}
+
+.form-text {
+    color: var(--wo-text-muted);
+    font-size: 0.75rem;
+}
+
+.invalid-feedback {
+    display: block;
+}
+
+.info-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.profile-submit {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--wo-primary) 0%, #1a6b5b 100%);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: 0 18px 26px rgba(17, 63, 58, 0.14);
+}
+
+.profile-submit:hover {
+    color: #fff;
+}
+
+@media (max-width: 575px) {
+    .membership-page {
+        padding: 24px 14px;
+    }
+
+    .info-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-card .card-header h4 {
+        font-size: 1.04rem;
+    }
+}

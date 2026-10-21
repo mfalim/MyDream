@@ -21,17 +21,17 @@
     text-transform: uppercase;
 }
 .member-header h2 {
-    margin: 0 0 7px;
+    margin: 0 0 8px;
     color: #173f39;
-    font-size: 29px;
-    line-height: 1.05;
+    font-size: 28px;
+    line-height: 1.3;
     font-weight: 700;
 }
 .member-header p {
     margin: 0;
     color: #74827f;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 16px;
+    line-height: 1.6;
 }
 .member-header-stats {
     display: flex;
@@ -52,7 +52,8 @@
 }
 .member-stat strong {
     color: #173f39;
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: 700;
 }
 .member-toolbar {
     display: flex;
@@ -88,6 +89,7 @@
 }
 .member-search input::placeholder {
     color: #9aa7a4;
+    font-size: 16px;
 }
 .member-filter {
     min-width: 145px;
@@ -128,7 +130,7 @@
     border-radius: 18px;
     background: #ffffff;
     color: #667773;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
@@ -217,29 +219,29 @@
 }
 .member-name h4 {
     overflow: hidden;
-    margin: 0 0 2px;
+    margin: 0 0 4px;
     color: #233e38;
-    font-size: 14px;
+    font-size: 19px;
     font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .member-name p {
-    margin: 0 0 2px;
+    margin: 0 0 3px;
     color: #61736d;
-    font-size: 10px;
+    font-size: 15px;
 }
 .member-id {
     color: #98a39f;
-    font-size: 9px;
+    font-size: 13px;
 }
 .member-role {
-    margin-bottom: 8px;
-    padding: 5px 7px;
-    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 6px 8px;
+    border-radius: 6px;
     background: #f0f4f2;
     color: #63746f;
-    font-size: 9px;
+    font-size: 13px;
 }
 .member-project {
     margin-bottom: 9px;
@@ -248,31 +250,31 @@
     background: #f4f7f5;
 }
 .member-project-label {
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     color: #9a7261;
-    font-size: 8px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 .member-project-name {
     color: #304740;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
-    line-height: 1.35;
+    line-height: 1.5;
 }
 .member-project-location {
-    margin-top: 2px;
+    margin-top: 4px;
     color: #899692;
-    font-size: 9px;
+    font-size: 13px;
 }
 .member-progress-info {
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     color: #62736e;
-    font-size: 9px;
+    font-size: 13px;
 }
 .member-progress-info strong {
     color: #31514a;
@@ -302,7 +304,7 @@
     border-radius: 6px;
     background: #eff3f1;
     color: #415852;
-    font-size: 10px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
 }

@@ -14,7 +14,6 @@ class Member extends Model
         'phone',
         'email',
         'domicile',
-        'photo',
         'division',
         'position',
         'specialization',
@@ -29,6 +28,44 @@ class Member extends Model
     protected $casts = [
         'daily_fee' => 'decimal:2',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $member) {
+            if (empty($member->member_code)) {
+                $member->member_code = self::generateMemberCode();
+            }
+        });
+    }
+
+    public static function generateMemberCode(): string
+    {
+        $lastMember = self::query()
+            ->whereNotNull('member_code')
+            ->orderByDesc('id')
+            ->first();
+
+        $sequence = 1;
+
+        if ($lastMember && $lastMember->member_code) {
+            $digits = preg_replace('/\D+/', '', (string) $lastMember->member_code);
+
+            if ($digits !== '') {
+                $sequence = (int) $digits + 1;
+            }
+        }
+
+        $candidate = 'MBR' . str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
+        $counter = 1;
+
+        while (self::query()->where('member_code', $candidate)->exists() && $counter <= 1000) {
+            $sequence++;
+            $candidate = 'MBR' . str_pad((string) $sequence, 3, '0', STR_PAD_LEFT);
+            $counter++;
+        }
+
+        return $candidate;
+    }
 
     public function user()
     {

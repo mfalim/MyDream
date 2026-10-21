@@ -123,14 +123,9 @@
                     Standby
                 </option>
 
-                <option value="resiko"
-                    @selected(request('status') === 'resiko')>
-                    Gladi Resik
-                </option>
-
-                <option value="selesai"
-                    @selected(request('status') === 'selesai')>
-                    Selesai
+                <option value="inaktif"
+                    @selected(request('status') === 'inaktif')>
+                    Tidak Aktif
                 </option>
 
             </select>
@@ -155,7 +150,7 @@
             </form>
 
 
-            <a href="{{ route('admin.user-members.create') }}"
+            <a href="{{ route('admin.members.create') }}"
                 class="btn-add-member">
                 + Rekrut / Tambah Anggota
             </a>
@@ -176,14 +171,14 @@
                 ● Sedang Bertugas
             </a>
 
-            <a href="{{ route('admin.members.index', ['status' => 'resiko']) }}"
-                class="member-tab {{ request('status') === 'resiko' ? 'active' : '' }}">
-                ◉ Gladi Resik
-            </a>
-
             <a href="{{ route('admin.members.index', ['status' => 'standby']) }}"
                 class="member-tab {{ request('status') === 'standby' ? 'active' : '' }}">
-                ● Standby
+                ◉ Standby
+            </a>
+
+            <a href="{{ route('admin.members.index', ['status' => 'inaktif']) }}"
+                class="member-tab {{ request('status') === 'inaktif' ? 'active' : '' }}">
+                ● Tidak Aktif
             </a>
 
         </div>
@@ -203,16 +198,15 @@
                     $status = strtolower($member->status ?? 'standby');
 
                     $statusText = match ($status) {
-                        'aktif' => 'Aktif di Lapangan',
-                        'resiko' => 'Gladi Resik',
+                        'aktif' => 'Sedang bertugas',
                         'standby' => 'Standby / On-Call',
-                        'selesai' => 'Selesai',
+                        'inaktif' => 'Tidak Aktif',
                         default => ucfirst($status),
                     };
 
                     $statusClass = match ($status) {
-                        'resiko' => 'warning',
-                        'standby', 'selesai' => 'gray',
+                        'inaktif' => 'warning',
+                        'standby', 'aktif' => 'gray',
                         default => '',
                     };
 
@@ -244,21 +238,7 @@
                         <div class="member-profile">
 
                             <div class="member-avatar">
-
-                                @if ($member->photo)
-                                    <img
-                                        src="{{ asset('storage/' . $member->photo) }}"
-                                        alt="{{ $member->name }}"
-                                    >
-                                @elseif($member->user && $member->user->avatar)
-                                    <img
-                                        src="{{ $member->user->avatar }}"
-                                        alt="{{ $member->name }}"
-                                    >
-                                @else
-                                    👤
-                                @endif
-
+                                👤
                             </div>
 
                             <div class="member-name">
@@ -390,7 +370,7 @@
                         penugasan dan aktivitas kru.
                     </p>
 
-                    <a href="{{ route('admin.user-members.create') }}"
+                    <a href="{{ route('admin.members.create') }}"
                         class="btn-add-member">
                         + Tambah Anggota
                     </a>

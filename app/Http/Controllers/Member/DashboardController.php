@@ -11,17 +11,22 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
-        if (!$member) {
-            if ($user->role === 'member') {
-                return redirect()->route('member.profile.complete');
-            }
-
+        if ($user->role !== 'member') {
             abort(403, 'Akses ditolak. Anda bukan member organizer.');
+        }
+
+        if (!$member) {
+            return redirect()->route('member.profile.complete');
+        }
+
+        // Jika call_sign belum diisi, arahkan ke form pelengkapan profil.
+        if (empty($member->call_sign)) {
+            return redirect()->route('member.profile.complete');
         }
 
         $eventIds = EventMember::where('member_id', $member->id)->pluck('event_id');
@@ -43,6 +48,7 @@ class DashboardController extends Controller
             'rejected' => $schedules->where('status', 'rejected')->count(),
             'total_events' => $eventMembers->count(),
         ];
+
 
         return view('member.dashboard', compact('member', 'schedules', 'eventMembers', 'stats'));
     }

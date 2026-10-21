@@ -1,0 +1,31 @@
+.member-category-page {
+    max-width: 1200px;
+}
+
+.member-category-table thead th {
+    background: #f6f8f8;
+    color: #1e2d2b;
+    border-bottom: 1px solid #e7eceb;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
+}
+
+.member-category-table tbody td {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.member-category-page .badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+@media (max-width: 768px) {
+    .member-category-page .btn {
+        width: 100%;
+    }
+}

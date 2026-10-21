@@ -21,17 +21,16 @@
     text-decoration: none;
 }
 .member-create-header h2 {
-    margin: 0 0 7px;
-    color: #173f39;
-    font-size: 29px;
-    line-height: 1.1;
+    font-size: 28px;
     font-weight: 700;
+    line-height: 1.3;
+    color: #173b32;
+    margin-bottom: 8px;
 }
 .member-create-header p {
-    margin: 0;
-    color: #76847f;
-    font-size: 13px;
-    line-height: 1.5;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6b7c75;
 }
 .member-form-section {
     background: #ffffff;
@@ -159,12 +158,10 @@
 }
 .form-label-custom {
     display: block;
-    margin-bottom: 6px;
-    color: #425650;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.2px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #344b42;
 }
 .form-label-custom .required {
     color: #b35a4d;
@@ -172,13 +169,15 @@
 .form-control-custom,
 .form-select-custom {
     width: 100%;
-    border: 1px solid #e0e7e4;
-    background: #ffffff;
-    border-radius: 7px;
-    padding: 10px 11px;
-    color: #354a44;
-    font-size: 12px;
-    outline: none;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid #d8e2dc;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #263d34;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .form-control-custom:focus,
 .form-select-custom:focus {
@@ -194,9 +193,10 @@ textarea.form-control-custom {
     color: #687773;
 }
 .input-note {
-    margin-top: 5px;
-    color: #9aa5a2;
-    font-size: 9px;
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #74847c;
 }
 .division-grid {
     display: grid;
@@ -262,15 +262,12 @@ textarea.form-control-custom {
     background: #f7faf8;
     border-top: 1px solid #edf1ef;
 }
-.btn-cancel,
-.btn-save {
-    border: none;
-    border-radius: 7px;
-    padding: 10px 16px;
-    font-size: 11px;
+.btn-save,
+.btn-cancel {
+    padding: 11px 18px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
 }
 .btn-cancel {
     background: #ffffff;
