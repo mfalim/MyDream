@@ -3,12 +3,12 @@ name: Laravel CI
 on:
   push:
     branches:
-      - main
+      - staging
       - 'feature/**'
 
   pull_request:
     branches:
-      - main
+      - staging
 
 jobs:
   test:
