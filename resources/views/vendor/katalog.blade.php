@@ -284,7 +284,7 @@
                                 @if($foto)
 
                                     <img
-                                        src="{{ $foto }}"
+                                        src="{{ asset('storage/' . $foto) }}"
                                         alt="Portofolio {{ $layanan->nama_layanan }}"
                                         class="vendor-gallery-image"
                                     >

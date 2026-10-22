@@ -1245,3 +1245,15 @@ RESPONSIVE
     width: 100%;
   }
 }
+
+/* =========================================================
+UPLOAD FOTO (TAMBAH & EDIT LAYANAN)
+========================================================= */
+
+.vendor-gallery-upload { cursor: pointer; border: 1px dashed #afc1b4; }
+
+.vendor-gallery-upload:hover { background: #f1f6f2; }
+
+.gallery-plus { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 26px; color: #8aa392; }
+
+.vendor-alert-error { background: #fbefed; border: 1px solid #efd1cc; color: #9a4a3e; }

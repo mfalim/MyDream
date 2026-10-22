@@ -5,9 +5,21 @@ namespace App\Http\Controllers\Vendor;
 use App\Http\Controllers\Controller;
 use App\Models\Layanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class LayananController extends Controller
 {
+    /**
+     * Kolom foto di tabel layanans.
+     */
+    private const KOLOM_FOTO = [
+        'foto_utama',
+        'gallery_1',
+        'gallery_2',
+        'gallery_3',
+        'gallery_4',
+    ];
+
     /**
      * Menampilkan daftar layanan di katalog.
      */
@@ -49,6 +61,13 @@ class LayananController extends Controller
             'meja_akad' => 'nullable|string',
             'aisle_carpet' => 'nullable|string',
             'photo_booth' => 'nullable|string',
+
+            // Foto (maks. 5 MB per file)
+            'foto_utama' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_1' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $layanan = new Layanan();
@@ -81,6 +100,13 @@ class LayananController extends Controller
         $layanan->photo_booth = $request->has('photo_booth')
             ? 'Photo Booth & Galeri Foto Interaktif'
             : null;
+
+        // Simpan file foto, yang masuk ke database hanya path-nya.
+        foreach (self::KOLOM_FOTO as $kolom) {
+            if ($request->hasFile($kolom)) {
+                $layanan->$kolom = $request->file($kolom)->store('layanan', 'public');
+            }
+        }
 
         $layanan->status = $validated['status'] ?? 'Draft Vendor';
 
@@ -126,6 +152,12 @@ class LayananController extends Controller
             'meja_akad' => 'nullable|string',
             'aisle_carpet' => 'nullable|string',
             'photo_booth' => 'nullable|string',
+
+            'foto_utama' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_1' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_2' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_3' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'gallery_4' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $layanan->nama_layanan = $validated['nama_layanan'];
@@ -156,6 +188,15 @@ class LayananController extends Controller
             ? 'Photo Booth & Galeri Foto Interaktif'
             : null;
 
+        // Foto: hanya diganti kalau ada file baru, file lama dihapus.
+        foreach (self::KOLOM_FOTO as $kolom) {
+            if ($request->hasFile($kolom)) {
+                $this->hapusFile($layanan->$kolom);
+
+                $layanan->$kolom = $request->file($kolom)->store('layanan', 'public');
+            }
+        }
+
         $layanan->status = $validated['status'];
 
         $layanan->save();
@@ -166,16 +207,30 @@ class LayananController extends Controller
     }
 
     /**
-     * Menghapus layanan.
+     * Menghapus layanan beserta file fotonya.
      */
     public function destroy($id)
     {
         $layanan = Layanan::findOrFail($id);
+
+        foreach (self::KOLOM_FOTO as $kolom) {
+            $this->hapusFile($layanan->$kolom);
+        }
 
         $layanan->delete();
 
         return redirect()
             ->route('vendor.katalog')
             ->with('success', 'Layanan berhasil dihapus.');
+    }
+
+    /**
+     * Hapus file dari storage publik kalau ada.
+     */
+    private function hapusFile(?string $path): void
+    {
+        if ($path && Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->delete($path);
+        }
     }
 }

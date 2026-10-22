@@ -494,44 +494,34 @@
 
                 <div class="vendor-hero-image">
 
-                    <img
-                        src="{{ asset('images/vendor/portfolio-hero.jpg') }}"
-                        alt="Portofolio Dekorasi"
-                        onerror="this.style.display='none'"
-                    >
+                    <img id="heroPreview" alt="Portofolio Dekorasi" style="display:none">
 
-                    <div class="vendor-image-placeholder">
-
-                        <span>
-                            Foto Portofolio
-                        </span>
-
-                        <small>
-                            16:9
-                        </small>
-
+                    <div class="vendor-image-placeholder" id="heroPlaceholder">
+                        <span>Foto Portofolio</span>
+                        <small>16:9</small>
                     </div>
 
-                    <div class="vendor-image-overlay">
-
-                        <strong>
-                            DSC08492_Luxury_Stage_Main.raw
-                        </strong>
-
-                        <span>
-                            6.4 MB • Resolusi Ultra HD
-                        </span>
-
+                    <div class="vendor-image-overlay" id="heroInfo" style="display:none">
+                        <strong id="heroName"></strong>
+                        <span id="heroSize"></span>
                     </div>
 
                 </div>
 
+                <input
+                    type="file"
+                    name="foto_utama"
+                    id="fotoUtama"
+                    accept="image/*"
+                    hidden
+                >
 
                 <button
                     type="button"
                     class="vendor-upload-button"
+                    onclick="document.getElementById('fotoUtama').click()"
                 >
-                    ↗ &nbsp; Ganti Foto Portofolio Resolusi Tinggi
+                    ↗ &nbsp; Pilih Foto Utama
                 </button>
 
             </section>
@@ -556,7 +546,7 @@
                     </div>
 
                     <span class="gallery-count">
-                        4 / 4<br>
+                        <span id="galleryCount">0</span> / 4<br>
                         <small>Terunggah</small>
                     </span>
 
@@ -565,64 +555,20 @@
 
                 <div class="vendor-gallery">
 
-                    <div class="vendor-gallery-item">
-
-                        <img
-                            src="{{ asset('images/vendor/gallery-1.jpg') }}"
-                            alt="Macro Floral"
-                            onerror="this.style.display='none'"
-                        >
-
-                        <span>
-                            Macro Floral
-                        </span>
-
-                    </div>
-
-
-                    <div class="vendor-gallery-item">
-
-                        <img
-                            src="{{ asset('images/vendor/gallery-2.jpg') }}"
-                            alt="Entrance Gate"
-                            onerror="this.style.display='none'"
-                        >
-
-                        <span>
-                            Entrance Gate
-                        </span>
-
-                    </div>
-
-
-                    <div class="vendor-gallery-item">
-
-                        <img
-                            src="{{ asset('images/vendor/gallery-3.jpg') }}"
-                            alt="Meja Akad"
-                            onerror="this.style.display='none'"
-                        >
-
-                        <span>
-                            Meja Akad
-                        </span>
-
-                    </div>
-
-
-                    <div class="vendor-gallery-item">
-
-                        <img
-                            src="{{ asset('images/vendor/gallery-4.jpg') }}"
-                            alt="Photo Booth"
-                            onerror="this.style.display='none'"
-                        >
-
-                        <span>
-                            Photo Booth
-                        </span>
-
-                    </div>
+                    @foreach ([1 => 'Macro Floral', 2 => 'Entrance Gate', 3 => 'Meja Akad', 4 => 'Photo Booth'] as $i => $label)
+                        <label class="vendor-gallery-item vendor-gallery-upload">
+                            <img id="galleryPreview{{ $i }}" alt="{{ $label }}" style="display:none">
+                            <em class="gallery-plus">+</em>
+                            <span>{{ $label }}</span>
+                            <input
+                                type="file"
+                                name="gallery_{{ $i }}"
+                                accept="image/*"
+                                hidden
+                                data-preview="galleryPreview{{ $i }}"
+                            >
+                        </label>
+                    @endforeach
 
                 </div>
 
@@ -731,5 +677,45 @@
 </form>
 
 </div>
+
+{{-- =====================================================
+     SCRIPT PREVIEW FOTO
+====================================================== --}}
+
+<script>
+    const heroInput = document.getElementById('fotoUtama');
+
+    heroInput.addEventListener('change', () => {
+        const file = heroInput.files[0];
+        if (!file) return;
+
+        const img = document.getElementById('heroPreview');
+        img.src = URL.createObjectURL(file);
+        img.style.display = 'block';
+
+        document.getElementById('heroPlaceholder').style.display = 'none';
+        document.getElementById('heroInfo').style.display = 'flex';
+        document.getElementById('heroName').textContent = file.name;
+        document.getElementById('heroSize').textContent =
+            (file.size / 1048576).toFixed(1) + ' MB';
+    });
+
+    document.querySelectorAll('.vendor-gallery-upload input[type=file]').forEach(input => {
+        input.addEventListener('change', () => {
+            const file = input.files[0];
+            if (!file) return;
+
+            const img = document.getElementById(input.dataset.preview);
+            img.src = URL.createObjectURL(file);
+            img.style.display = 'block';
+
+            input.closest('label').querySelector('.gallery-plus').style.display = 'none';
+
+            document.getElementById('galleryCount').textContent =
+                [...document.querySelectorAll('.vendor-gallery-upload input[type=file]')]
+                    .filter(i => i.files.length).length;
+        });
+    });
+</script>
 
 @endsection
