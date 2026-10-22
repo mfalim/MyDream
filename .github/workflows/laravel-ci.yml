@@ -54,7 +54,7 @@ jobs:
           echo "DB_PORT=3306" >> .env
           echo "DB_DATABASE=laravel_test" >> .env
           echo "DB_USERNAME=root" >> .env
-          echo "DB_PASSWORD=Raphtalia123*" >> .env
+          echo "DB_PASSWORD=root" >> .env
 
       - name: Run Migrations
         run: php artisan migrate --force
