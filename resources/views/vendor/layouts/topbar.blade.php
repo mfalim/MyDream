@@ -35,7 +35,9 @@
     <div class="vendor-topbar-right">
 
         <button type="button" class="notification-btn">
-            ♧
+            <span class="notification-icon">🔔</span>
+
+            </span>
         </button>
 
         <div class="topbar-divider"></div>

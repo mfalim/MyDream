@@ -20,7 +20,7 @@
         <a href="{{ route('vendor.dashboard') }}"
            class="vendor-nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
 
-            <span class="nav-icon">▣</span>
+            <span class="nav-icon">📊</span>
 
             <span>Dashboard Vendor</span>
 
@@ -30,7 +30,7 @@
         <a href="{{ route('vendor.kalender') }}"
            class="vendor-nav-item {{ request()->routeIs('vendor.kalender') ? 'active' : '' }}">
 
-            <span class="nav-icon">▦</span>
+            <span class="nav-icon">📅</span>
 
             <span>Kalender & Jadwal Acara</span>
 
@@ -40,7 +40,7 @@
         <a href="{{ route('vendor.tracking') }}"
            class="vendor-nav-item {{ request()->routeIs('vendor.tracking') ? 'active' : '' }}">
 
-            <span class="nav-icon">☑</span>
+            <span class="nav-icon">🔍</span>
 
             <span>Tracking Tugas & SPK</span>
 
@@ -50,7 +50,7 @@
         <a href="{{ route('vendor.konfirmasi') }}"
            class="vendor-nav-item {{ request()->routeIs('vendor.konfirmasi') ? 'active' : '' }}">
 
-            <span class="nav-icon">▣</span>
+            <span class="nav-icon">🔄</span>
 
             <span>Konfirmasi Lintas Vendor</span>
 

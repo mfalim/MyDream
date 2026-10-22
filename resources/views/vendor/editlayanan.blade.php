@@ -32,9 +32,7 @@
 
             <span class="status-dot"></span>
 
-            <span>
-                Status:
-            </span>
+            <span>Status:</span>
 
             <strong>
                 {{ $layanan->status ?? 'Draft Vendor' }}
@@ -45,7 +43,7 @@
     </div>
 
 
-    {{-- FORM EDIT --}}
+    {{-- FORM --}}
     <form
         action="{{ route('vendor.layanan.update', $layanan->id) }}"
         method="POST"
@@ -55,7 +53,10 @@
         @method('PUT')
 
 
-        {{-- INFORMASI DASAR --}}
+        {{-- =====================================================
+             1. INFORMASI DASAR
+        ====================================================== --}}
+
         <section class="vendor-form-card">
 
             <div class="vendor-section-heading">
@@ -77,6 +78,7 @@
             </div>
 
 
+            {{-- NAMA --}}
             <div class="vendor-form-group">
 
                 <label class="vendor-form-label">
@@ -103,6 +105,7 @@
 
             <div class="vendor-form-row">
 
+                {{-- KATEGORI --}}
                 <div class="vendor-form-group">
 
                     <label class="vendor-form-label">
@@ -116,7 +119,7 @@
                         required
                     >
 
-                        @foreach ([
+                        @foreach([
                             'Dekorasi Pelaminan & Stage',
                             'Floral Decoration',
                             'Wedding Decoration',
@@ -137,6 +140,7 @@
                 </div>
 
 
+                {{-- HARGA --}}
                 <div class="vendor-form-group">
 
                     <label class="vendor-form-label">
@@ -146,9 +150,7 @@
 
                     <div class="vendor-price-input">
 
-                        <span>
-                            Rp
-                        </span>
+                        <span>Rp</span>
 
                         <input
                             type="number"
@@ -174,7 +176,10 @@
         </section>
 
 
-        {{-- SPESIFIKASI --}}
+        {{-- =====================================================
+             2. SPESIFIKASI TEKNIS
+        ====================================================== --}}
+
         <section class="vendor-form-card">
 
             <div class="vendor-section-heading">
@@ -196,11 +201,14 @@
 
                 </div>
 
+                <span class="vendor-required-info">
+                    WAJIB DIISI
+                </span>
+
             </div>
 
 
             <div class="vendor-spec-grid">
-
 
                 {{-- DIMENSI --}}
                 <div class="vendor-spec-card">
@@ -219,6 +227,7 @@
                         name="dimensi_panggung"
                         class="vendor-form-input"
                         value="{{ old('dimensi_panggung', $layanan->dimensi_panggung) }}"
+                        required
                     >
 
                 </div>
@@ -241,6 +250,7 @@
                         name="daya_listrik_rigging"
                         class="vendor-form-input"
                         value="{{ old('daya_listrik_rigging', $layanan->daya_listrik_rigging) }}"
+                        required
                     >
 
                 </div>
@@ -263,6 +273,7 @@
                         name="alokasi_kru"
                         class="vendor-form-input"
                         value="{{ old('alokasi_kru', $layanan->alokasi_kru) }}"
+                        required
                     >
 
                 </div>
@@ -285,6 +296,7 @@
                         name="durasi_loading_teardown"
                         class="vendor-form-input"
                         value="{{ old('durasi_loading_teardown', $layanan->durasi_loading_teardown) }}"
+                        required
                     >
 
                 </div>
@@ -294,7 +306,10 @@
         </section>
 
 
-        {{-- DESKRIPSI & FASILITAS --}}
+        {{-- =====================================================
+             3. DESKRIPSI & FASILITAS
+        ====================================================== --}}
+
         <section class="vendor-form-card">
 
             <div class="vendor-section-heading">
@@ -309,7 +324,16 @@
                         Deskripsi Konsep & Ruang Lingkup Fasilitas
                     </h2>
 
+                    <p>
+                        Jelaskan konsep layanan dan fasilitas yang
+                        termasuk dalam paket.
+                    </p>
+
                 </div>
+
+                <span class="vendor-required-info">
+                    WAJIB DIISI
+                </span>
 
             </div>
 
@@ -319,12 +343,20 @@
 
                 <label class="vendor-form-label">
                     DETAIL KOMPOSISI MATERIAL & DESKRIPSI ARTISTIK
+                    <span class="vendor-required">*</span>
                 </label>
 
                 <textarea
                     name="deskripsi"
                     class="vendor-form-textarea"
+                    required
                 >{{ old('deskripsi', $layanan->deskripsi) }}</textarea>
+
+                @error('deskripsi')
+                    <small class="text-danger">
+                        {{ $message }}
+                    </small>
+                @enderror
 
             </div>
 
@@ -336,25 +368,22 @@
                     FASILITAS TAMBAHAN YANG TERMASUK DALAM PAKET
                 </label>
 
-
                 <div class="vendor-facility-grid">
 
 
                     {{-- GRAND ENTRANCE --}}
                     <label class="vendor-facility-item">
 
-                        {{-- Nilai ini dikirim ketika checkbox tidak dicentang --}}
-                        <input
-                            type="hidden"
-                            name="grand_entrance_gate"
-                            value=""
-                        >
-
                         <input
                             type="checkbox"
                             name="grand_entrance_gate"
                             value="Grand Entrance Gate 4×3 Meter"
-                            @checked(old('grand_entrance_gate', $layanan->grand_entrance_gate))
+                            @checked(
+                                old(
+                                    'grand_entrance_gate',
+                                    $layanan->grand_entrance_gate
+                                )
+                            )
                         >
 
                         <span>
@@ -376,16 +405,15 @@
                     <label class="vendor-facility-item">
 
                         <input
-                            type="hidden"
-                            name="meja_akad"
-                            value=""
-                        >
-
-                        <input
                             type="checkbox"
                             name="meja_akad"
                             value="Meja Akad / Pemberkatan Khusus"
-                            @checked(old('meja_akad', $layanan->meja_akad))
+                            @checked(
+                                old(
+                                    'meja_akad',
+                                    $layanan->meja_akad
+                                )
+                            )
                         >
 
                         <span>
@@ -407,16 +435,15 @@
                     <label class="vendor-facility-item">
 
                         <input
-                            type="hidden"
-                            name="aisle_carpet"
-                            value=""
-                        >
-
-                        <input
                             type="checkbox"
                             name="aisle_carpet"
                             value="Aisle Carpet & 10 Standing Flowers"
-                            @checked(old('aisle_carpet', $layanan->aisle_carpet))
+                            @checked(
+                                old(
+                                    'aisle_carpet',
+                                    $layanan->aisle_carpet
+                                )
+                            )
                         >
 
                         <span>
@@ -438,16 +465,15 @@
                     <label class="vendor-facility-item">
 
                         <input
-                            type="hidden"
-                            name="photo_booth"
-                            value=""
-                        >
-
-                        <input
                             type="checkbox"
                             name="photo_booth"
                             value="Photo Booth & Galeri Foto Interaktif"
-                            @checked(old('photo_booth', $layanan->photo_booth))
+                            @checked(
+                                old(
+                                    'photo_booth',
+                                    $layanan->photo_booth
+                                )
+                            )
                         >
 
                         <span>
@@ -464,7 +490,6 @@
 
                     </label>
 
-
                 </div>
 
             </div>
@@ -472,7 +497,10 @@
         </section>
 
 
-        {{-- STATUS --}}
+        {{-- =====================================================
+             4. STATUS
+        ====================================================== --}}
+
         <section class="vendor-form-card">
 
             <div class="vendor-form-group">
@@ -516,18 +544,15 @@
 
                 </select>
 
-                @error('status')
-                    <small class="text-danger">
-                        {{ $message }}
-                    </small>
-                @enderror
-
             </div>
 
         </section>
 
 
-        {{-- ACTION BAR --}}
+        {{-- =====================================================
+             ACTION BAR
+        ====================================================== --}}
+
         <div class="vendor-service-actions">
 
             <div class="vendor-action-information">

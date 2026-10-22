@@ -20,7 +20,7 @@
 
 <div class="overview-top">
 
-    <div style="color:#71817d; font-size:13px;">
+    <div class="overview-breadcrumb">
         Kalender Acara ›
         <strong>Overview Detail Acara</strong>
         › #WO-2025-081
@@ -47,7 +47,7 @@
 <div class="overview-actions">
 
     <button class="overview-btn">
-        ▣ Cetak Lembar Kerja Hari H
+         Cetak Lembar Kerja Hari H
     </button>
 
     <button class="overview-btn">
