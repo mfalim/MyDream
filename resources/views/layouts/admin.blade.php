@@ -54,6 +54,10 @@
                     class="{{ request()->routeIs('admin.public-events.*') ? 'active' : '' }}">
                     <i class="bi bi-megaphone me-2"></i>Event Publik
                 </a>
+                <a href="{{ route('admin.articles.index') }}"
+                    class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-text me-2"></i>Artikel
+                </a>
             </div>
 
             <small class="text-muted px-3 d-block mt-4">DATA MASTER</small>

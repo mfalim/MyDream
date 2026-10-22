@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\PublicEventController;
 use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
@@ -12,4 +13,6 @@ Route::prefix('admin')
         Route::resource('public-events', PublicEventController::class)
             ->parameters(['public-events' => 'event'])
             ->except(['show']);
+
+        Route::resource('articles', ArticleController::class)->except(['show']);
     });

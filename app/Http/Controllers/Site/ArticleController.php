@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Site;
 
-use App\Data\Site\ArticleData;
 use App\Http\Controllers\Controller;
-use App\Models\Package;
+use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -12,11 +11,11 @@ class ArticleController extends Controller
 {
     public function index(Request $request): View
     {
-        $categories = ArticleData::categories();
-        $category = in_array($request->query('category'), $categories, true) ? $request->query('category') : null;
+        $categories = Article::published()->distinct()->orderBy('category')->pluck('category');
+        $category = $categories->contains($request->query('category')) ? $request->query('category') : null;
 
         return view('site.article.index', [
-            'articles' => collect(ArticleData::all())->when($category, fn ($c) => $c->where('category', $category))->values(),
+            'articles' => Article::published()->when($category, fn ($q) => $q->where('category', $category))->latestFirst()->get(),
             'categories' => $categories,
             'activeCategory' => $category,
         ]);
@@ -24,13 +23,12 @@ class ArticleController extends Controller
 
     public function show(string $slug): View
     {
-        $article = ArticleData::find($slug);
-        abort_if(! $article, 404);
+        $article = Article::published()->with('package')->where('slug', $slug)->firstOrFail();
 
         return view('site.article.show', [
             'article' => $article,
-            'package' => $article['related_package_slug'] ? Package::where('slug', $article['related_package_slug'])->first() : null,
-            'related' => collect(ArticleData::all())->where('slug', '!=', $slug)->take(3)->values(),
+            'package' => $article->package,
+            'related' => Article::published()->where('id', '!=', $article->id)->latestFirst()->take(3)->get(),
         ]);
     }
 }
