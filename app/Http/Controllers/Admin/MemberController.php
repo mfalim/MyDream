@@ -118,6 +118,7 @@ class MemberController extends Controller
             Member::create([
                 'user_id' => $user->id,
                 'position' => $validated['position'],
+                'status' => $request->status,
                 'specialization' => $validated['specialization'] ?? null,
                 'division' => $validated['division'],
             ]);
@@ -162,6 +163,7 @@ class MemberController extends Controller
 
         $member->update([
             'position' => $validated['position'],
+            'status' => $request->status,
             'specialization' => $validated['specialization'] ?? null,
             'division' => $validated['division'],
         ]);
