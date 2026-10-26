@@ -123,7 +123,8 @@
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Status</label>
                                     <select class="form-select" name="event_status">
-                                        <option value="scheduled" {{ $event->status == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
+                                        <option value="draft" {{ $event->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                        <option value="upcoming" {{ $event->status == 'upcoming' || $event->status == 'scheduled' ? 'selected' : '' }}>Upcoming</option>
                                         <option value="ongoing" {{ $event->status == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
                                         <option value="completed" {{ $event->status == 'completed' ? 'selected' : '' }}>Completed</option>
                                         <option value="cancelled" {{ $event->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
@@ -166,10 +167,10 @@
                                     <div class="row g-3 mb-3 team-item">
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Pilih Member</label>
-                                            <select class="form-select" name="team_member_id[]">
+                                            <select class="form-select team-member-select" name="team_member_id[]">
                                                 <option value="">Pilih Member</option>
                                                 @foreach ($members as $member)
-                                                    <option value="{{ $member->id }}"
+                                                    <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}"
                                                         {{ $eventMember->member_id == $member->id ? 'selected' : '' }}>
                                                         {{ $member->name }} ({{ $member->call_sign }})
                                                     </option>
@@ -178,8 +179,8 @@
                                         </div>
                                         <div class="col-md-5">
                                             <label class="form-label fw-semibold">Role</label>
-                                            <input type="text" class="form-control" name="team_member_role[]"
-                                                value="{{ $eventMember->role }}"
+                                            <input type="text" class="form-control team-member-role" name="team_member_role[]"
+                                                value="{{ $eventMember->role ?: ($eventMember->member?->position ?? 'Team Member') }}"
                                                 placeholder="Contoh: Lead Director, Coordinator">
                                         </div>
                                         <div class="col-md-1 d-flex align-items-end">
@@ -192,16 +193,18 @@
                                     <div class="row g-3 mb-3 team-item">
                                         <div class="col-md-6">
                                             <label class="form-label fw-semibold">Pilih Member</label>
-                                            <select class="form-select" name="team_member_id[]">
+                                            <select class="form-select team-member-select" name="team_member_id[]">
                                                 <option value="">Pilih Member</option>
                                                 @foreach ($members as $member)
-                                                    <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
+                                                    <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
+                                                        {{ $member->name }} ({{ $member->call_sign }})
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="col-md-5">
                                             <label class="form-label fw-semibold">Role</label>
-                                            <input type="text" class="form-control" name="team_member_role[]"
+                                            <input type="text" class="form-control team-member-role" name="team_member_role[]"
                                                 placeholder="Contoh: Lead Director, Coordinator">
                                         </div>
                                         <div class="col-md-1 d-flex align-items-end">
@@ -479,10 +482,14 @@
                 selects.forEach(select => select.value = '');
 
                 const inputs = newTeamItem.querySelectorAll('input');
-                inputs.forEach(input => input.value = '');
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.dataset.autofilled = 'false';
+                });
 
                 teamList.appendChild(newTeamItem);
                 attachRemoveTeamEvent(newTeamItem.querySelector('.remove-team-btn'));
+                attachTeamMemberSelectionHandlers(newTeamItem);
             });
 
             function attachRemoveTeamEvent(btn) {
@@ -497,6 +504,38 @@
             document.querySelectorAll('.remove-team-btn').forEach(btn => {
                 attachRemoveTeamEvent(btn);
             });
+
+            function attachTeamMemberSelectionHandlers(root) {
+                const selects = root.querySelectorAll('.team-member-select');
+                selects.forEach(select => {
+                    const item = select.closest('.team-item');
+                    const roleInput = item.querySelector('.team-member-role');
+                    const defaultRole = select.selectedOptions[0]?.dataset?.defaultRole || 'Team Member';
+
+                    if (!roleInput.value.trim()) {
+                        roleInput.value = defaultRole;
+                        roleInput.dataset.autofilled = 'true';
+                    }
+
+                    select.addEventListener('change', function() {
+                        const selectedOption = this.selectedOptions[0];
+                        const fallbackRole = selectedOption?.dataset?.defaultRole || 'Team Member';
+
+                        if (!roleInput.value.trim() || roleInput.dataset.autofilled === 'true') {
+                            roleInput.value = fallbackRole;
+                            roleInput.dataset.autofilled = 'true';
+                        }
+                    });
+
+                    roleInput.addEventListener('input', function() {
+                        if (this.value.trim() !== '') {
+                            this.dataset.autofilled = 'false';
+                        }
+                    });
+                });
+            }
+
+            attachTeamMemberSelectionHandlers(document);
         });
     </script>
 @endsection

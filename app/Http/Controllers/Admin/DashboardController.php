@@ -29,7 +29,9 @@ class DashboardController extends Controller
         $rejectedBookings = Booking::where('status', 'rejected')->count();
         
         // Statistik event berdasarkan status
-        $scheduledEvents = Event::where('status', 'scheduled')->count();
+        $upcomingEvents = Event::whereIn('status', ['upcoming', 'scheduled'])->count();
+        $draftEvents = Event::where('status', 'draft')->count();
+        $scheduledEvents = $upcomingEvents;
         $ongoingEvents = Event::where('status', 'ongoing')->count();
         $completedEvents = Event::where('status', 'completed')->count();
         

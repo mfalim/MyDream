@@ -63,15 +63,25 @@
                             <label class="text-muted small mb-1">Status Acara</label>
                             <div>
                                 @php
+                                    $eventStatusLabel = match($event->status) {
+                                        'draft' => 'Draft',
+                                        'scheduled', 'upcoming' => 'Upcoming',
+                                        'ongoing' => 'Ongoing',
+                                        'completed' => 'Completed',
+                                        'cancelled' => 'Cancelled',
+                                        default => ucfirst($event->status),
+                                    };
+
                                     $statusClass = match($event->status) {
-                                        'scheduled' => 'secondary',
+                                        'draft' => 'secondary',
+                                        'scheduled', 'upcoming' => 'primary',
                                         'ongoing' => 'warning',
                                         'completed' => 'success',
                                         'cancelled' => 'danger',
                                         default => 'secondary'
                                     };
                                 @endphp
-                                <span class="badge bg-{{ $statusClass }}">{{ ucfirst($event->status) }}</span>
+                                <span class="badge bg-{{ $statusClass }}">{{ $eventStatusLabel }}</span>
                             </div>
                         </div>
                         <div class="col-md-6">

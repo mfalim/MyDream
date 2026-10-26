@@ -42,7 +42,7 @@ class BookingController extends Controller
             'event_date' => 'required|date|after_or_equal:today',
             'guest_count' => 'nullable|integer|min:1|max:10000',
             'event_notes' => 'nullable|string|max:2000',
-            'event_status' => 'nullable|string|in:scheduled,ongoing,completed,cancelled',
+            'event_status' => 'nullable|string|in:draft,scheduled,upcoming,ongoing,completed,cancelled',
             'package_id' => 'nullable|exists:packages,id',
             'vendor_id' => 'nullable|array',
             'vendor_id.*' => 'nullable|exists:vendors,id',
@@ -80,6 +80,8 @@ class BookingController extends Controller
             'vendor_end_time.*.date_format' => 'Format waktu harus HH:MM',
         ]);
 
+        $status = Event::normalizeStatus($request->event_status ?? 'upcoming') ?? 'upcoming';
+
         $photoPath = null;
         if ($request->hasFile('event_photo')) {
             $photoPath = $request->file('event_photo')->store('events', 'public');
@@ -96,7 +98,7 @@ class BookingController extends Controller
             'end_time' => null,
             'package_id' => $request->package_id,
             'notes' => $request->event_notes,
-            'status' => $request->event_status ?? 'scheduled',
+            'status' => $status,
         ]);
 
         $vendorTimes = [];
@@ -211,7 +213,7 @@ class BookingController extends Controller
             'event_date' => 'required|date|after_or_equal:today',
             'guest_count' => 'nullable|integer|min:1|max:10000',
             'event_notes' => 'nullable|string|max:2000',
-            'event_status' => 'nullable|string|in:scheduled,ongoing,completed,cancelled',
+            'event_status' => 'nullable|string|in:draft,scheduled,upcoming,ongoing,completed,cancelled',
             'package_id' => 'nullable|exists:packages,id',
             'vendor_id' => 'nullable|array',
             'vendor_id.*' => 'nullable|exists:vendors,id',
@@ -250,6 +252,8 @@ class BookingController extends Controller
             $photoPath = $request->file('event_photo')->store('events', 'public');
         }
 
+        $nextStatus = Event::normalizeStatus($request->event_status ?? $event->status) ?? $event->status;
+
         $event->update([
             'name' => $request->event_name,
             'photo' => $photoPath,
@@ -258,7 +262,7 @@ class BookingController extends Controller
             'guest_count' => $request->guest_count,
             'package_id' => $request->package_id,
             'notes' => $request->event_notes,
-            'status' => $request->event_status ?? $event->status,
+            'status' => $nextStatus,
         ]);
 
         $existingSchedules = $event->schedules->keyBy('vendor_id');

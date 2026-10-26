@@ -129,7 +129,7 @@
                         <div class="col-4 text-center">
                             <div class="p-3 bg-light rounded">
                                 <h4 class="text-primary mb-1">{{ $scheduledEvents }}</h4>
-                                <small class="text-muted">Scheduled</small>
+                                <small class="text-muted">Upcoming</small>
                             </div>
                         </div>
                         <div class="col-4 text-center">

@@ -41,11 +41,12 @@
                     <span>Dashboard Admin</span>
                 </a>
 
-                <a href="{{ route('admin.event_day.index') }}" class="nav-item {{ request()->routeIs('admin.event_day.*') || request()->routeIs('admin.event.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.index', 'admin.events.create', 'admin.events.store', 'admin.events.show', 'admin.events.edit', 'admin.events.update') ? 'active' : '' }}">
                     <i class="bi bi-calendar-event"></i>
                     <span>Event Day</span>
                 </a>
-                <a href="{{ route('admin.calendar') }}" class="nav-item {{ request()->routeIs('admin.calendar') || request()->routeIs('admin.events.*') ? 'active' : '' }}">
+                </a>
+                <a href="{{ route('admin.calendar') }}" class="nav-item {{ request()->routeIs('admin.calendar', 'admin.events.by-date', 'admin.events.by-month', 'admin.events.detail') ? 'active' : '' }}">
                     <i class="bi bi-calendar3"></i>
                     <span>Calendar</span>
                 </a>

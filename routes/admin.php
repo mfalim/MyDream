@@ -65,11 +65,11 @@ Route::middleware('auth')
         // EVENT DAY
         // =========================================================
 
-        Route::resource('event_day', BookingController::class)->only([
-            'index',
-            'create',
-            'store',
-        ]);
+        // Route::resource('event_day', BookingController::class)->only([
+        //     'index',
+        //     'create',
+        //     'store',
+        // ]);
 
         Route::get('/event/{id}', [BookingController::class, 'show'])->name('event.show');
         Route::get('/event/{id}/edit', [BookingController::class, 'edit'])->name('event.edit');
