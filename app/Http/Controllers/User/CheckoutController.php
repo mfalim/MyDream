@@ -58,7 +58,7 @@ class CheckoutController extends Controller
 
         $client = Client::where('users_id', Auth::id())->first();
 
-        return view('user.checkout.index', [
+        return view('site.checkout.index', [
             'cart' => $cart,
             'package' => $package,
             'vendors' => $vendors,
@@ -222,42 +222,5 @@ class CheckoutController extends Controller
         }
     }
 
-    public function payment($bookingId)
-    {
-        $booking = Booking::with(['client', 'package'])
-            ->findOrFail($bookingId);
 
-        $dp = (int) round($booking->total_price * 0.3);
-        $lunas = (int) round($booking->total_price * 0.97);
-        $savings = $booking->total_price - $lunas;
-        $cicilan = (int) round($booking->total_price / 6);
-
-        return view('user.checkout.payment', [
-            'booking' => $booking,
-            'dp' => $dp,
-            'lunas' => $lunas,
-            'savings' => $savings,
-            'cicilan' => $cicilan,
-        ]);
-    }
-
-    public function paymentSuccess($bookingId)
-    {
-        $client = Client::where('users_id', Auth::id())
-            ->firstOrFail();
-
-        $booking = Booking::with([
-            'client',
-            'package',
-        ])
-            ->where('client_id', $client->id)
-            ->findOrFail($bookingId);
-
-        $dp = round($booking->total_price * 0.3);
-
-        return view('pages.payment.success', [
-            'booking' => $booking,
-            'dp' => $dp,
-        ]);
-    }
 }

@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.getElementById("sidebar");
+    const sidebarNav = document.querySelector(".sidebar-nav");
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebarOverlay = document.getElementById("sidebarOverlay");
 
@@ -14,6 +15,38 @@ document.addEventListener("DOMContentLoaded", () => {
         sidebarOverlay?.classList.add("show");
         document.body.style.overflow = "hidden";
     };
+    if (!sidebar) return;
+
+    const storageKey = 'admin_sidebar_scroll';
+
+    const saveSidebarScroll = () => {
+        sessionStorage.setItem(storageKey, JSON.stringify({
+            sidebar: sidebar.scrollTop,
+            sidebarNav: sidebarNav?.scrollTop ?? 0
+        }));
+    };
+
+    // Pulihkan posisi scroll setelah halaman dimuat
+    try {
+        const savedPosition = sessionStorage.getItem(storageKey);
+
+        if (savedPosition) {
+            const positions = JSON.parse(savedPosition);
+
+            sidebar.scrollTop = positions.sidebar ?? 0;
+
+            if (sidebarNav) {
+                sidebarNav.scrollTop = positions.sidebarNav ?? 0;
+            }
+        }
+    } catch (error) {
+        console.warn("Gagal memulihkan posisi sidebar:", error);
+    }
+
+    // Simpan posisi sebelum berpindah halaman
+    document.querySelectorAll(".sidebar a[href]").forEach((link) => {
+        link.addEventListener("click", saveSidebarScroll);
+    });
 
     sidebarToggle?.addEventListener("click", () => {
         if (sidebar?.classList.contains("open")) {

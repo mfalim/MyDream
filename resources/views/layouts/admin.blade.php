@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Wedding Organizer')</title>
+
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> -->
+
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     @vite('resources/css/admin/layout.css')
     <link rel="stylesheet" href="{{ asset('css/admin-layout.css') }}">
@@ -36,61 +38,109 @@
             @endauth
 
             <nav class="sidebar-nav">
-                <a href="{{ route('admin.dashboard') }}" class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-grid-1x2"></i>
-                    <span>Dashboard Admin</span>
-                </a>
 
-                <a href="{{ route('admin.events.index') }}" class="nav-item {{ request()->routeIs('admin.events.index', 'admin.events.create', 'admin.events.store', 'admin.events.show', 'admin.events.edit', 'admin.events.update') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-event"></i>
-                    <span>Event Day</span>
-                </a>
-                </a>
-                <a href="{{ route('admin.calendar') }}" class="nav-item {{ request()->routeIs('admin.calendar', 'admin.events.by-date', 'admin.events.by-month', 'admin.events.detail') ? 'active' : '' }}">
-                    <i class="bi bi-calendar3"></i>
-                    <span>Calendar</span>
-                </a>
-                <a href="{{ route('admin.tracking.index') }}" class="nav-item {{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
-                    <i class="bi bi-activity"></i>
-                    <span>Tracking Acara Client</span>
-                </a>
-                <a href="{{ route('admin.organizer-event.index') }}" class="nav-item {{ request()->routeIs('admin.organizer-event.*') ? 'active' : '' }}">
-                    <i class="bi bi-diagram-3"></i>
-                    <span>Organizer Event</span>
-                </a>
+                {{-- OVERVIEW --}}
+                <div class="sidebar-section">
+                    <small class="sidebar-section-title">OVERVIEW</small>
 
-                <a href="{{ route('admin.packages.index') }}" class="nav-item {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Paket Wedding</span>
-                </a>
-                <a href="{{ route('admin.vendors.index') }}" class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
-                    <i class="bi bi-shop"></i>
-                    <span>Vendor</span>
-                </a>
-                <a href="{{ route('admin.categories.index') }}" class="nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                    <i class="bi bi-tags"></i>
-                    <span>Kategori</span>
-                </a>
-                <a href="{{ route('admin.members.index') }}" class="nav-item {{ request()->routeIs('admin.members.*') || request()->routeIs('admin.user-members.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span>Anggota Tim</span>
-                </a>
-                <a href="{{ route('admin.member-categories.index') }}" class="nav-item {{ request()->routeIs('admin.member-categories.*') ? 'active' : '' }}">
-                    <i class="bi bi-diagram-3-fill"></i>
-                    <span>Kategori Member</span>
-                </a>
-                <!-- <a href="{{ route('admin.members.index') }}" class="nav-item {{ request()->routeIs('admin.members.*') || request()->routeIs('admin.user-members.*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span>Kategori Anggota tim</span>
-                </a> -->
+                    <a href="{{ route('admin.dashboard') }}"
+                        class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <i class="bi bi-grid-1x2"></i>
+                        <span>Dashboard Admin</span>
+                    </a>
+                </div>
 
+                {{-- OPERASIONAL --}}
+                <div class="sidebar-section">
+                    <small class="sidebar-section-title">OPERASIONAL</small>
+
+                    <a href="{{ route('admin.events.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.events.index', 'admin.events.create', 'admin.events.store', 'admin.events.show', 'admin.events.edit', 'admin.events.update') ? 'active' : '' }}">
+                        <i class="bi bi-calendar-event"></i>
+                        <span>Event Day</span>
+                    </a>
+
+                    <a href="{{ route('admin.calendar') }}"
+                        class="nav-item {{ request()->routeIs('admin.calendar', 'admin.events.by-date', 'admin.events.by-month', 'admin.events.detail') ? 'active' : '' }}">
+                        <i class="bi bi-calendar3"></i>
+                        <span>Calendar</span>
+                    </a>
+
+                    <a href="{{ route('admin.tracking.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
+                        <i class="bi bi-activity"></i>
+                        <span>Tracking Acara Client</span>
+                    </a>
+
+                    <a href="{{ route('admin.organizer-event.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.organizer-event.*') ? 'active' : '' }}">
+                        <i class="bi bi-diagram-3"></i>
+                        <span>Organizer Event</span>
+                    </a>
+                </div>
+
+                {{-- KONTEN WEBSITE --}}
+                <div class="sidebar-section">
+                    <small class="sidebar-section-title">KONTEN WEBSITE</small>
+
+                    <a href="{{ route('admin.public-events.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.public-events.*') ? 'active' : '' }}">
+                        <i class="bi bi-megaphone"></i>
+                        <span>Event Publik</span>
+                    </a>
+
+                    <a href="{{ route('admin.articles.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
+                        <i class="bi bi-journal-text"></i>
+                        <span>Artikel</span>
+                    </a>
+                </div>
+
+                {{-- DATA MASTER --}}
+                <div class="sidebar-section">
+                    <small class="sidebar-section-title">DATA MASTER</small>
+
+                    <a href="{{ route('admin.packages.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
+                        <i class="bi bi-box-seam"></i>
+                        <span>Paket Wedding</span>
+                    </a>
+
+                    <a href="{{ route('admin.vendors.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}">
+                        <i class="bi bi-shop"></i>
+                        <span>Vendor</span>
+                    </a>
+
+                    <a href="{{ route('admin.categories.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        <i class="bi bi-tags"></i>
+                        <span>Kategori</span>
+                    </a>
+
+                    <a href="{{ route('admin.members.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.members.*') || request()->routeIs('admin.user-members.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Anggota Tim</span>
+                    </a>
+
+                    <a href="{{ route('admin.member-categories.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.member-categories.*') ? 'active' : '' }}">
+                        <i class="bi bi-diagram-3-fill"></i>
+                        <span>Kategori Member</span>
+                    </a>
+                </div>
+
+                {{-- KELUAR --}}
                 <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                     @csrf
-                    <button type="submit" class="nav-item" style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
+                    <button type="submit" class="nav-item"
+                        style="width: 100%; text-align: left; background: none; border: none; cursor: pointer;">
                         <i class="bi bi-box-arrow-right"></i>
                         <span>Keluar</span>
                     </button>
                 </form>
+
             </nav>
 
             <div class="sidebar-director">
@@ -105,9 +155,10 @@
 
         <main class="admin-main">
             <div class="admin-content">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
+
                 @if ($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
@@ -117,6 +168,7 @@
                         </ul>
                     </div>
                 @endif
+
                 @yield('content')
             </div>
         </main>

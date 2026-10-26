@@ -13,6 +13,8 @@ class Vendor extends Model
         'price',
         'phone',
         'address',
+        'city',
+        'instagram',
         'description',
     ];
 
