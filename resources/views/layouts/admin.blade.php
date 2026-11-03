@@ -58,6 +58,10 @@
                     class="{{ request()->routeIs('admin.articles.*') ? 'active' : '' }}">
                     <i class="bi bi-journal-text me-2"></i>Artikel
                 </a>
+                <a href="{{ route('admin.inspirations.index') }}"
+                    class="{{ request()->routeIs('admin.inspirations.*') ? 'active' : '' }}">
+                    <i class="bi bi-stars me-2"></i>Inspirasi Client
+                </a>
             </div>
 
             <small class="text-muted px-3 d-block mt-4">DATA MASTER</small>

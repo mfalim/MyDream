@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\InspirationController;
 use App\Http\Controllers\Admin\PublicEventController;
 use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
@@ -15,4 +16,7 @@ Route::prefix('admin')
             ->except(['show']);
 
         Route::resource('articles', ArticleController::class)->except(['show']);
+
+        // Cerita dari client: ditinjau (setujui / minta revisi), tidak dibuat dari admin.
+        Route::resource('inspirations', InspirationController::class)->only(['index', 'edit', 'update', 'destroy']);
     });

@@ -60,6 +60,13 @@
 
         </a>
 
+        {{-- INSPIRASI --}}
+        <a href="{{ route('user.inspiration') }}"
+            class="nav-item {{ request()->routeIs('user.inspiration*') ? 'active' : '' }}">
+            <i class="bi bi-stars"></i>
+            <span>Cerita &amp; Inspirasi</span>
+        </a>
+
         {{-- ANGGARAN --}}
         <a href="#" class="nav-item">
             <i class="bi bi-wallet2"></i>

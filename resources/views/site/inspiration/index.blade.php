@@ -7,16 +7,18 @@
 
     <section class="border-b border-black/5 bg-white">
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Dokumentasi Karya</p>
-            <h1 class="mt-2 font-display text-4xl font-semibold">Inspirasi Pernikahan Nyata</h1>
-            <p class="mt-3 max-w-2xl text-ink/60">Konsep dan cerita dari pasangan yang sudah mempercayakan hari bahagianya kepada MyDream.</p>
+            <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Cerita Nyata dari Client</p>
+            <h1 class="mt-2 font-display text-4xl font-semibold">Inspirasi Pernikahan</h1>
+            <p class="mt-3 max-w-2xl text-ink/60">Konsep dan cerita dari pasangan yang sudah menikah bersama MyDream, ditulis langsung oleh mereka dan ditinjau tim kami.</p>
 
-            <div class="mt-6 flex flex-wrap gap-2">
-                <a href="{{ route('inspiration.index') }}" class="rounded-full px-4 py-2 text-xs font-semibold {{ ! $activeTheme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">Semua</a>
-                @foreach ($themes as $theme)
-                    <a href="{{ route('inspiration.index', ['theme' => $theme]) }}" class="rounded-full px-4 py-2 text-xs font-medium {{ $activeTheme === $theme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">{{ $theme }}</a>
-                @endforeach
-            </div>
+            @if ($themes->isNotEmpty())
+                <div class="mt-6 flex flex-wrap gap-2">
+                    <a href="{{ route('inspiration.index') }}" class="rounded-full px-4 py-2 text-xs font-semibold {{ ! $activeTheme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">Semua</a>
+                    @foreach ($themes as $theme)
+                        <a href="{{ route('inspiration.index', ['theme' => $theme]) }}" class="rounded-full px-4 py-2 text-xs font-medium {{ $activeTheme === $theme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">{{ $theme }}</a>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </section>
 
@@ -28,7 +30,7 @@
                 @endforeach
             </div>
         @else
-            <x-site.empty-state title="Belum ada inspirasi untuk tema ini" description="Coba pilih tema lain." />
+            <x-site.empty-state title="Belum ada cerita" description="Cerita dari pasangan yang sudah menikah bersama MyDream akan tampil di sini." />
         @endif
     </section>
 
