@@ -7,6 +7,20 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## JSON API
+
+The JSON API is available under `/api`. Public catalog and published-content reads do not require authentication. Send `Accept: application/json` for JSON validation and error responses.
+
+- Public reads: `GET /home`, `/about`, `/store`, `/catalog`, `/catalog/categories`, `/catalog/packages`, `/catalog/packages/{slug}`, `/catalog/vendors/{slug}`, `/vendors`, `/members`, `/content/articles`, `/content/events`, and `/content/inspirations` (detail routes use `{slug}`). `/about` returns the same title, description, hero, story, values, and CTA content used by the web page.
+- Sign in with Google using `POST /auth/google` and an `id_token`; use the returned token as `Authorization: Bearer <token>`.
+- Any signed-in user can call `GET /me` and `POST /logout`.
+- Any signed-in user can use `/cart` (`GET`, `DELETE`), add a package with `POST /cart/packages/{id}`, add a custom vendor with `POST /cart/vendors/{id}`, and remove a vendor with `DELETE /cart/vendors/{id}`. API carts persist in the database, are isolated by user, and follow the web cart's package/custom selection rules.
+- Admin endpoints require a Sanctum token and the `admin` role. Resource CRUD endpoints are `/admin/categories`, `/admin/packages`, `/admin/articles`, `/admin/public-events`, `/admin/organizer-events`, `/admin/members`, `/admin/member-divisions`, `/admin/member-positions`, and `/admin/member-specializations`. Vendor writes retain the existing `/vendors` URLs and require the admin role. Event scheduling, calendar, and tracking operations are under `/admin/events`, `/admin/calendar/events`, and `/admin/tracking`.
+- Client endpoints require the `client` role and cover profile, bookings/checkout, event planning, and booking payments under `/client`.
+- Member endpoints require the `member` role and cover dashboard, profile completion, and assigned schedule status under `/member`.
+
+Client checkout is submitted directly as `POST /client/bookings` with event/venue details and either a `package_id` or at least three `vendor_ids`. The bearer-token API cart is database-backed and separate from the existing web session cart.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
