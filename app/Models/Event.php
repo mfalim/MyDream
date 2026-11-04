@@ -58,6 +58,26 @@ class Event extends Model
         return $updated;
     }
 
+    public function canBeCompleted(): bool
+    {
+        if ($this->status === 'cancelled' || $this->status === 'draft') {
+            return false;
+        }
+
+        if (! $this->event_date) {
+            return false;
+        }
+
+        $eventEndDateTime = Carbon::parse($this->event_date)
+            ->setTimeFromTimeString($this->end_time ? $this->end_time->format('H:i:s') : '23:59:59');
+
+        if (now()->lt($eventEndDateTime)) {
+            return false;
+        }
+
+        return ! $this->schedules()->where('status', 'pending')->exists();
+    }
+
     public function resolveAutomaticStatus(?Carbon $now = null): ?string
     {
         $now ??= now();
@@ -72,6 +92,10 @@ class Event extends Model
             return 'draft';
         }
 
+        if ($currentStatus === 'completed') {
+            return 'completed';
+        }
+
         if (! $this->event_date) {
             return $currentStatus;
         }
@@ -79,19 +103,15 @@ class Event extends Model
         $startDateTime = Carbon::parse($this->event_date)->setTimeFromTimeString($this->start_time ? $this->start_time->format('H:i:s') : '00:00:00');
         $endDateTime = Carbon::parse($this->event_date)->setTimeFromTimeString($this->end_time ? $this->end_time->format('H:i:s') : '23:59:59');
 
-        if ($currentStatus === 'upcoming') {
-            return $now->greaterThanOrEqualTo($startDateTime) ? 'ongoing' : 'upcoming';
+        if ($now->lt($startDateTime)) {
+            return 'upcoming';
         }
 
-        if ($currentStatus === 'ongoing') {
-            return $now->greaterThan($endDateTime) ? 'completed' : 'ongoing';
+        if ($now->lt($endDateTime)) {
+            return 'ongoing';
         }
 
-        if ($currentStatus === 'completed') {
-            return 'completed';
-        }
-
-        return $currentStatus;
+        return 'ongoing';
     }
 
     public function booking()

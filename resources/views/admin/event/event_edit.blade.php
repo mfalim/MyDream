@@ -13,7 +13,7 @@
                         <p class="text-muted mb-0">Edit detail event seperti Akad Nikah, Resepsi, dll</p>
                     </div>
                     <div>
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                        <a href="javascript:void(0)" onclick="history.back()" class="btn btn-outline-secondary me-2">Cancel</a>
                         <button type="submit" form="eventForm" class="btn btn-dark">Update Event</button>
                     </div>
                 </div>

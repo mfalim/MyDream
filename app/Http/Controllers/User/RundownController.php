@@ -362,6 +362,10 @@ class RundownController extends Controller
                     'role' => $member['role'],
                     'notes' => $member['notes'] ?? null,
                     'status' => 'approved',
+                    'attendance_status' => 'full_day',
+                    'actual_hours' => 0,
+                    'allowance' => 0,
+                    'payment_status' => 'pending',
                 ]);
             }
 

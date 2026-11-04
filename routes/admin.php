@@ -146,6 +146,11 @@ Route::middleware('auth')
             'updateBookingStatus',
         ])->name('tracking.booking.status');
 
+        Route::post('/tracking/event/{eventId}/member/{memberId}/attendance', [
+            TrackingController::class,
+            'updateEventMemberAttendance',
+        ])->name('tracking.member.attendance');
+
 
         // =========================================================
         // ORGANIZER EVENTS
@@ -200,4 +205,11 @@ Route::middleware('auth')
             MemberController::class,
             'storeSpecialization',
         ])->name('members.options.specializations.store');
+
+        // =========================================================
+        // COMPLETE EVENT
+        // =========================================================
+
+        Route::post('/events/{id}/complete', [BookingController::class, 'complete'])
+            ->name('events.complete');
     });

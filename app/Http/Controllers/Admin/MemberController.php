@@ -95,6 +95,7 @@ class MemberController extends Controller
             'position' => 'required|string|max:100',
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
+            'daily_fee' => 'required|numeric|min:0',
         ], [
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
@@ -103,9 +104,12 @@ class MemberController extends Controller
             'specialization.string' => 'Spesialisasi tidak valid.',
             'division.required' => 'Divisi wajib dipilih.',
             'division.in' => 'Divisi yang dipilih tidak valid.',
+            'daily_fee.required' => 'Tarif harian member wajib diisi.',
+            'daily_fee.numeric' => 'Tarif harian harus berupa angka.',
+            'daily_fee.min' => 'Tarif harian tidak boleh kurang dari nol.',
         ]);
 
-        DB::transaction(function () use ($validated) {
+        DB::transaction(function () use ($validated, $request) {
             $user = User::create([
                 'email' => $validated['email'],
                 'name' => explode('@', $validated['email'])[0],
@@ -121,6 +125,7 @@ class MemberController extends Controller
                 'status' => $request->status,
                 'specialization' => $validated['specialization'] ?? null,
                 'division' => $validated['division'],
+                'daily_fee' => $validated['daily_fee'],
             ]);
         });
 
@@ -152,6 +157,7 @@ class MemberController extends Controller
             'position' => 'required|string|max:100',
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
+            'daily_fee' => 'required|numeric|min:0',
         ], [
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
@@ -159,6 +165,9 @@ class MemberController extends Controller
             'position.required' => 'Posisi atau jabatan wajib dipilih.',
             'division.required' => 'Divisi wajib dipilih.',
             'division.in' => 'Divisi yang dipilih tidak valid.',
+            'daily_fee.required' => 'Tarif harian member wajib diisi.',
+            'daily_fee.numeric' => 'Tarif harian harus berupa angka.',
+            'daily_fee.min' => 'Tarif harian tidak boleh kurang dari nol.',
         ]);
 
         $member->update([
@@ -166,6 +175,7 @@ class MemberController extends Controller
             'status' => $request->status,
             'specialization' => $validated['specialization'] ?? null,
             'division' => $validated['division'],
+            'daily_fee' => $validated['daily_fee'],
         ]);
 
         if ($member->user) {

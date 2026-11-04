@@ -409,6 +409,24 @@ class BookingController extends Controller
         return response()->json($events);
     }
 
+    public function complete($id)
+    {
+        $event = Event::with('schedules')->findOrFail($id);
+
+        if ($event->status === 'cancelled') {
+            return back()->with('error', 'Event yang dibatalkan tidak bisa diselesaikan.');
+        }
+
+        if (! $event->canBeCompleted()) {
+            return back()->with('error', 'Event belum dapat diselesaikan. Pastikan waktu acara sudah lewat dan semua jadwal utama sudah tidak berstatus pending.');
+        }
+
+        $event->status = 'completed';
+        $event->save();
+
+        return back()->with('success', 'Event berhasil ditandai selesai dan divalidasi admin.');
+    }
+
     private function syncTeamMemberSchedules(Event $event, array $teamAssignments): void
     {
         if (empty($teamAssignments)) {
@@ -435,6 +453,10 @@ class BookingController extends Controller
                 [
                     'role' => $role,
                     'status' => 'assigned',
+                    'attendance_status' => 'full_day',
+                    'actual_hours' => 0,
+                    'allowance' => 0,
+                    'payment_status' => 'pending',
                 ]
             );
 

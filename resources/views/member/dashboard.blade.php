@@ -53,44 +53,95 @@
         <div class="member-stats">
             <div class="member-stat-card">
                 <div class="stat-icon" style="background:#dfeafc; color:#2454d3;">
-                    <i class="bi bi-list-check"></i>
+                    <i class="bi bi-calendar-event"></i>
                 </div>
-                <div class="stat-label">Total Jadwal</div>
-                <p class="stat-value">{{ $stats['total_schedules'] }}</p>
+                <div class="stat-label">Event Aktif</div>
+                <p class="stat-value">{{ $stats['total_events'] }}</p>
             </div>
 
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:#fff2d9; color:#b77b0d;">
+                <div class="stat-icon" style="background:#d9f0ff; color:#1577b6;">
                     <i class="bi bi-clock-history"></i>
                 </div>
-                <div class="stat-label">Pending</div>
-                <p class="stat-value">{{ $stats['pending'] }}</p>
+                <div class="stat-label">Jadwal Saya</div>
+                <p class="stat-value">{{ $stats['total_schedules'] }}</p>
             </div>
 
             <div class="member-stat-card">
                 <div class="stat-icon" style="background:#dff7ee; color:#0e7d57;">
                     <i class="bi bi-check-circle"></i>
                 </div>
-                <div class="stat-label">Approved</div>
+                <div class="stat-label">Checklist Selesai</div>
                 <p class="stat-value">{{ $stats['approved'] }}</p>
             </div>
 
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:#fee7e5; color:#c1504e;">
-                    <i class="bi bi-x-circle"></i>
+                <div class="stat-icon" style="background:#fff2d9; color:#b77b0d;">
+                    <i class="bi bi-wallet2"></i>
                 </div>
-                <div class="stat-label">Rejected</div>
-                <p class="stat-value">{{ $stats['rejected'] }}</p>
-            </div>
-
-            <div class="member-stat-card">
-                <div class="stat-icon" style="background:#eeebff; color:#5d4ac6;">
-                    <i class="bi bi-calendar-event"></i>
-                </div>
-                <div class="stat-label">Event Terlibat</div>
-                <p class="stat-value">{{ $stats['total_events'] }}</p>
+                <div class="stat-label">Daily Fee</div>
+                <p class="stat-value">Rp {{ number_format((float) ($member->daily_fee ?? 0), 0, ',', '.') }}</p>
             </div>
         </div>
+
+        @php
+            $todaySchedules = $schedules->filter(function ($schedule) {
+                return $schedule->start_time && \Carbon\Carbon::parse($schedule->start_time)->isToday();
+            });
+            $upcomingSchedules = $schedules->filter(function ($schedule) {
+                return $schedule->start_time && \Carbon\Carbon::parse($schedule->start_time)->isFuture();
+            });
+        @endphp
+
+        <section class="member-summary-grid">
+            <div class="member-summary-panel">
+                <div class="summary-panel-header">
+                    <span><i class="bi bi-person-badge"></i> Profil Team</span>
+                </div>
+                <ul class="summary-list">
+                    <li><span>Divisi</span><strong>{{ $member->division ?? '-' }}</strong></li>
+                    <li><span>Jabatan</span><strong>{{ $member->position ?? '-' }}</strong></li>
+                    <li><span>Spesialisasi</span><strong>{{ $member->specialization ?? '-' }}</strong></li>
+                    <li><span>Status</span><strong>{{ ucfirst($member->status ?? 'aktif') }}</strong></li>
+                </ul>
+            </div>
+
+            <div class="member-summary-panel">
+                <div class="summary-panel-header">
+                    <span><i class="bi bi-clock-fill"></i> Jadwal Hari Ini</span>
+                </div>
+                @if($todaySchedules->isNotEmpty())
+                    <ul class="summary-list compact-list">
+                        @foreach($todaySchedules as $todaySchedule)
+                            <li>
+                                <span>{{ $todaySchedule->activity }}</span>
+                                <strong>{{ \Carbon\Carbon::parse($todaySchedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($todaySchedule->end_time)->format('H:i') }}</strong>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="mini-empty-state">Tidak ada tugas hari ini.</div>
+                @endif
+            </div>
+
+            <div class="member-summary-panel">
+                <div class="summary-panel-header">
+                    <span><i class="bi bi-flag-fill"></i> Agenda Mendatang</span>
+                </div>
+                @if($upcomingSchedules->isNotEmpty())
+                    <ul class="summary-list compact-list">
+                        @foreach($upcomingSchedules->take(3) as $upcoming)
+                            <li>
+                                <span>{{ $upcoming->event->name }}</span>
+                                <strong>{{ \Carbon\Carbon::parse($upcoming->start_time)->format('d M') }}</strong>
+                            </li>
+                        @endforeach
+                    </ul>
+                @else
+                    <div class="mini-empty-state">Belum ada agenda mendatang.</div>
+                @endif
+            </div>
+        </section>
 
         <section>
             <h2 class="section-heading"><i class="bi bi-list-task"></i>Jadwal Tugas Saya</h2>

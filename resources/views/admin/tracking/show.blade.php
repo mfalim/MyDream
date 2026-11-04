@@ -154,9 +154,56 @@
                         <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                             {{ strtoupper(substr($eventMember->member->name, 0, 2)) }}
                         </div>
-                        <div>
+                        <div class="flex-grow-1">
                             <div class="fw-semibold">{{ $eventMember->member->name }}</div>
                             <small class="text-muted">{{ $eventMember->role ?? 'Member' }}</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#memberAttendance{{ $eventMember->id }}">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                    </div>
+
+                    <div class="collapse mb-3" id="memberAttendance{{ $eventMember->id }}">
+                        <div class="card card-body border-0 bg-light member-fee-row"
+                            data-daily-fee="{{ (float) ($eventMember->member?->daily_fee ?? 0) }}">
+                            
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label small fw-semibold">Attendance</label>
+                                    <select class="form-select attendance-status">
+                                        <option value="present"
+                                            @selected(($eventMember->attendance_status ?? 'present') === 'present')>
+                                            Present
+                                        </option>
+
+                                        <option value="late"
+                                            @selected($eventMember->attendance_status === 'late')>
+                                            Late
+                                        </option>
+
+                                        <option value="absent"
+                                            @selected($eventMember->attendance_status === 'absent')>
+                                            Absent
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold">Actual Hours</label>
+                                    <input type="number" step="0.25" min="0" max="24" class="form-control form-control-sm actual-hours" value="{{ number_format((float) ($eventMember->actual_hours ?? 0), 2, '.', '') }}" data-event-id="{{ $event->id }}" data-member-id="{{ $eventMember->member_id }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-semibold">Allowance</label>
+                                    <input type="number" step="1000" min="0" class="form-control form-control-sm allowance" value="{{ number_format((float) ($eventMember->allowance ?? 0), 0, '.', '') }}" data-event-id="{{ $event->id }}" data-member-id="{{ $eventMember->member_id }}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-sm btn-primary w-100 save-member-fee" data-event-id="{{ $event->id }}" data-member-id="{{ $eventMember->member_id }}">
+                                        Simpan
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-2 small text-muted">
+                                Total Fee: <strong class="member-total-fee">Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}</strong>
+                            </div>
                         </div>
                     </div>
                     @empty
@@ -382,6 +429,128 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error:', error));
     }
+
+    // ==========================================
+// MEMBER ATTENDANCE & FEE
+// ==========================================
+
+    function calculateMemberFee(row) {
+        const attendanceStatus =
+            row.querySelector('.attendance-status')?.value || 'present';
+
+        const actualHours = Math.max(
+            0,
+            parseFloat(row.querySelector('.actual-hours')?.value) || 0
+        );
+
+        const allowance = Math.max(
+            0,
+            parseFloat(row.querySelector('.allowance')?.value) || 0
+        );
+
+        const dailyFee = Math.max(
+            0,
+            parseFloat(row.dataset.dailyFee) || 0
+        );
+
+        if (attendanceStatus === 'absent') {
+            return 0;
+        }
+
+        const hourlyRate = dailyFee / 8;
+        const workFee = actualHours * hourlyRate;
+
+        return Math.round(workFee + allowance);
+    }
+
+function formatRupiah(value) {
+    return 'Rp ' + value.toLocaleString('id-ID');
+}
+
+// Preview perhitungan fee masing-masing member.
+document.querySelectorAll('.member-fee-row').forEach(row => {
+    const inputs = row.querySelectorAll(
+        '.attendance-status, .actual-hours, .allowance'
+    );
+
+    function updateFeePreview() {
+        const totalFeeEl = row.querySelector('.member-total-fee');
+
+        if (totalFeeEl) {
+            totalFeeEl.textContent = formatRupiah(calculateMemberFee(row));
+        }
+    }
+
+    inputs.forEach(input => {
+        input.addEventListener('input', updateFeePreview);
+        input.addEventListener('change', updateFeePreview);
+    });
+
+    // Tampilkan perhitungan awal.
+    updateFeePreview();
+});
+
+// Simpan attendance dan fee member.
+document.querySelectorAll('.save-member-fee').forEach(button => {
+    button.addEventListener('click', async function() {
+        const eventId = this.dataset.eventId;
+        const memberId = this.dataset.memberId;
+        const row = this.closest('.member-fee-row');
+
+        if (!row) return;
+
+        const attendanceStatus = row.querySelector('.attendance-status').value;
+        const actualHours = parseFloat(row.querySelector('.actual-hours').value) || 0;
+        const allowance = parseFloat(row.querySelector('.allowance').value) || 0;
+
+        if (actualHours < 0 || actualHours > 24 || allowance < 0) {
+            alert('Jam kerja harus antara 0–24 jam dan allowance tidak boleh negatif.');
+            return;
+        }
+
+        this.disabled = true;
+
+        try {
+            const response = await fetch(
+                `/admin/tracking/event/${eventId}/member/${memberId}/attendance`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        attendance_status: attendanceStatus,
+                        actual_hours: actualHours,
+                        allowance: allowance
+                    })
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Gagal menyimpan tracking member.');
+            }
+
+            const totalFeeEl = row.querySelector('.member-total-fee');
+
+            if (totalFeeEl) {
+                totalFeeEl.textContent = data.total_fee ?? formatRupiah(calculateMemberFee(row));
+            }
+
+            alert(data.message || 'Tracking member berhasil disimpan.');
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'Gagal menyimpan tracking member.');
+
+        } finally {
+            this.disabled = false;
+        }
+    });
+});
 
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
