@@ -64,6 +64,8 @@ class VendorController extends Controller
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'address' => 'required|string|max:1000',
             'description' => 'nullable|string|max:2000',
+            'city' => 'nullable|string|max:100',
+            'instagram' => 'nullable|string|max:100',
 
             'photos' => 'nullable|array|max:10',
             'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -105,6 +107,8 @@ class VendorController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'description' => $request->description,
+            'city' => $request->city,
+            'instagram' => $request->instagram,
         ]);
 
         if ($request->hasFile('photos')) {
@@ -145,6 +149,8 @@ class VendorController extends Controller
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'address' => 'required|string|max:1000',
             'description' => 'nullable|string|max:2000',
+            'city' => 'nullable|string|max:100',
+            'instagram' => 'nullable|string|max:100',
 
             'photos' => 'nullable|array|max:10',
             'photos.*' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -195,6 +201,8 @@ class VendorController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'description' => $request->description,
+            'city' => $request->city,
+            'instagram' => $request->instagram,
         ]);
 
         /*

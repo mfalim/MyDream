@@ -46,6 +46,11 @@
                     class="{{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
                     <i class="bi bi-shop me-2"></i>Tracking Acara Client
                 </a>
+                <a href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                    <i class="bi bi-cash-coin me-2"></i>Pembayaran
+                </a>
+
             </div>
 
             <small class="text-muted px-3 d-block mt-4">KONTEN WEBSITE</small>

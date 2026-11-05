@@ -81,6 +81,23 @@
 
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi Paket <small class="text-muted">(opsional)</small></label>
+                    <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+                    <small class="text-muted">Tampil di halaman paket pada website.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Periode Acara <small class="text-muted">(opsional)</small></label>
+                    <input type="text" name="event_period" class="form-control" value="{{ old('event_period') }}" placeholder="mis. Sepanjang tahun">
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input" type="checkbox" role="switch" name="is_featured" value="1" id="is_featured" @checked(old('is_featured'))>
+                    <label class="form-check-label" for="is_featured">Tampilkan sebagai "Pilihan MyDream" di website</label>
+                </div>
+
+
 
                 <div class="mb-4">
 

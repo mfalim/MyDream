@@ -14,6 +14,7 @@ class Payment extends Model
         'bank_info',
         'status',
         'proof_path',
+        'admin_note',
         'verified_at',
     ];
 

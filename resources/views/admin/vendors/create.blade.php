@@ -94,6 +94,18 @@
 
                 </div>
 
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kota</label>
+                        <input type="text" name="city" class="form-control" value="{{ old('city') }}" placeholder="mis. Jember">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Instagram <small class="text-muted">(opsional)</small></label>
+                        <input type="text" name="instagram" class="form-control" value="{{ old('instagram') }}" placeholder="@namavendor">
+                    </div>
+                </div>
+
+
 
                 <div class="mb-3">
 

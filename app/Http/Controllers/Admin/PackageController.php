@@ -34,6 +34,8 @@ class PackageController extends Controller
                 'duration' => 'required|numeric|min:0.01|max:365',
                 'guest_capacity' => 'required|integer|min:1|max:10000',
                 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'description' => 'nullable|string|max:5000',
+                'event_period' => 'nullable|string|max:255',
                 'vendors' => 'nullable|array',
                 'vendors.*' => 'integer|distinct|exists:vendors,id',
             ],
@@ -78,6 +80,9 @@ class PackageController extends Controller
             'availability_date' => $request->availability_date,
             'duration' => $request->duration,
             'guest_capacity' => $request->guest_capacity,
+            'description' => $request->description,
+            'event_period' => $request->event_period,
+            'is_featured' => $request->boolean('is_featured'),
             'photo' => $photo,
         ]);
 
@@ -114,6 +119,8 @@ class PackageController extends Controller
                 'duration' => 'required|numeric|min:0.01|max:365',
                 'guest_capacity' => 'required|integer|min:1|max:10000',
                 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'description' => 'nullable|string|max:5000',
+                'event_period' => 'nullable|string|max:255',
                 'vendors' => 'nullable|array',
                 'vendors.*' => 'integer|distinct|exists:vendors,id',
             ],
@@ -142,6 +149,9 @@ class PackageController extends Controller
             'availability_date' => $request->availability_date,
             'duration' => $request->duration,
             'guest_capacity' => $request->guest_capacity,
+            'description' => $request->description,
+            'event_period' => $request->event_period,
+            'is_featured' => $request->boolean('is_featured'),
         ]);
 
         if ($request->hasFile('photo')) {

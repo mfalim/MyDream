@@ -67,7 +67,15 @@
             <span>Cerita &amp; Inspirasi</span>
         </a>
 
+        {{-- TAGIHAN --}}
+        <a href="{{ route('user.billing') }}"
+            class="nav-item {{ request()->routeIs('user.billing') ? 'active' : '' }}">
+            <i class="bi bi-receipt"></i>
+            <span>Tagihan &amp; Pembayaran</span>
+        </a>
+
         {{-- ANGGARAN --}}
+
         <a href="#" class="nav-item">
             <i class="bi bi-wallet2"></i>
             <span>Anggaran &amp; Pembayaran</span>
