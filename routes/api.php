@@ -34,6 +34,8 @@ use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->name('api.auth.google');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('api.auth.google.redirect');
+Route::get('/auth/google/poll', [GoogleAuthController::class, 'pollAuthResult'])->name('api.auth.google.poll');
 
 Route::get('/home', [HomeController::class, 'index'])->name('api.home');
 Route::get('/about', [AboutController::class, 'show'])->name('api.about');

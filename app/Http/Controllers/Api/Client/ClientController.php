@@ -44,10 +44,11 @@ class ClientController extends Controller
         $data = $request->validate([
             'groom_name' => ['required', 'string', 'max:255'],
             'bride_name' => ['required', 'string', 'max:255'],
-            'groom_phone' => ['required', 'regex:/^[0-9]{10,15}$/'],
-            'bride_phone' => ['required', 'regex:/^[0-9]{10,15}$/'],
-            'email' => ['required', 'email', 'max:255'],
+            'groom_phone' => ['nullable', 'string', 'regex:/^[0-9]{10,15}$/'],
+            'bride_phone' => ['nullable', 'string', 'regex:/^[0-9]{10,15}$/'],
+            'email' => ['nullable', 'email', 'max:255'],
         ]);
+        $data['email'] = $data['email'] ?? $request->user()->email;
         $client = Client::updateOrCreate(['users_id' => $request->user()->id], $data);
 
         return response()->json(['data' => $client], 200);
