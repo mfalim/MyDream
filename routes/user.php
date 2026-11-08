@@ -9,6 +9,8 @@ use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\VendorConfirmationController;
 use App\Http\Controllers\User\EventController;
+use App\Http\Controllers\User\RiwayatController;
+use App\Http\Controllers\User\UlasanController;
 
 Route::prefix('user')
     ->name('user.')
@@ -22,6 +24,11 @@ Route::prefix('user')
         */
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/riwayat-pembelian', [RiwayatController::class, 'index'])->name('history.index');
+        Route::get('/riwayat-pembelian/{booking}', [RiwayatController::class, 'show'])->name('history.show');
+        Route::get('/ulasan', [UlasanController::class, 'index'])->name('reviews.index');
+        Route::post('/ulasan', [UlasanController::class, 'store'])->name('reviews.store');
 
         /*
         |--------------------------------------------------------------------------

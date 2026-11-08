@@ -162,7 +162,7 @@ class CheckoutController extends Controller
                 'event_type' => 'wedding',
                 'event_date' => $validated['event_date'],
                 'guest_count' => $validated['guest_count'],
-                'status' => 'pending',
+                'status' => 'scheduled',
             ]);
 
             if ($cart['type'] === 'package' && $packageId) {
@@ -172,6 +172,7 @@ class CheckoutController extends Controller
                 foreach ($package->vendors as $vendor) {
                     $event->schedules()->create([
                         'vendor_id' => $vendor->id,
+                        'price' => $vendor->price,
                         'activity' => $vendor->name,
                         'start_time' => $validated['event_date'] . ' 09:00:00',
                         'end_time' => $validated['event_date'] . ' 17:00:00',
@@ -186,6 +187,7 @@ class CheckoutController extends Controller
                 foreach ($vendors as $vendor) {
                     $event->schedules()->create([
                         'vendor_id' => $vendor->id,
+                        'price' => $vendor->price,
                         'activity' => $vendor->name,
                         'start_time' => $validated['event_date'] . ' 09:00:00',
                         'end_time' => $validated['event_date'] . ' 17:00:00',

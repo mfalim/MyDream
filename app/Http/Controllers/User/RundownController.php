@@ -41,7 +41,7 @@ class RundownController extends Controller
             ->orderBy('start_time')
             ->get()
             ->groupBy(function ($event) {
-                return $event->event_date->format('Y-m-d');
+                return Carbon::parse($event->event_date)->format('Y-m-d');
             });
 
         $eventsByDay = [];
@@ -121,6 +121,7 @@ class RundownController extends Controller
 
         $monthEvents = $events->flatten(1)
             ->map(function ($event) {
+                $eventDate = Carbon::parse($event->event_date);
                 $startTime = $event->start_time
                     ? Carbon::parse($event->start_time)->format('H.i')
                     : '-';
@@ -130,8 +131,8 @@ class RundownController extends Controller
                     : '-';
 
                 return [
-                    'date' => $event->event_date->format('Y-m-d'),
-                    'date_label' => $event->event_date->isoFormat('D MMM'),
+                    'date' => $eventDate->format('Y-m-d'),
+                    'date_label' => $eventDate->isoFormat('D MMM'),
                     'session' => $event->start_time && Carbon::parse($event->start_time)->hour < 16 ? 'Siang' : 'Malam',
                     'time' => $startTime . ' - ' . $endTime,
                     'couple' => ($event->booking->client->groom_name ?? '-') . ' & ' . ($event->booking->client->bride_name ?? '-'),
@@ -347,6 +348,7 @@ class RundownController extends Controller
             foreach ($validated['vendors'] ?? [] as $vendor) {
                 $event->schedules()->create([
                     'vendor_id' => $vendor['vendor_id'],
+                    'price' => \App\Models\Vendor::find($vendor['vendor_id'])?->price,
                     'activity' => $vendor['activity'],
                     'location' => $vendor['location'] ?? null,
                     'start_time' => $validated['event_date'] . ' ' . $vendor['start_time'],

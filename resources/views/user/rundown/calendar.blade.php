@@ -110,7 +110,13 @@
             <div class="wo-card">
                 <span class="wo-badge wo-badge-gold">Tanggal Terpilih</span>
                 <h2 class="rc-selected-date">{{ $selected['date_label'] }}</h2>
-                <p class="rc-selected-desc">Terdata {{ $selected['event_count'] }} acara pernikahan berlangsung serentak di berbagai venue rekanan premium.</p>
+                <p class="rc-selected-desc">
+                    @if ($selected['event_count'] > 0)
+                        Terdapat {{ $selected['event_count'] }} acara terjadwal pada tanggal ini.
+                    @else
+                        Belum ada acara terjadwal pada tanggal ini.
+                    @endif
+                </p>
 
                 <div class="rc-crew-box">
                     <div class="rc-crew-row">

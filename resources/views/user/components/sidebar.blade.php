@@ -60,6 +60,20 @@
 
         </a>
 
+        {{-- ULASAN --}}
+        <a href="{{ route('user.reviews.index') }}"
+            class="nav-item {{ request()->routeIs('user.reviews.*') ? 'active' : '' }}">
+            <i class="bi bi-star"></i>
+            <span>Ulasan</span>
+        </a>
+
+        {{-- RIWAYAT PEMBELIAN --}}
+        <a href="{{ route('user.history.index') }}"
+            class="nav-item {{ request()->routeIs('user.history.*') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Riwayat Pembelian</span>
+        </a>
+
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
             @csrf

@@ -9,6 +9,7 @@ class Schedule extends Model
     protected $fillable = [
         'event_id',
         'vendor_id',
+        'price',
         'member_id',
         'activity',
         'location',

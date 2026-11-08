@@ -39,4 +39,9 @@ class Vendor extends Model
             ->withPivot('status')
             ->withTimestamps();
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class);
+    }
 }

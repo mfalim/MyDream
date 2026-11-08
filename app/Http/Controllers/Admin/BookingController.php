@@ -131,6 +131,7 @@ class BookingController extends Controller
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
+                    'price' => $vendor->price,
                     'member_id' => null,
                     'activity' => $vendor->name,
                     'location' => null,
@@ -154,6 +155,7 @@ class BookingController extends Controller
                         Schedule::create([
                             'event_id' => $event->id,
                             'vendor_id' => $vendorId,
+                            'price' => $vendor?->price,
                             'member_id' => $memberId,
                             'activity' => $vendor ? $vendor->name : 'Vendor',
                             'location' => null,
@@ -306,6 +308,7 @@ class BookingController extends Controller
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
+                    'price' => $vendor->price,
                     'member_id' => null,
                     'activity' => $vendor->name,
                     'location' => null,
@@ -329,6 +332,7 @@ class BookingController extends Controller
                         Schedule::create([
                             'event_id' => $event->id,
                             'vendor_id' => $vendorId,
+                            'price' => $vendor?->price,
                             'member_id' => $memberId,
                             'activity' => $vendor ? $vendor->name : 'Vendor',
                             'location' => null,
