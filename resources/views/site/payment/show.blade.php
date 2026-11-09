@@ -15,11 +15,28 @@
         [$statusLabel, $statusVariant] = $statusLabels[$status] ?? $statusLabels['unpaid'];
 
         $paymentLabels = ['dp' => 'DP', 'full' => 'Pembayaran lunas', 'remaining' => 'Pelunasan'];
-        $paymentStatusLabels = ['pending' => ['Menunggu verifikasi', 'gold'], 'verified' => ['Terverifikasi', 'category'], 'rejected' => ['Ditolak', 'maroon']];
+        $paymentStatusLabels = [
+            'pending' => ['Menunggu verifikasi', 'gold'],
+            'initiated' => ['Menunggu pembayaran', 'gold'],
+            'verified' => ['Terverifikasi', 'category'],
+            'rejected' => ['Gagal / kedaluwarsa', 'maroon'],
+        ];
+        $transactionStatusLabels = [
+            'created' => 'Transaksi dibuat',
+            'pending' => 'Menunggu pembayaran',
+            'capture' => 'Pembayaran diproses',
+            'challenge' => 'Menunggu pemeriksaan',
+            'settlement' => 'Berhasil',
+            'expire' => 'Kedaluwarsa',
+            'cancel' => 'Dibatalkan',
+            'deny' => 'Ditolak',
+            'refund' => 'Dikembalikan',
+            'partial_refund' => 'Pengembalian sebagian',
+            'request_failed' => 'Gagal membuat transaksi',
+        ];
 
         $eventDate = $event?->event_date ? \Carbon\Carbon::parse($event->event_date)->locale('id')->translatedFormat('d F Y') : null;
         $lastRejected = $payments->firstWhere('status', 'rejected');
-        $field = 'mt-1 block w-full text-sm text-ink/70 file:mr-3 file:rounded-full file:border-0 file:bg-maroon-light file:px-4 file:py-2 file:text-xs file:font-semibold file:text-maroon';
     @endphp
 
     <section class="mx-auto max-w-6xl px-4 pt-8 sm:px-6">
@@ -60,20 +77,13 @@
 
                 @if ($lastRejected && count($options))
                     <div class="rounded-3xl bg-maroon-light p-6 text-sm text-maroon">
-                        Pembayaran sebelumnya ({{ \App\Support\Format::rupiah($lastRejected->amount) }}) tidak dapat diverifikasi. Silakan transfer ulang atau hubungi admin.
+                        Pembayaran sebelumnya ({{ \App\Support\Format::rupiah($lastRejected->amount) }}) tidak berhasil. Silakan coba bayar kembali atau hubungi admin.
                     </div>
                 @endif
 
-                {{-- FORM PEMBAYARAN --}}
+                {{-- PEMBAYARAN MIDTRANS --}}
                 @if (count($options))
-                    @if (! $bank)
-                        <div class="rounded-3xl bg-maroon-light p-6 text-sm text-maroon">
-                            Rekening transfer belum diatur oleh admin.
-                            <a href="{{ \App\Support\Format::waLink(config('mydream.whatsapp'), 'Halo MyDream, saya ingin membayar reservasi #' . $booking->id . '.') }}" class="font-semibold underline">Hubungi admin via WhatsApp</a>.
-                        </div>
-                    @endif
-
-                    <form action="{{ route('payment.pay', $booking->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <form action="{{ route('payment.pay', $booking->id) }}" method="POST" class="space-y-6" id="midtrans-payment-form">
                         @csrf
 
                         <div class="space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
@@ -92,26 +102,10 @@
                         </div>
 
                         <div class="space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                            <h2 class="font-display text-lg font-semibold">2. Transfer Bank</h2>
-                            @if ($bank)
-                                <div class="rounded-2xl bg-cream-dark/60 p-5">
-                                    <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Transfer ke rekening</p>
-                                    <p class="mt-2 font-display text-lg font-semibold">{{ $bank['name'] }}</p>
-                                    <p class="font-display text-2xl font-semibold tracking-wider text-maroon">{{ $bank['number'] }}</p>
-                                    @if ($bank['holder'])
-                                        <p class="text-sm text-ink/60">a.n. {{ $bank['holder'] }}</p>
-                                    @endif
-                                </div>
-                                <p class="text-xs text-ink/50">Transfer sesuai nominal skema yang dipilih, lalu tekan tombol di bawah.</p>
-                            @endif
-
-                            <div>
-                                <label for="proof" class="text-xs font-medium text-ink/60">Bukti transfer (opsional, JPG/PNG/PDF maks. 2 MB)</label>
-                                <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" class="{{ $field }}">
-                                @error('proof') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
-                            </div>
-
-                            <x-site.button type="submit" size="lg" class="w-full" :disabled="! $bank">Saya Sudah Transfer</x-site.button>
+                            <h2 class="font-display text-lg font-semibold">2. Pilih Metode Pembayaran</h2>
+                            <p class="text-sm text-ink/60">Pilih metode pembayaran yang Anda inginkan.</p>
+                            <p id="midtrans-payment-error" class="hidden rounded-xl bg-maroon-light p-3 text-sm text-maroon" role="alert"></p>
+                            <x-site.button type="submit" size="lg" class="w-full" id="midtrans-pay-button">Bayar Sekarang</x-site.button>
                         </div>
                     </form>
                 @endif
@@ -128,6 +122,9 @@
                                         <p class="font-medium">{{ $paymentLabels[$payment->type] ?? $payment->type }} · {{ \App\Support\Format::rupiah($payment->amount) }}</p>
                                         <p class="text-xs text-ink/50">
                                             {{ $payment->created_at->locale('id')->translatedFormat('d F Y, H:i') }}
+                                            @if ($payment->method === 'midtrans')
+                                                · Midtrans · {{ $transactionStatusLabels[$payment->transaction_status] ?? 'Status diperbarui' }}
+                                            @endif
                                             @if ($payment->proof_url) · <a href="{{ $payment->proof_url }}" target="_blank" class="text-maroon hover:underline">Lihat bukti</a> @endif
                                         </p>
                                     </div>
@@ -179,10 +176,14 @@
 
     @if (count($options))
         @push('scripts')
+            <script src="{{ $snapScriptUrl }}" data-client-key="{{ $snapClientKey }}" defer></script>
             <script>
                 (function () {
                     var remaining = {{ (int) round($remaining) }};
                     var radios = document.querySelectorAll('input[name="scheme"]');
+                    var form = document.getElementById('midtrans-payment-form');
+                    var button = document.getElementById('midtrans-pay-button');
+                    var errorBox = document.getElementById('midtrans-payment-error');
                     var rupiah = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
 
                     function update() {
@@ -196,6 +197,58 @@
 
                     radios.forEach(function (radio) { radio.addEventListener('change', update); });
                     update();
+
+                    form.addEventListener('submit', async function (event) {
+                        event.preventDefault();
+                        errorBox.classList.add('hidden');
+                        button.disabled = true;
+                        button.textContent = 'Menyiapkan pembayaran...';
+
+                        try {
+                            var selected = form.querySelector('input[name="scheme"]:checked');
+                            var response = await fetch(form.action, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                                },
+                                body: JSON.stringify({ scheme: selected.value })
+                            });
+                            var result = await response.json();
+
+                            if (!response.ok) {
+                                throw new Error(result.message || 'Tidak dapat menyiapkan pembayaran.');
+                            }
+                            if (!window.snap) {
+                                throw new Error('Layanan pembayaran belum siap. Muat ulang halaman dan coba lagi.');
+                            }
+
+                            window.snap.pay(result.token, {
+                                onSuccess: function () {
+                                    errorBox.textContent = 'Pembayaran terdeteksi. Status akan diperbarui setelah konfirmasi Midtrans.';
+                                    errorBox.classList.remove('hidden');
+                                    window.setTimeout(function () { window.location.reload(); }, 1800);
+                                },
+                                onPending: function () {
+                                    window.location.reload();
+                                },
+                                onError: function () {
+                                    errorBox.textContent = 'Pembayaran belum berhasil. Silakan coba lagi atau pilih metode lain.';
+                                    errorBox.classList.remove('hidden');
+                                },
+                                onClose: function () {
+                                    button.disabled = false;
+                                    button.textContent = 'Bayar Sekarang';
+                                }
+                            });
+                        } catch (error) {
+                            errorBox.textContent = error.message || 'Terjadi kesalahan saat menyiapkan pembayaran.';
+                            errorBox.classList.remove('hidden');
+                            button.disabled = false;
+                            button.textContent = 'Bayar Sekarang';
+                        }
+                    });
                 })();
             </script>
         @endpush

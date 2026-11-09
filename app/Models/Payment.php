@@ -15,6 +15,9 @@ class Payment extends Model
         'status',
         'proof_path',
         'verified_at',
+        'midtrans_order_id',
+        'snap_token',
+        'transaction_status',
     ];
 
     protected $casts = [

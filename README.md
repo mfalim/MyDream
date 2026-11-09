@@ -21,6 +21,20 @@ The JSON API is available under `/api`. Public catalog and published-content rea
 
 Client checkout is submitted directly as `POST /client/bookings` with event/venue details and either a `package_id` or at least three `vendor_ids`. The bearer-token API cart is database-backed and separate from the existing web session cart.
 
+## Midtrans Snap
+
+The existing web checkout still creates the booking and opens its payment page. Payment is handled in a Snap popup, so customers do not leave MyDream. Add these sandbox settings to `.env` and replace the dummy values with the keys from your Midtrans dashboard:
+
+```dotenv
+MIDTRANS_SERVER_KEY=SB-Mid-server-DUMMY_REPLACE_WITH_YOUR_SERVER_KEY
+MIDTRANS_CLIENT_KEY=SB-Mid-client-DUMMY_REPLACE_WITH_YOUR_CLIENT_KEY
+MIDTRANS_IS_PRODUCTION=false
+```
+
+Authenticated client API users can also create a Snap transaction with `POST /api/client/bookings/{bookingId}/payments/midtrans`, sending `{"scheme":"dp"}`, `{"scheme":"full"}`, or `{"scheme":"remaining"}` as appropriate. The response includes a `token` for opening the Snap payment UI. The existing `POST /api/client/bookings/{bookingId}/payments` endpoint remains for bank-transfer submissions.
+
+Set the Midtrans payment notification URL to `https://your-domain.example/api/midtrans/notification`. Only signed notifications from Midtrans update the booking payment status; the browser popup callbacks do not mark payments as paid. Set `MIDTRANS_IS_PRODUCTION=true` and use production keys when moving to production.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
