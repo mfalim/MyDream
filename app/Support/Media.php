@@ -35,6 +35,21 @@ final class Media
         return self::placeholder();
     }
 
+    /**
+     * Foto beranda: pakai file asli di public/images/home/<nama>.(jpg|jpeg|png|webp) bila ada,
+     * kalau belum ada pakai foto contoh ($fallback).
+     */
+    public static function home(string $name, string $fallback): string
+    {
+        foreach (['jpg', 'jpeg', 'png', 'webp'] as $ext) {
+            if (is_file(public_path("images/home/{$name}.{$ext}"))) {
+                return asset("images/home/{$name}.{$ext}");
+            }
+        }
+
+        return $fallback;
+    }
+
     private static function placeholder(): string
     {
         $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">'
