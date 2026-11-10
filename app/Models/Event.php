@@ -27,6 +27,11 @@ class Event extends Model
         'end_time' => 'datetime:H:i',
     ];
 
+    public function getTitleAttribute(): string
+    {
+        return $this->name ?? 'Acara Pernikahan';
+    }
+
     public static function normalizeStatus(?string $status): ?string
     {
         if ($status === null) {

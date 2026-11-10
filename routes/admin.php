@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\OrganizerEventController;
 use App\Http\Controllers\Admin\TrackingController;
+use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\UserMemberController;
 
 Route::middleware('auth')
@@ -141,6 +142,16 @@ Route::middleware('auth')
             'updateScheduleStatus',
         ])->name('tracking.schedule.status');
 
+        Route::post('/tracking/schedule/{scheduleId}/time', [
+            TrackingController::class,
+            'updateScheduleTime',
+        ])->name('tracking.schedule.time');
+
+        Route::post('/tracking/schedule/{scheduleId}/member', [
+            TrackingController::class,
+            'updateScheduleMember',
+        ])->name('tracking.schedule.member');
+
         Route::post('/tracking/booking/{bookingId}/status', [
             TrackingController::class,
             'updateBookingStatus',
@@ -150,6 +161,30 @@ Route::middleware('auth')
             TrackingController::class,
             'updateEventMemberAttendance',
         ])->name('tracking.member.attendance');
+
+        Route::post('/tracking/event/{eventId}/member/{memberId}/quick-fee', [
+            TrackingController::class,
+            'quickUpdateFeeStatus',
+        ])->name('tracking.member.quick-fee');
+
+        Route::post('/tracking/event/{eventId}/batch-fee', [
+            TrackingController::class,
+            'batchUpdateEventFee',
+        ])->name('tracking.event.batch-fee');
+
+
+        // =========================================================
+        // PAYROLL & HONORARIUM KRU
+        // =========================================================
+
+        Route::get('/payroll', [PayrollController::class, 'index'])
+            ->name('payroll.index');
+
+        Route::post('/payroll/{id}/status', [PayrollController::class, 'updateStatus'])
+            ->name('payroll.update-status');
+
+        Route::post('/payroll/batch-update', [PayrollController::class, 'batchUpdate'])
+            ->name('payroll.batch-update');
 
 
         // =========================================================

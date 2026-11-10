@@ -24,15 +24,20 @@ class AuthController extends Controller
         }
 
         $user->load('client');
+        $member = null;
+        if ($user->role === 'member') {
+            $member = Member::where('user_id', $user->id)->first();
+        }
 
         $nextStep = match ($user->role) {
             'client' => is_null($user->client) ? 'complete_profile' : 'dashboard',
-            'member' => Member::where('user_id', $user->id)->exists() ? 'dashboard' : 'complete_profile',
+            'member' => ($member && !empty($member->call_sign)) ? 'dashboard' : 'complete_profile',
             default => 'dashboard',
         };
 
         $data = $user->toArray();
         $data['next_step'] = $nextStep;
+        $data['member'] = $member;
 
         return response()->json(['data' => $data]);
     }

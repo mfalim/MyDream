@@ -149,7 +149,7 @@ class DatabaseSeeder extends Seeder
                 'position' => 'Lead Coordinator',
                 'specialization' => 'Event Management',
                 'daily_fee' => 500000,
-                'status' => 'active',
+                'status' => 'aktif',
             ],
             [
                 'user_id' => $memberUser2->id,
@@ -163,7 +163,7 @@ class DatabaseSeeder extends Seeder
                 'position' => 'Photographer',
                 'specialization' => 'Photography',
                 'daily_fee' => 400000,
-                'status' => 'active',
+                'status' => 'aktif',
             ],
             [
                 'user_id' => $memberUser3->id,
@@ -177,7 +177,7 @@ class DatabaseSeeder extends Seeder
                 'position' => 'Technical Support',
                 'specialization' => 'Sound System',
                 'daily_fee' => 350000,
-                'status' => 'active',
+                'status' => 'aktif',
             ],
         ];
 

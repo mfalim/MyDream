@@ -14,10 +14,10 @@
 }
 .member-eyebrow {
     margin-bottom: 5px;
-    color: #71908a;
-    font-size: 10px;
+    color: #55756d;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 .member-header h2 {
@@ -47,12 +47,13 @@
 .member-stat small {
     display: block;
     margin-bottom: 3px;
-    color: #81908c;
-    font-size: 10px;
+    color: #5a7067;
+    font-size: 13px;
+    font-weight: 600;
 }
 .member-stat strong {
     color: #173f39;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
 }
 .member-toolbar {
@@ -147,8 +148,9 @@
 }
 .member-result-count {
     margin-bottom: 10px;
-    color: #7b8986;
-    font-size: 11px;
+    color: #5e736a;
+    font-size: 13px;
+    font-weight: 600;
 }
 .member-card {
     background: #ffffff;
@@ -161,14 +163,14 @@
 }
 .member-status-badge {
     display: inline-flex;
-    gap: 5px;
+    gap: 6px;
     align-items: center;
-    padding: 5px 8px;
+    padding: 5px 10px;
     border-radius: 15px;
     background: #e7f3ee;
     color: #18715f;
-    font-size: 10px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
 }
 .member-status-badge.warning {
     background: #f8f0dc;
@@ -251,21 +253,21 @@
 }
 .member-project-label {
     margin-bottom: 4px;
-    color: #9a7261;
-    font-size: 12px;
+    color: #8a6a3b;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
 }
 .member-project-name {
-    color: #304740;
-    font-size: 12px;
+    color: #173b32;
+    font-size: 13.5px;
     font-weight: 600;
     line-height: 1.5;
 }
 .member-project-location {
     margin-top: 4px;
-    color: #899692;
+    color: #5e736a;
     font-size: 13px;
 }
 .member-progress-info {
@@ -273,8 +275,9 @@
     justify-content: space-between;
     gap: 10px;
     margin-bottom: 6px;
-    color: #62736e;
-    font-size: 13px;
+    color: #4b6259;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 .member-progress-info strong {
     color: #31514a;
@@ -348,25 +351,33 @@
     margin-top: 16px;
 }
 .member-bottom-text {
-    color: #7a8985;
-    font-size: 10px;
+    color: #5e736a;
+    font-size: 13px;
+    font-weight: 500;
 }
 .member-pagination {
     display: flex;
-    gap: 5px;
+    gap: 6px;
 }
 .member-page-btn {
     display: flex;
-    width: 29px;
-    height: 29px;
+    width: 32px;
+    height: 32px;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e0e8e5;
-    border-radius: 6px;
+    border: 1px solid #d4dfda;
+    border-radius: 7px;
     background: #ffffff;
-    color: #687873;
-    font-size: 10px;
+    color: #4b6259;
+    font-size: 13px;
+    font-weight: 600;
     text-decoration: none;
+    transition: all 0.15s ease;
+}
+.member-page-btn:hover {
+    border-color: #073d36;
+    color: #073d36;
+    background: #f0f5f3;
 }
 .member-page-btn.active {
     border-color: #073d36;

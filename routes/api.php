@@ -121,6 +121,8 @@ Route::middleware(['auth:sanctum', EnsureUserRole::class . ':member'])->prefix('
     Route::get('/dashboard', [MemberAccountController::class, 'dashboard'])->name('dashboard');
     Route::put('/profile', [MemberAccountController::class, 'updateProfile'])->name('profile.update');
     Route::patch('/schedules/{id}/status', [MemberAccountController::class, 'updateScheduleStatus'])->name('schedule.status');
+    Route::post('/schedules/{id}/assign', [MemberAccountController::class, 'assignScheduleMember'])->name('schedule.assign');
+    Route::post('/events/{eventId}/members/{memberId}/attendance', [MemberAccountController::class, 'updateTeamAttendance'])->name('team.attendance');
 });
 
 Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me'])->name('api.me');

@@ -27,7 +27,7 @@ class BookingController extends Controller
         $vendors = Vendor::all();
         $packages = Package::with('vendors')->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
-        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif', 'standby'])->orderBy('name')->get();
 
         return view('admin.event.event_form', compact('vendors', 'packages', 'bookings', 'members'));
     }
@@ -55,6 +55,10 @@ class BookingController extends Controller
             'vendor_member_id' => 'nullable|array',
             'vendor_member_id.*' => 'nullable|exists:members,id',
             'package_vendor_id' => 'nullable|array',
+            'package_vendor_member_id' => 'nullable|array',
+            'package_vendor_member_id.*' => 'nullable|exists:members,id',
+            'package_vendor_status' => 'nullable|array',
+            'package_vendor_status.*' => 'nullable|in:pending,approved,rejected',
             'package_vendor_start_time' => 'nullable|array',
             'package_vendor_start_time.*' => 'nullable|date_format:H:i',
             'package_vendor_end_time' => 'nullable|array',
@@ -107,25 +111,22 @@ class BookingController extends Controller
             $selectedPackage = Package::with('vendors')->find($request->package_id);
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
+            $packageVendorMembers = $request->package_vendor_member_id ?? [];
+            $packageVendorStatuses = $request->package_vendor_status ?? [];
 
             foreach ($selectedPackage->vendors as $index => $vendor) {
-                $startTime = $packageVendorStartTimes[$index] ?? null;
-                $endTime = $packageVendorEndTimes[$index] ?? null;
+                $startTime = $packageVendorStartTimes[$index]
+                    ?? ($request->vendor_start_time[$index] ?? null)
+                    ?: '09:00';
+                $endTime = $packageVendorEndTimes[$index]
+                    ?? ($request->vendor_end_time[$index] ?? null)
+                    ?: '17:00';
+                $memberId = $packageVendorMembers[$index] ?? null;
+                $scheduleStatus = $packageVendorStatuses[$index] ?? 'pending';
 
-                if (! $startTime) {
-                    $startTime = $request->vendor_start_time[$index] ?? null;
+                if ($startTime) {
+                    $vendorTimes[] = $startTime;
                 }
-
-                if (! $endTime) {
-                    $endTime = $request->vendor_end_time[$index] ?? null;
-                }
-
-                if (! $startTime) {
-                    continue;
-                }
-
-                $vendorTimes[] = $startTime;
-
                 if ($endTime) {
                     $vendorTimes[] = $endTime;
                 }
@@ -133,20 +134,20 @@ class BookingController extends Controller
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
-                    'member_id' => null,
+                    'member_id' => $memberId ?: null,
                     'activity' => $vendor->name,
-                    'location' => null,
+                    'location' => $event->booking?->venue_name,
                     'start_time' => $startTime,
                     'end_time' => $endTime,
-                    'status' => 'pending',
+                    'status' => $scheduleStatus,
                 ]);
             }
         } else {
             if ($request->has('vendor_id') && is_array($request->vendor_id)) {
                 foreach ($request->vendor_id as $index => $vendorId) {
                     if ($vendorId) {
-                        $startTime = $request->vendor_start_time[$index] ?? null;
-                        $endTime = $request->vendor_end_time[$index] ?? null;
+                        $startTime = ($request->vendor_start_time[$index] ?? null) ?: '09:00';
+                        $endTime = ($request->vendor_end_time[$index] ?? null) ?: '17:00';
                         $memberId = $request->vendor_member_id[$index] ?? null;
 
                         if ($startTime) $vendorTimes[] = $startTime;
@@ -156,9 +157,9 @@ class BookingController extends Controller
                         Schedule::create([
                             'event_id' => $event->id,
                             'vendor_id' => $vendorId,
-                            'member_id' => $memberId,
+                            'member_id' => $memberId ?: null,
                             'activity' => $vendor ? $vendor->name : 'Vendor',
-                            'location' => null,
+                            'location' => $event->booking?->venue_name,
                             'start_time' => $startTime,
                             'end_time' => $endTime,
                             'status' => $request->vendor_status[$index] ?? 'pending',
@@ -189,15 +190,15 @@ class BookingController extends Controller
 
         $this->syncTeamMemberSchedules($event, $teamAssignments);
 
-        return redirect()->route('admin.event_day.index')->with('success', 'Event created successfully!');
+        return redirect()->route('admin.events.index')->with('success', 'Event created successfully!');
     }
 
     public function edit($id)
     {
-        $event = Event::with(['booking', 'schedules.vendor', 'eventMembers.member'])->findOrFail($id);
-        $vendors = Vendor::all();
-        $packages = Package::with('vendors')->get();
-        $members = \App\Models\Member::whereIn('status', ['active', 'aktif'])->get();
+        $event = Event::with(['booking.client', 'booking.package', 'schedules.vendor', 'schedules.member', 'eventMembers.member'])->findOrFail($id);
+        $vendors = Vendor::with('category')->get();
+        $packages = Package::with('vendors.category')->get();
+        $members = \App\Models\Member::whereIn('status', ['active', 'aktif', 'standby'])->orderBy('name')->get();
         $bookings = Booking::with(['client', 'package'])->where('status', 'approved')->get();
 
         return view('admin.event.event_edit', compact('event', 'vendors', 'packages', 'members', 'bookings'));
@@ -210,7 +211,7 @@ class BookingController extends Controller
             'event_name' => 'required|string|max:255',
             'event_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:10240',
             'event_type' => 'nullable|string',
-            'event_date' => 'required|date|after_or_equal:today',
+            'event_date' => 'required|date',
             'guest_count' => 'nullable|integer|min:1|max:10000',
             'event_notes' => 'nullable|string|max:2000',
             'event_status' => 'nullable|string|in:draft,scheduled,upcoming,ongoing,completed,cancelled',
@@ -225,6 +226,15 @@ class BookingController extends Controller
             'vendor_end_time.*' => 'nullable|date_format:H:i',
             'vendor_member_id' => 'nullable|array',
             'vendor_member_id.*' => 'nullable|exists:members,id',
+            'package_vendor_id' => 'nullable|array',
+            'package_vendor_member_id' => 'nullable|array',
+            'package_vendor_member_id.*' => 'nullable|exists:members,id',
+            'package_vendor_status' => 'nullable|array',
+            'package_vendor_status.*' => 'nullable|in:pending,approved,rejected',
+            'package_vendor_start_time' => 'nullable|array',
+            'package_vendor_start_time.*' => 'nullable|date_format:H:i',
+            'package_vendor_end_time' => 'nullable|array',
+            'package_vendor_end_time.*' => 'nullable|date_format:H:i',
             'team_member_id' => 'nullable|array',
             'team_member_id.*' => 'nullable|exists:members,id',
             'team_member_role' => 'nullable|array',
@@ -236,7 +246,6 @@ class BookingController extends Controller
             'event_photo.mimes' => 'Format gambar harus jpg, jpeg, png, atau webp',
             'event_photo.max' => 'Ukuran gambar maksimal 2MB',
             'event_date.required' => 'Tanggal event harus diisi',
-            'event_date.after_or_equal' => 'Tanggal event tidak boleh kurang dari hari ini',
             'guest_count.min' => 'Jumlah tamu minimal 1',
             'guest_count.max' => 'Jumlah tamu maksimal 10000',
             'event_notes.max' => 'Catatan maksimal 2000 karakter',
@@ -274,35 +283,41 @@ class BookingController extends Controller
 
             $packageVendorStartTimes = $request->package_vendor_start_time ?? [];
             $packageVendorEndTimes = $request->package_vendor_end_time ?? [];
+            $packageVendorMembers = $request->package_vendor_member_id ?? [];
+            $packageVendorStatuses = $request->package_vendor_status ?? [];
 
             foreach ($selectedPackage->vendors as $index => $vendor) {
+                $existingSchedule = $existingSchedules->get($vendor->id);
+
                 $startTime = $packageVendorStartTimes[$index] ?? null;
                 $endTime = $packageVendorEndTimes[$index] ?? null;
 
-                $existingSchedule = $existingSchedules->get($vendor->id);
-
-                if (! $startTime && $existingSchedule) {
-                    $startTime = $existingSchedule->start_time;
+                if (! $startTime && $existingSchedule && $existingSchedule->start_time) {
+                    $startTime = \Carbon\Carbon::parse($existingSchedule->start_time)->format('H:i');
                 }
 
-                if (! $endTime && $existingSchedule) {
-                    $endTime = $existingSchedule->end_time;
+                if (! $endTime && $existingSchedule && $existingSchedule->end_time) {
+                    $endTime = \Carbon\Carbon::parse($existingSchedule->end_time)->format('H:i');
                 }
 
                 if (! $startTime) {
-                    $startTime = $request->vendor_start_time[$index] ?? null;
+                    $startTime = ($request->vendor_start_time[$index] ?? null) ?: '09:00';
                 }
 
                 if (! $endTime) {
-                    $endTime = $request->vendor_end_time[$index] ?? null;
+                    $endTime = ($request->vendor_end_time[$index] ?? null) ?: '17:00';
                 }
 
-                if (! $startTime) {
-                    continue;
+                $memberId = array_key_exists($index, $packageVendorMembers)
+                    ? ($packageVendorMembers[$index] ?: null)
+                    : ($existingSchedule?->member_id);
+
+                $scheduleStatus = $packageVendorStatuses[$index]
+                    ?? ($existingSchedule?->status ?? 'pending');
+
+                if ($startTime) {
+                    $vendorTimes[] = $startTime;
                 }
-
-                $vendorTimes[] = $startTime;
-
                 if ($endTime) {
                     $vendorTimes[] = $endTime;
                 }
@@ -310,21 +325,25 @@ class BookingController extends Controller
                 Schedule::create([
                     'event_id' => $event->id,
                     'vendor_id' => $vendor->id,
-                    'member_id' => null,
-                    'activity' => $vendor->name,
-                    'location' => null,
+                    'member_id' => $memberId,
+                    'activity' => $existingSchedule?->activity ?: $vendor->name,
+                    'location' => $existingSchedule?->location ?? $event->booking?->venue_name,
                     'start_time' => $startTime,
                     'end_time' => $endTime,
-                    'status' => 'pending',
+                    'notes' => $existingSchedule?->notes,
+                    'status' => $scheduleStatus,
                 ]);
             }
         } else {
             if ($request->has('vendor_id') && is_array($request->vendor_id)) {
                 foreach ($request->vendor_id as $index => $vendorId) {
                     if ($vendorId) {
-                        $startTime = $request->vendor_start_time[$index] ?? null;
-                        $endTime = $request->vendor_end_time[$index] ?? null;
-                        $memberId = $request->vendor_member_id[$index] ?? null;
+                        $existingSchedule = $existingSchedules->get((int) $vendorId);
+                        $startTime = ($request->vendor_start_time[$index] ?? null)
+                            ?: ($existingSchedule?->start_time ? \Carbon\Carbon::parse($existingSchedule->start_time)->format('H:i') : '09:00');
+                        $endTime = ($request->vendor_end_time[$index] ?? null)
+                            ?: ($existingSchedule?->end_time ? \Carbon\Carbon::parse($existingSchedule->end_time)->format('H:i') : '17:00');
+                        $memberId = ($request->vendor_member_id[$index] ?? null) ?: null;
 
                         if ($startTime) $vendorTimes[] = $startTime;
                         if ($endTime) $vendorTimes[] = $endTime;
@@ -334,11 +353,12 @@ class BookingController extends Controller
                             'event_id' => $event->id,
                             'vendor_id' => $vendorId,
                             'member_id' => $memberId,
-                            'activity' => $vendor ? $vendor->name : 'Vendor',
-                            'location' => null,
+                            'activity' => $vendor ? $vendor->name : ($existingSchedule?->activity ?? 'Vendor'),
+                            'location' => $existingSchedule?->location ?? $event->booking?->venue_name,
                             'start_time' => $startTime,
                             'end_time' => $endTime,
-                            'status' => $request->vendor_status[$index] ?? 'pending',
+                            'notes' => $existingSchedule?->notes,
+                            'status' => $request->vendor_status[$index] ?? ($existingSchedule?->status ?? 'pending'),
                         ]);
                     }
                 }
@@ -357,13 +377,12 @@ class BookingController extends Controller
 
         $event->save();
 
-        $event->eventMembers()->delete();
         $teamAssignments = [];
         if ($request->has('team_member_id') && is_array($request->team_member_id)) {
             foreach ($request->team_member_id as $index => $memberId) {
                 if ($memberId) {
                     $teamAssignments[] = [
-                        'member_id' => $memberId,
+                        'member_id' => (int) $memberId,
                         'role' => $request->team_member_role[$index] ?? 'Team Member',
                     ];
                 }
@@ -429,15 +448,11 @@ class BookingController extends Controller
 
     private function syncTeamMemberSchedules(Event $event, array $teamAssignments): void
     {
-        if (empty($teamAssignments)) {
-            return;
-        }
-
-        $eventDate = $event->event_date ? \Carbon\Carbon::parse($event->event_date) : \Carbon\Carbon::now();
+        $keptMemberIds = [];
 
         foreach ($teamAssignments as $assignment) {
             $memberId = (int) ($assignment['member_id'] ?? 0);
-            if ($memberId <= 0) {
+            if ($memberId <= 0 || in_array($memberId, $keptMemberIds, true)) {
                 continue;
             }
 
@@ -446,39 +461,40 @@ class BookingController extends Controller
                 continue;
             }
 
-            $role = $assignment['role'] ?? 'Team Member';
+            $keptMemberIds[] = $memberId;
+            $role = trim((string) ($assignment['role'] ?? '')) ?: ($member->position ?? 'Team Member');
 
-            $event->eventMembers()->updateOrCreate(
-                ['member_id' => $memberId],
-                [
-                    'role' => $role,
-                    'status' => 'assigned',
-                    'attendance_status' => 'full_day',
-                    'actual_hours' => 0,
-                    'allowance' => 0,
-                    'payment_status' => 'pending',
-                ]
-            );
-
-            $existingTask = Schedule::where('event_id', $event->id)
+            $existingEventMember = EventMember::where('event_id', $event->id)
                 ->where('member_id', $memberId)
                 ->first();
 
-            if ($existingTask) {
-                continue;
+            if ($existingEventMember) {
+                $existingEventMember->update([
+                    'role' => $role,
+                ]);
+            } else {
+                EventMember::create([
+                    'event_id' => $event->id,
+                    'member_id' => $memberId,
+                    'role' => $role,
+                    'status' => 'assigned',
+                    'attendance_status' => 'present',
+                    'actual_hours' => 0,
+                    'allowance' => 0,
+                    'payment_status' => 'pending',
+                ]);
             }
+        }
 
-            Schedule::create([
-                'event_id' => $event->id,
-                'vendor_id' => null,
-                'member_id' => $memberId,
-                'activity' => 'Tugas ' . ($member->call_sign ?: $member->name),
-                'location' => $event->booking?->venue_name ?? 'Venue acara',
-                'start_time' => $eventDate->copy()->setTime(8, 0, 0),
-                'end_time' => $eventDate->copy()->setTime(17, 0, 0),
-                'notes' => 'Checklist tugas untuk ' . ($member->call_sign ?: $member->name) . ' sebagai ' . $role,
-                'status' => 'pending',
-            ]);
+        if (empty($keptMemberIds)) {
+            $event->eventMembers()->delete();
+            Schedule::where('event_id', $event->id)->update(['member_id' => null]);
+        } else {
+            $event->eventMembers()->whereNotIn('member_id', $keptMemberIds)->delete();
+            Schedule::where('event_id', $event->id)
+                ->whereNotNull('member_id')
+                ->whereNotIn('member_id', $keptMemberIds)
+                ->update(['member_id' => null]);
         }
     }
 }

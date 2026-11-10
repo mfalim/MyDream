@@ -18,7 +18,7 @@ class TrackingController extends Controller
             'status' => ['sometimes', 'in:approved,pending,rejected'],
         ]);
 
-        $bookings = Booking::with(['client', 'package', 'events.schedules'])
+        $bookings = Booking::with(['client', 'package', 'events.package', 'events.schedules'])
             ->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status))
             ->when($filters['q'] ?? null, function ($q, $search) {
                 $q->where(fn ($query) => $query->where('venue_name', 'like', "%{$search}%")
@@ -27,6 +27,9 @@ class TrackingController extends Controller
             ->latest()->paginate($request->integer('per_page', 20));
 
         $bookings->getCollection()->transform(function (Booking $booking) {
+            $booking->syncTotalPrice();
+            $booking->setAttribute('all_packages', $booking->all_packages);
+            $booking->setAttribute('full_venue_address', $booking->full_venue_address);
             $schedules = $booking->events->flatMap->schedules;
             $booking->setAttribute('schedule_progress', [
                 'approved' => $schedules->where('status', 'approved')->count(),

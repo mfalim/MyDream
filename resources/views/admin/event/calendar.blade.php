@@ -2,6 +2,10 @@
 @section('title', 'Kalender & Tanggal Acara')
 @section('page-title', 'Kalender Event')
 
+@push('styles')
+    @vite('resources/css/admin/events.css')
+@endpush
+
 @section('content')
     <div class="container-fluid px-4 py-4">
         <div class="mb-4">
@@ -67,28 +71,6 @@
             </div>
         </div>
     </div>
-
-    <style>
-        .table td {
-            border: 1px solid #e9ecef;
-        }
-
-        .badge {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.5rem;
-            font-weight: 500;
-        }
-
-        .calendar-day:hover {
-            background-color: #f8f9fa;
-            transition: background-color 0.2s;
-        }
-
-        .calendar-day.selected {
-            background-color: #e7f3ff;
-            border: 2px solid #0d6efd;
-        }
-    </style>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

@@ -78,18 +78,41 @@
         </section>
     @endif
 
-    {{-- CERITA --}}
-    <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div class="mb-10 text-center">
-            <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Dokumentasi Karya</p>
-            <h2 class="mt-2 font-display text-3xl font-semibold">Cerita yang Sudah Terwujud</h2>
-        </div>
-        <div class="grid gap-8 sm:grid-cols-3">
-            @foreach ($stories as $story)
-                <x-site.article-card :article="$story" />
-            @endforeach
-        </div>
-    </section>
+    {{-- EVENT PUBLIK MENDATANG --}}
+    @if (isset($upcomingEvents) && $upcomingEvents->isNotEmpty())
+        <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+            <div class="mb-8 flex items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Agenda Kegiatan</p>
+                    <h2 class="mt-2 font-display text-3xl font-semibold">Event &amp; Pameran Mendatang</h2>
+                </div>
+                <a href="{{ route('event.index') }}" class="hidden text-sm font-medium text-maroon hover:underline sm:inline">Lihat Semua Event &rarr;</a>
+            </div>
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                @foreach ($upcomingEvents as $event)
+                    <x-site.event-card :event="$event" />
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    {{-- CERITA & ARTIKEL --}}
+    @if ($stories->isNotEmpty())
+        <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+            <div class="mb-8 flex items-end justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Dokumentasi Karya &amp; Inspirasi</p>
+                    <h2 class="mt-2 font-display text-3xl font-semibold">Cerita &amp; Tips Pernikahan</h2>
+                </div>
+                <a href="{{ route('blog.index') }}" class="hidden text-sm font-medium text-maroon hover:underline sm:inline">Lihat Semua Artikel &rarr;</a>
+            </div>
+            <div class="grid gap-8 sm:grid-cols-3">
+                @foreach ($stories as $story)
+                    <x-site.article-card :article="$story" />
+                @endforeach
+            </div>
+        </section>
+    @endif
 
     {{-- LAYANAN --}}
     <section class="bg-cream-dark py-16">

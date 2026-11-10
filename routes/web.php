@@ -34,6 +34,8 @@ Route::prefix('member')->name('member.')->middleware('auth')->group(function () 
     Route::post('/profile/complete', [MemberProfileController::class, 'storeProfile'])->name('profile.store');
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
     Route::post('/dashboard/schedule/{id}/status', [MemberDashboardController::class, 'updateScheduleStatus'])->name('schedule.status');
+    Route::post('/dashboard/schedule/{id}/assign', [MemberDashboardController::class, 'assignScheduleMember'])->name('schedule.assign');
+    Route::post('/dashboard/event/{eventId}/member/{memberId}/attendance', [MemberDashboardController::class, 'updateTeamAttendance'])->name('event.attendance');
 });
 
 require __DIR__ . '/site.php';

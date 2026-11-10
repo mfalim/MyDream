@@ -56,8 +56,8 @@
 
                     <a href="{{ route('admin.events.index') }}"
                         class="nav-item {{ request()->routeIs('admin.events.index', 'admin.events.create', 'admin.events.store', 'admin.events.show', 'admin.events.edit', 'admin.events.update') ? 'active' : '' }}">
-                        <i class="bi bi-calendar-event"></i>
-                        <span>Event Day</span>
+                        <i class="bi bi-calendar-check"></i>
+                        <span>Event Day (Hari H)</span>
                     </a>
 
                     <a href="{{ route('admin.calendar') }}"
@@ -68,8 +68,14 @@
 
                     <a href="{{ route('admin.tracking.index') }}"
                         class="nav-item {{ request()->routeIs('admin.tracking.*') ? 'active' : '' }}">
-                        <i class="bi bi-activity"></i>
-                        <span>Tracking Acara Client</span>
+                        <i class="bi bi-journal-check"></i>
+                        <span>Tracking Booking Client</span>
+                    </a>
+
+                    <a href="{{ route('admin.payroll.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Honor & Pencairan Kru</span>
                     </a>
 
                     <a href="{{ route('admin.organizer-event.index') }}"
@@ -159,7 +165,7 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                @if ($errors->any())
+                @if (isset($errors) && $errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
                             @foreach ($errors->all() as $error)

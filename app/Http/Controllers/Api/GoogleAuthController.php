@@ -142,13 +142,13 @@ class GoogleAuthController extends Controller
 
         $nextStep = match ($user->role) {
             'client' => is_null($client) ? 'complete_profile' : 'dashboard',
-            'member' => is_null($member) ? 'complete_profile' : 'dashboard',
+            'member' => ($member && !empty($member->call_sign)) ? 'dashboard' : 'complete_profile',
             default => 'dashboard',
         };
 
         $redirectTo = match ($user->role) {
             'client' => is_null($client) ? '/login/profile' : '/user/dashboard',
-            'member' => is_null($member) ? '/member/profile/complete' : '/member/dashboard',
+            'member' => ($member && !empty($member->call_sign)) ? '/member/dashboard' : '/member/profile/complete',
             'admin' => '/admin/dashboard',
             'vendor' => '/vendor/dashboard',
             default => '/user/dashboard',
@@ -156,6 +156,9 @@ class GoogleAuthController extends Controller
 
         $token = $user->createToken($deviceName)->plainTextToken;
         $user->setRelation('client', $client);
+        if ($member) {
+            $user->setRelation('member', $member);
+        }
 
         return response()->json([
             'success' => true,
@@ -163,6 +166,7 @@ class GoogleAuthController extends Controller
             'data' => [
                 'user' => $user,
                 'client' => $client,
+                'member' => $member,
                 'token' => $token,
                 'token_type' => 'Bearer',
                 'role' => $user->role,

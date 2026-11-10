@@ -3,539 +3,589 @@
 @section('title', 'Edit Event')
 @section('page-title', 'Form Edit Event')
 
+@push('styles')
+    @vite('resources/css/admin/events.css')
+@endpush
+
 @section('content')
-    <div class="container-fluid px-4 py-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-1">Edit Event</h2>
-                        <p class="text-muted mb-0">Edit detail event seperti Akad Nikah, Resepsi, dll</p>
+<div class="container-fluid px-4 py-4">
+    <div class="wo-event-page">
+        <div class="wo-page-header">
+            <div>
+                <div class="wo-breadcrumb">
+                    <a href="{{ route('admin.events.index') }}">Event Day</a>
+                    <span>/</span>
+                    <span>Edit Event</span>
+                </div>
+                <h2>Edit Event</h2>
+                <p>Perbarui detail pelaksanaan acara, penugasan tim organizer, serta jadwal & PIC vendor</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="javascript:void(0)" onclick="history.back()" class="wo-btn-outline">Batal</a>
+                <button type="submit" form="eventForm" class="wo-btn-primary">
+                    <i class="bi bi-check2-circle"></i> Update Event
+                </button>
+            </div>
+        </div>
+
+        <form id="eventForm" method="POST" action="{{ route('admin.events.update', $event->id) }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <!-- Section 1: Info Booking (Read Only) -->
+            <div class="wo-section-card">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h5>1. Info Booking</h5>
+                            <small>Booking client yang terkait dengan event ini</small>
+                        </div>
                     </div>
-                    <div>
-                        <a href="javascript:void(0)" onclick="history.back()" class="btn btn-outline-secondary me-2">Cancel</a>
-                        <button type="submit" form="eventForm" class="btn btn-dark">Update Event</button>
+                </div>
+                <div class="wo-section-body">
+                    <div class="wo-booking-summary">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Pasangan Mempelai</small>
+                                <span class="fw-bold" style="color:#173b32;">
+                                    {{ $event->booking?->client?->groom_name ?? 'N/A' }} & {{ $event->booking?->client?->bride_name ?? 'N/A' }}
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Lokasi Venue</small>
+                                <span class="fw-bold" style="color:#173b32;">{{ $event->booking?->venue_name ?? 'N/A' }}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted d-block">Paket Booking</small>
+                                <span class="fw-bold" style="color:#8a6a3b;">{{ $event->booking?->package?->name ?? 'Custom Vendor' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Detail Event -->
+            <div class="wo-section-card">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <div>
+                            <h5>2. Detail Acara</h5>
+                            <small>Informasi tentang acara (Akad, Resepsi, Lamaran, dll)</small>
+                        </div>
+                    </div>
+                    <span class="wo-badge-required">Wajib</span>
+                </div>
+                <div class="wo-section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="wo-label">Nama Event <span class="req">*</span></label>
+                            <input type="text" class="wo-control" name="event_name" value="{{ $event->name }}" placeholder="Contoh: Akad Nikah" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Foto Cover Event</label>
+                            <input type="file" class="wo-control" name="event_photo" accept="image/*">
+                            @if ($event->photo)
+                                @php
+                                    $storagePath = storage_path('app/public/' . $event->photo);
+                                    $photoUrl = asset('storage/' . $event->photo);
+                                    if (file_exists($storagePath)) {
+                                        $photoUrl .= '?v=' . filemtime($storagePath);
+                                    }
+                                @endphp
+                                <small class="text-muted">Foto saat ini: <a href="{{ $photoUrl }}" target="_blank" style="color:#176257; font-weight:600;">Lihat foto</a></small>
+                            @else
+                                <small class="text-muted">Belum ada foto</small>
+                            @endif
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Tipe Event</label>
+                            <select class="wo-select" name="event_type">
+                                <option value="">-- Pilih Tipe --</option>
+                                <option value="akad_nikah" {{ $event->event_type == 'akad_nikah' ? 'selected' : '' }}>Akad Nikah</option>
+                                <option value="resepsi" {{ $event->event_type == 'resepsi' ? 'selected' : '' }}>Resepsi</option>
+                                <option value="lamaran" {{ $event->event_type == 'lamaran' ? 'selected' : '' }}>Lamaran</option>
+                                <option value="siraman" {{ $event->event_type == 'siraman' ? 'selected' : '' }}>Siraman</option>
+                                <option value="midodareni" {{ $event->event_type == 'midodareni' ? 'selected' : '' }}>Midodareni</option>
+                                <option value="pemberkatan" {{ $event->event_type == 'pemberkatan' ? 'selected' : '' }}>Pemberkatan</option>
+                                <option value="tea_ceremony" {{ $event->event_type == 'tea_ceremony' ? 'selected' : '' }}>Tea Ceremony</option>
+                                <option value="lainnya" {{ $event->event_type == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Tanggal Acara <span class="req">*</span></label>
+                            <input type="date" class="wo-control" name="event_date" value="{{ $event->event_date?->format('Y-m-d') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Jumlah Tamu Undangan</label>
+                            <input type="number" class="wo-control" name="guest_count" value="{{ $event->guest_count }}" placeholder="Contoh: 300">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Status Event</label>
+                            <select class="wo-select" name="event_status">
+                                <option value="draft" {{ $event->status == 'draft' ? 'selected' : '' }}>Draft</option>
+                                <option value="upcoming" {{ $event->status == 'upcoming' || $event->status == 'scheduled' ? 'selected' : '' }}>Upcoming</option>
+                                <option value="ongoing" {{ $event->status == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
+                                <option value="completed" {{ $event->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="cancelled" {{ $event->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="wo-label">Catatan Event</label>
+                            <textarea class="wo-control" name="event_notes" rows="2" placeholder="Catatan khusus untuk event ini">{{ $event->notes }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Team Members -->
+            <div class="wo-section-card">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div>
+                            <h5>3. Tim Organizer</h5>
+                            <small>Gunakan role <strong>Lead Coordinator</strong> / <strong>Coordinator</strong> untuk Penanggung Jawab Utama Event</small>
+                        </div>
+                    </div>
+                    <button type="button" class="wo-btn-add" id="addTeamMemberBtn">
+                        <i class="bi bi-plus-lg"></i> Tambah Anggota Tim
+                    </button>
+                </div>
+
+                <div class="wo-section-body">
+                    <datalist id="teamRoleOptions">
+                        <option value="Lead Coordinator"></option>
+                        <option value="Coordinator"></option>
+                        <option value="Team Member"></option>
+                        <option value="Crew"></option>
+                    </datalist>
+
+                    <div class="team-list" id="teamList">
+                        @forelse($event->eventMembers as $eventMember)
+                            <div class="wo-item-row team-item">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="wo-label">Pilih Member</label>
+                                        <select class="wo-select team-member-select" name="team_member_id[]">
+                                            <option value="">-- Pilih Member --</option>
+                                            @foreach ($members as $member)
+                                                <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}"
+                                                    {{ $eventMember->member_id == $member->id ? 'selected' : '' }}>
+                                                    {{ $member->name }} ({{ $member->call_sign ?: '-' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="wo-label">Role di Event</label>
+                                        <input type="text" list="teamRoleOptions" class="wo-control team-member-role" name="team_member_role[]"
+                                            value="{{ $eventMember->role ?: ($eventMember->member?->position ?? 'Team Member') }}"
+                                            placeholder="Contoh: Lead Coordinator, Coordinator, Crew">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="wo-btn-remove remove-team-btn" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="wo-item-row team-item">
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="wo-label">Pilih Member</label>
+                                        <select class="wo-select team-member-select" name="team_member_id[]">
+                                            <option value="">-- Pilih Member --</option>
+                                            @foreach ($members as $member)
+                                                <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
+                                                    {{ $member->name }} ({{ $member->call_sign ?: '-' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="wo-label">Role di Event</label>
+                                        <input type="text" list="teamRoleOptions" class="wo-control team-member-role" name="team_member_role[]"
+                                            placeholder="Contoh: Lead Coordinator, Coordinator, Crew">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="wo-btn-remove remove-team-btn" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Vendor & Paket -->
+            <div class="wo-section-card">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div>
+                            <h5>4. Jadwal Vendor & Penanggung Jawab (PIC)</h5>
+                            <small>Atur paket atau vendor kustom beserta member PIC masing-masing</small>
+                        </div>
                     </div>
                 </div>
 
-                <form id="eventForm" method="POST" action="{{ route('admin.events.update', $event->id) }}"
-                    enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-
-                    <!-- Section 1: Info Booking (Read Only) -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-calendar-check"></i>
-                                </div>
-                                <div>
-                                    <h5 class="fw-bold mb-0">Info Booking</h5>
-                                    <small class="text-muted">Booking yang terkait dengan event ini</small>
-                                </div>
-                            </div>
-
-                            <div class="alert alert-info">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Client:</small>
-                                        <span class="fw-semibold">{{ $event->booking->client->groom_name ?? 'N/A' }} &
-                                            {{ $event->booking->client->bride_name ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Venue:</small>
-                                        <span class="fw-semibold">{{ $event->booking->venue_name ?? 'N/A' }}</span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <small class="text-muted d-block">Package:</small>
-                                        <span class="fw-semibold">{{ $event->booking->package->name ?? 'N/A' }}</span>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="wo-section-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="wo-label">Pilih Paket Wedding</label>
+                            <select class="wo-select" name="package_id" id="packageSelect">
+                                <option value="">Tidak Menggunakan Paket (Pilih Vendor Kustom)</option>
+                                @foreach ($packages as $package)
+                                    <option value="{{ $package->id }}"
+                                        {{ $event->package_id == $package->id ? 'selected' : '' }}
+                                        data-vendors="{{ json_encode($package->vendors->map(function ($v) { return ['id' => $v->id, 'name' => $v->name, 'category' => $v->category->name ?? 'N/A']; })) }}">
+                                        {{ $package->name }} - Rp {{ number_format($package->price, 0, ',', '.') }}
+                                        ({{ $package->vendors->count() }} vendor)
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Section 2: Detail Event -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-heart-fill"></i>
-                                </div>
-                                <div>
-                                    <h5 class="fw-bold mb-0">Detail Event</h5>
-                                    <small class="text-muted">Informasi tentang event (Akad, Resepsi, dll)</small>
-                                </div>
-                                <span class="badge bg-danger ms-auto">WAJIB</span>
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Event <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="event_name" value="{{ $event->name }}"
-                                        placeholder="Contoh: Akad Nikah" required>
-                                    <small class="text-muted">Contoh: Akad Nikah, Resepsi, Lamaran, Siraman</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Foto Event</label>
-                                    <input type="file" class="form-control" name="event_photo" accept="image/*">
-                                    @if ($event->photo)
-                                        @php
-                                            $storagePath = storage_path('app/public/' . $event->photo);
-                                            $photoUrl = asset('storage/' . $event->photo);
-                                            if (file_exists($storagePath)) {
-                                                $photoUrl .= '?v=' . filemtime($storagePath);
-                                            }
-                                        @endphp
-                                        <small class="text-muted">Foto saat ini: <a href="{{ $photoUrl }}" target="_blank">Lihat foto</a></small>
-                                    @else
-                                        <small class="text-muted">Belum ada foto</small>
-                                    @endif
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tipe Event</label>
-                                    <select class="form-select" name="event_type">
-                                        <option value="">Pilih Tipe</option>
-                                        <option value="akad_nikah" {{ $event->event_type == 'akad_nikah' ? 'selected' : '' }}>Akad Nikah</option>
-                                        <option value="resepsi" {{ $event->event_type == 'resepsi' ? 'selected' : '' }}>Resepsi</option>
-                                        <option value="lamaran" {{ $event->event_type == 'lamaran' ? 'selected' : '' }}>Lamaran</option>
-                                        <option value="siraman" {{ $event->event_type == 'siraman' ? 'selected' : '' }}>Siraman</option>
-                                        <option value="midodareni" {{ $event->event_type == 'midodareni' ? 'selected' : '' }}>Midodareni</option>
-                                        <option value="pemberkatan" {{ $event->event_type == 'pemberkatan' ? 'selected' : '' }}>Pemberkatan</option>
-                                        <option value="tea_ceremony" {{ $event->event_type == 'tea_ceremony' ? 'selected' : '' }}>Tea Ceremony</option>
-                                        <option value="lainnya" {{ $event->event_type == 'lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tanggal <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="event_date"
-                                        value="{{ $event->event_date->format('Y-m-d') }}" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Jumlah Tamu Undangan</label>
-                                    <input type="number" class="form-control" name="guest_count"
-                                        value="{{ $event->guest_count }}" placeholder="Contoh: 300">
-                                    <small class="text-muted">Jumlah tamu yang diundang</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Status</label>
-                                    <select class="form-select" name="event_status">
-                                        <option value="draft" {{ $event->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                                        <option value="upcoming" {{ $event->status == 'upcoming' || $event->status == 'scheduled' ? 'selected' : '' }}>Upcoming</option>
-                                        <option value="ongoing" {{ $event->status == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
-                                        <option value="completed" {{ $event->status == 'completed' ? 'selected' : '' }}>Completed</option>
-                                        <option value="cancelled" {{ $event->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Catatan Event</label>
-                                    <textarea class="form-control" name="event_notes" rows="2" placeholder="Catatan khusus untuk event ini">{{ $event->notes }}</textarea>
-                                    <small class="text-muted">Waktu event akan otomatis sesuai jadwal vendor (dari paling awal sampai paling akhir)</small>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="packageVendorsDisplay" class="mb-3" style="display: {{ $event->package_id ? 'block' : 'none' }};">
+                        <label class="wo-label mb-2">Daftar Vendor dalam Paket & Penugasan PIC:</label>
+                        <div id="packageVendorsList"></div>
                     </div>
 
-                    <!-- Section 3: Team Members -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-people-fill"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-0">Tim Organizer</h5>
-                                    <small class="text-muted">Assign anggota tim yang bertanggung jawab</small>
-                                </div>
+                    <div id="customVendorSection" style="display: {{ $event->package_id ? 'none' : 'block' }};">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <label class="wo-label mb-0">Daftar Vendor Kustom</label>
+                                <small class="text-muted">Pilih vendor kustom dan tentukan member penanggung jawabnya</small>
                             </div>
+                            <button type="button" class="wo-btn-add" id="addVendorBtn">
+                                <i class="bi bi-plus-lg"></i> Tambah Vendor
+                            </button>
+                        </div>
 
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <label class="form-label fw-semibold mb-0">Anggota Tim</label>
-                                    <small class="text-muted d-block">Lead Director, Coordinator, dll</small>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline-warning" id="addTeamMemberBtn">+
-                                    Tambah Tim</button>
-                            </div>
-
-                            <div class="team-list" id="teamList">
-                                @forelse($event->eventMembers as $eventMember)
-                                    <div class="row g-3 mb-3 team-item">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Pilih Member</label>
-                                            <select class="form-select team-member-select" name="team_member_id[]">
-                                                <option value="">Pilih Member</option>
-                                                @foreach ($members as $member)
-                                                    <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}"
-                                                        {{ $eventMember->member_id == $member->id ? 'selected' : '' }}>
-                                                        {{ $member->name }} ({{ $member->call_sign }})
+                        <div class="vendor-list" id="vendorList">
+                            @forelse($event->schedules as $schedule)
+                                <div class="wo-item-row vendor-item">
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-3">
+                                            <label class="wo-label">Pilih Vendor</label>
+                                            <select class="wo-select" name="vendor_id[]">
+                                                <option value="">-- Pilih Vendor --</option>
+                                                @foreach ($vendors as $vendor)
+                                                    <option value="{{ $vendor->id }}" {{ $schedule->vendor_id == $vendor->id ? 'selected' : '' }}>
+                                                        {{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-semibold">Role</label>
-                                            <input type="text" class="form-control team-member-role" name="team_member_role[]"
-                                                value="{{ $eventMember->role ?: ($eventMember->member?->position ?? 'Team Member') }}"
-                                                placeholder="Contoh: Lead Director, Coordinator">
-                                        </div>
-                                        <div class="col-md-1 d-flex align-items-end">
-                                            <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                @empty
-                                    <div class="row g-3 mb-3 team-item">
-                                        <div class="col-md-6">
-                                            <label class="form-label fw-semibold">Pilih Member</label>
-                                            <select class="form-select team-member-select" name="team_member_id[]">
-                                                <option value="">Pilih Member</option>
+                                        <div class="col-md-3">
+                                            <label class="wo-label">Penanggung Jawab (PIC)</label>
+                                            <select class="wo-select" name="vendor_member_id[]">
+                                                <option value="">Tidak ditugaskan</option>
                                                 @foreach ($members as $member)
-                                                    <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
-                                                        {{ $member->name }} ({{ $member->call_sign }})
+                                                    <option value="{{ $member->id }}" {{ $schedule->member_id == $member->id ? 'selected' : '' }}>
+                                                        {{ $member->name }} ({{ $member->call_sign ?: '-' }})
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-5">
-                                            <label class="form-label fw-semibold">Role</label>
-                                            <input type="text" class="form-control team-member-role" name="team_member_role[]"
-                                                placeholder="Contoh: Lead Director, Coordinator">
+                                        <div class="col-md-2">
+                                            <label class="wo-label">Waktu Mulai</label>
+                                            <input type="time" class="wo-control" name="vendor_start_time[]"
+                                                value="{{ $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '09:00' }}">
                                         </div>
-                                        <div class="col-md-1 d-flex align-items-end">
-                                            <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">
+                                        <div class="col-md-2">
+                                            <label class="wo-label">Waktu Selesai</label>
+                                            <input type="time" class="wo-control" name="vendor_end_time[]"
+                                                value="{{ $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '17:00' }}">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="wo-label">Status</label>
+                                            <select class="wo-select" name="vendor_status[]">
+                                                <option value="pending" {{ $schedule->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                <option value="approved" {{ $schedule->status == 'approved' ? 'selected' : '' }}>Approved</option>
+                                                <option value="rejected" {{ $schedule->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="wo-btn-remove remove-vendor-btn" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
                                     </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 4: Vendor & Paket -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-shop"></i>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-0">Vendor & Paket</h5>
-                                    <small class="text-muted">Pilih paket tambahan atau vendor custom</small>
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-4">
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Pilih Paket Tambahan</label>
-                                    <select class="form-select" name="package_id" id="packageSelect">
-                                        <option value="">Tidak Menggunakan Paket (Pilih Vendor Custom)</option>
-                                        @foreach ($packages as $package)
-                                            <option value="{{ $package->id }}"
-                                                {{ $event->package_id == $package->id ? 'selected' : '' }}
-                                                data-vendors="{{ json_encode($package->vendors->map(function ($v) { return ['id' => $v->id, 'name' => $v->name, 'category' => $v->category->name ?? 'N/A']; })) }}">
-                                                {{ $package->name }} - Rp {{ number_format($package->price, 0, ',', '.') }}
-                                                ({{ $package->vendors->count() }} vendor)
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="text-muted">Package tambahan untuk event ini</small>
-                                </div>
-                            </div>
-
-                            <div id="packageVendorsDisplay" class="mb-4"
-                                style="display: {{ $event->package_id ? 'block' : 'none' }};">
-                                <h6 class="fw-bold mb-3">Vendor dalam paket:</h6>
-                                <div id="packageVendorsList" class="border rounded p-3 bg-light"></div>
-                            </div>
-
-                            <div id="customVendorSection" style="display: {{ $event->package_id ? 'none' : 'block' }};">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <label class="form-label fw-semibold mb-0">Vendor Kustom</label>
-                                        <small class="text-muted d-block">Pilih vendor custom</small>
+                            @empty
+                                <div class="wo-item-row vendor-item">
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-md-3">
+                                            <label class="wo-label">Pilih Vendor</label>
+                                            <select class="wo-select" name="vendor_id[]">
+                                                <option value="">-- Pilih Vendor --</option>
+                                                @foreach ($vendors as $vendor)
+                                                    <option value="{{ $vendor->id }}">
+                                                        {{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="wo-label">Penanggung Jawab (PIC)</label>
+                                            <select class="wo-select" name="vendor_member_id[]">
+                                                <option value="">Tidak ditugaskan</option>
+                                                @foreach ($members as $member)
+                                                    <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign ?: '-' }})</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="wo-label">Waktu Mulai</label>
+                                            <input type="time" class="wo-control" name="vendor_start_time[]" value="09:00">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="wo-label">Waktu Selesai</label>
+                                            <input type="time" class="wo-control" name="vendor_end_time[]" value="17:00">
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="wo-label">Status</label>
+                                            <select class="wo-select" name="vendor_status[]">
+                                                <option value="pending">Pending</option>
+                                                <option value="approved">Approved</option>
+                                                <option value="rejected">Rejected</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="wo-btn-remove remove-vendor-btn" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addVendorBtn">+
-                                        Tambah Vendor</button>
                                 </div>
-
-                                <div class="vendor-list" id="vendorList">
-                                    @forelse($event->schedules as $schedule)
-                                        <div class="row g-3 mb-3 vendor-item">
-                                            <div class="col-md-4">
-                                                <label class="form-label fw-semibold">Pilih Vendor</label>
-                                                <select class="form-select" name="vendor_id[]">
-                                                    <option value="">Pilih Vendor</option>
-                                                    @foreach ($vendors as $vendor)
-                                                        <option value="{{ $vendor->id }}"
-                                                            {{ $schedule->vendor_id == $vendor->id ? 'selected' : '' }}>
-                                                            {{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Penanggung Jawab</label>
-                                                <select class="form-select" name="vendor_member_id[]">
-                                                    <option value="">Tidak ditugaskan</option>
-                                                    @foreach ($members as $member)
-                                                        <option value="{{ $member->id }}"
-                                                            {{ $schedule->member_id == $member->id ? 'selected' : '' }}>
-                                                            {{ $member->name }} ({{ $member->call_sign }})
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Waktu Mulai</label>
-                                                <input type="time" class="form-control" name="vendor_start_time[]"
-                                                    value="{{ $schedule->start_time ? \Carbon\Carbon::parse($schedule->start_time)->format('H:i') : '' }}">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Waktu Selesai</label>
-                                                <input type="time" class="form-control" name="vendor_end_time[]"
-                                                    value="{{ $schedule->end_time ? \Carbon\Carbon::parse($schedule->end_time)->format('H:i') : '' }}">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <label class="form-label fw-semibold">Status</label>
-                                                <select class="form-select" name="vendor_status[]">
-                                                    <option value="pending" {{ $schedule->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                                    <option value="approved" {{ $schedule->status == 'approved' ? 'selected' : '' }}>Approved</option>
-                                                    <option value="rejected" {{ $schedule->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-1 d-flex align-items-end">
-                                                <button type="button" class="btn btn-outline-danger w-100 remove-vendor-btn">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @empty
-                                        <div class="row g-3 mb-3 vendor-item">
-                                            <div class="col-md-4">
-                                                <label class="form-label fw-semibold">Pilih Vendor</label>
-                                                <select class="form-select" name="vendor_id[]">
-                                                    <option value="">Pilih Vendor</option>
-                                                    @foreach ($vendors as $vendor)
-                                                        <option value="{{ $vendor->id }}">
-                                                            {{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Penanggung Jawab</label>
-                                                <select class="form-select" name="vendor_member_id[]">
-                                                    <option value="">Tidak ditugaskan</option>
-                                                    @foreach ($members as $member)
-                                                        <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Waktu Mulai</label>
-                                                <input type="time" class="form-control" name="vendor_start_time[]">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <label class="form-label fw-semibold">Waktu Selesai</label>
-                                                <input type="time" class="form-control" name="vendor_end_time[]">
-                                            </div>
-                                            <div class="col-md-1">
-                                                <label class="form-label fw-semibold">Status</label>
-                                                <select class="form-select" name="vendor_status[]">
-                                                    <option value="pending">Pending</option>
-                                                    <option value="approved">Approved</option>
-                                                    <option value="rejected">Rejected</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-1 d-flex align-items-end">
-                                                <button type="button" class="btn btn-outline-danger w-100 remove-vendor-btn">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforelse
-                                </div>
-                            </div>
+                            @endforelse
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-end gap-2 mb-4">
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-dark px-5">
-                            <i class="bi bi-check-circle me-2"></i> Update Event
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-4">
+                <a href="{{ route('admin.events.index') }}" class="wo-btn-outline">Batal</a>
+                <button type="submit" class="wo-btn-primary">
+                    <i class="bi bi-check2-circle"></i> Update Event
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const packageSelect = document.getElementById('packageSelect');
-            const customVendorSection = document.getElementById('customVendorSection');
-            const packageVendorsDisplay = document.getElementById('packageVendorsDisplay');
-            const packageVendorsList = document.getElementById('packageVendorsList');
-            const addVendorBtn = document.getElementById('addVendorBtn');
-            const vendorList = document.getElementById('vendorList');
-            const addTeamMemberBtn = document.getElementById('addTeamMemberBtn');
-            const teamList = document.getElementById('teamList');
+@php
+    $existingVendorsJson = $event->schedules->keyBy('vendor_id')->map(function ($s) {
+        return [
+            'member_id' => $s->member_id,
+            'start_time' => $s->start_time ? \Carbon\Carbon::parse($s->start_time)->format('H:i') : '09:00',
+            'end_time' => $s->end_time ? \Carbon\Carbon::parse($s->end_time)->format('H:i') : '17:00',
+            'status' => $s->status ?? 'pending',
+        ];
+    });
 
-            if (packageSelect && packageSelect.value) {
-                updatePackageVendors(true);
-            }
+    $availableMembersJson = $members->map(function ($m) {
+        return [
+            'id' => $m->id,
+            'label' => $m->name . ' (' . ($m->call_sign ?: '-') . ')',
+        ];
+    })->values();
+@endphp
 
-            function updatePackageVendors(isInitialLoad = false) {
-                const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const packageSelect = document.getElementById('packageSelect');
+    const customVendorSection = document.getElementById('customVendorSection');
+    const packageVendorsDisplay = document.getElementById('packageVendorsDisplay');
+    const packageVendorsList = document.getElementById('packageVendorsList');
+    const addVendorBtn = document.getElementById('addVendorBtn');
+    const vendorList = document.getElementById('vendorList');
+    const addTeamMemberBtn = document.getElementById('addTeamMemberBtn');
+    const teamList = document.getElementById('teamList');
 
-                if (packageSelect.value) {
-                    customVendorSection.style.display = 'none';
-                    packageVendorsDisplay.style.display = 'block';
+    const existingVendors = @json($existingVendorsJson);
+    const availableMembers = @json($availableMembersJson);
 
-                    const vendors = JSON.parse(selectedOption.getAttribute('data-vendors') || '[]');
-                    const existingVendors = @json($event->schedules->keyBy('vendor_id'));
+    if (packageSelect && packageSelect.value) {
+        updatePackageVendors(true);
+    }
 
-                    let vendorHTML = '';
+    function updatePackageVendors() {
+        const selectedOption = packageSelect.options[packageSelect.selectedIndex];
 
-                    if (vendors.length > 0) {
-                        vendors.forEach((vendor, index) => {
-                            const existingVendor = existingVendors[vendor.id];
-                            const startTime = existingVendor && existingVendor.start_time ? existingVendor.start_time.substring(11, 16) : '';
-                            const endTime = existingVendor && existingVendor.end_time ? existingVendor.end_time.substring(11, 16) : '';
+        if (packageSelect.value) {
+            customVendorSection.style.display = 'none';
+            packageVendorsDisplay.style.display = 'block';
 
-                            vendorHTML += `
-                                <div class="row g-3 mb-3 p-3 border-bottom">
-                                    <div class="col-md-5">
-                                        <label class="form-label fw-semibold">Vendor</label>
-                                        <input type="text" class="form-control bg-white" value="${vendor.name} - ${vendor.category}" readonly>
-                                        <input type="hidden" name="package_vendor_id[]" value="${vendor.id}">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Waktu Mulai</label>
-                                        <input type="time" class="form-control" name="package_vendor_start_time[]" value="${startTime}">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label fw-semibold">Waktu Selesai</label>
-                                        <input type="time" class="form-control" name="package_vendor_end_time[]" value="${endTime}">
-                                    </div>
-                                    <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                        <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
-                                    </div>
+            const vendors = JSON.parse(selectedOption.getAttribute('data-vendors') || '[]');
+
+            let vendorHTML = '';
+
+            if (vendors.length > 0) {
+                vendors.forEach(vendor => {
+                    const existingVendor = existingVendors[vendor.id];
+                    const startTime = existingVendor && existingVendor.start_time ? existingVendor.start_time : '09:00';
+                    const endTime = existingVendor && existingVendor.end_time ? existingVendor.end_time : '17:00';
+                    const selectedMemberId = existingVendor && existingVendor.member_id ? Number(existingVendor.member_id) : null;
+                    const statusValue = existingVendor && existingVendor.status ? existingVendor.status : 'pending';
+
+                    let memberOptionsHTML = '<option value="">Tidak ditugaskan</option>';
+                    availableMembers.forEach(m => {
+                        const isSelected = selectedMemberId === Number(m.id) ? 'selected' : '';
+                        memberOptionsHTML += `<option value="${m.id}" ${isSelected}>${m.label}</option>`;
+                    });
+
+                    vendorHTML += `
+                        <div class="wo-item-row">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="wo-label">Vendor Paket</label>
+                                    <input type="text" class="wo-control bg-light" value="${vendor.name} - ${vendor.category}" readonly>
+                                    <input type="hidden" name="package_vendor_id[]" value="${vendor.id}">
                                 </div>
-                            `;
-                        });
-                    } else {
-                        vendorHTML = '<div class="text-muted">Tidak ada vendor dalam paket ini.</div>';
-                    }
-
-                    packageVendorsList.innerHTML = vendorHTML;
-                } else {
-                    customVendorSection.style.display = 'block';
-                    packageVendorsDisplay.style.display = 'none';
-                }
-            }
-
-            if (packageSelect) {
-                packageSelect.addEventListener('change', updatePackageVendors);
-            }
-
-            addVendorBtn.addEventListener('click', function() {
-                const firstVendorItem = vendorList.querySelector('.vendor-item');
-                const newVendorItem = firstVendorItem.cloneNode(true);
-
-                const selects = newVendorItem.querySelectorAll('select');
-                selects.forEach(select => select.value = '');
-
-                const inputs = newVendorItem.querySelectorAll('input');
-                inputs.forEach(input => input.value = '');
-
-                vendorList.appendChild(newVendorItem);
-                attachRemoveEvent(newVendorItem.querySelector('.remove-vendor-btn'));
-            });
-
-            function attachRemoveEvent(btn) {
-                btn.addEventListener('click', function() {
-                    const vendorItems = vendorList.querySelectorAll('.vendor-item');
-                    if (vendorItems.length > 1) {
-                        this.closest('.vendor-item').remove();
-                    }
+                                <div class="col-md-3">
+                                    <label class="wo-label">Penanggung Jawab (PIC)</label>
+                                    <select class="wo-select" name="package_vendor_member_id[]">
+                                        ${memberOptionsHTML}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Waktu Mulai</label>
+                                    <input type="time" class="wo-control" name="package_vendor_start_time[]" value="${startTime}">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Waktu Selesai</label>
+                                    <input type="time" class="wo-control" name="package_vendor_end_time[]" value="${endTime}">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Status</label>
+                                    <select class="wo-select" name="package_vendor_status[]">
+                                        <option value="pending" ${statusValue === 'pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="approved" ${statusValue === 'approved' ? 'selected' : ''}>Approved</option>
+                                        <option value="rejected" ${statusValue === 'rejected' ? 'selected' : ''}>Rejected</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
+            } else {
+                vendorHTML = '<div class="text-muted small">Tidak ada vendor dalam paket ini.</div>';
             }
 
-            document.querySelectorAll('.remove-vendor-btn').forEach(btn => {
-                attachRemoveEvent(btn);
-            });
+            packageVendorsList.innerHTML = vendorHTML;
+        } else {
+            customVendorSection.style.display = 'block';
+            packageVendorsDisplay.style.display = 'none';
+        }
+    }
 
-            addTeamMemberBtn.addEventListener('click', function() {
-                const firstTeamItem = teamList.querySelector('.team-item');
-                const newTeamItem = firstTeamItem.cloneNode(true);
+    if (packageSelect) {
+        packageSelect.addEventListener('change', updatePackageVendors);
+    }
 
-                const selects = newTeamItem.querySelectorAll('select');
-                selects.forEach(select => select.value = '');
+    addVendorBtn.addEventListener('click', function() {
+        const firstVendorItem = vendorList.querySelector('.vendor-item');
+        const newVendorItem = firstVendorItem.cloneNode(true);
 
-                const inputs = newTeamItem.querySelectorAll('input');
-                inputs.forEach(input => {
-                    input.value = '';
-                    input.dataset.autofilled = 'false';
-                });
-
-                teamList.appendChild(newTeamItem);
-                attachRemoveTeamEvent(newTeamItem.querySelector('.remove-team-btn'));
-                attachTeamMemberSelectionHandlers(newTeamItem);
-            });
-
-            function attachRemoveTeamEvent(btn) {
-                btn.addEventListener('click', function() {
-                    const teamItems = teamList.querySelectorAll('.team-item');
-                    if (teamItems.length > 1) {
-                        this.closest('.team-item').remove();
-                    }
-                });
-            }
-
-            document.querySelectorAll('.remove-team-btn').forEach(btn => {
-                attachRemoveTeamEvent(btn);
-            });
-
-            function attachTeamMemberSelectionHandlers(root) {
-                const selects = root.querySelectorAll('.team-member-select');
-                selects.forEach(select => {
-                    const item = select.closest('.team-item');
-                    const roleInput = item.querySelector('.team-member-role');
-                    const defaultRole = select.selectedOptions[0]?.dataset?.defaultRole || 'Team Member';
-
-                    if (!roleInput.value.trim()) {
-                        roleInput.value = defaultRole;
-                        roleInput.dataset.autofilled = 'true';
-                    }
-
-                    select.addEventListener('change', function() {
-                        const selectedOption = this.selectedOptions[0];
-                        const fallbackRole = selectedOption?.dataset?.defaultRole || 'Team Member';
-
-                        if (!roleInput.value.trim() || roleInput.dataset.autofilled === 'true') {
-                            roleInput.value = fallbackRole;
-                            roleInput.dataset.autofilled = 'true';
-                        }
-                    });
-
-                    roleInput.addEventListener('input', function() {
-                        if (this.value.trim() !== '') {
-                            this.dataset.autofilled = 'false';
-                        }
-                    });
-                });
-            }
-
-            attachTeamMemberSelectionHandlers(document);
+        newVendorItem.querySelectorAll('select').forEach(select => {
+            if (select.name === 'vendor_status[]') select.value = 'pending';
+            else select.value = '';
         });
-    </script>
+
+        newVendorItem.querySelectorAll('input').forEach(input => {
+            if (input.name === 'vendor_start_time[]') input.value = '09:00';
+            else if (input.name === 'vendor_end_time[]') input.value = '17:00';
+            else input.value = '';
+        });
+
+        vendorList.appendChild(newVendorItem);
+        attachRemoveEvent(newVendorItem.querySelector('.remove-vendor-btn'));
+    });
+
+    function attachRemoveEvent(btn) {
+        btn.addEventListener('click', function() {
+            const vendorItems = vendorList.querySelectorAll('.vendor-item');
+            if (vendorItems.length > 1) {
+                this.closest('.vendor-item').remove();
+            }
+        });
+    }
+
+    document.querySelectorAll('.remove-vendor-btn').forEach(btn => attachRemoveEvent(btn));
+
+    addTeamMemberBtn.addEventListener('click', function() {
+        const firstTeamItem = teamList.querySelector('.team-item');
+        const newTeamItem = firstTeamItem.cloneNode(true);
+
+        newTeamItem.querySelectorAll('select').forEach(select => select.value = '');
+        newTeamItem.querySelectorAll('input').forEach(input => {
+            input.value = '';
+            input.dataset.autofilled = 'false';
+        });
+
+        teamList.appendChild(newTeamItem);
+        attachRemoveTeamEvent(newTeamItem.querySelector('.remove-team-btn'));
+        attachTeamMemberSelectionHandlers(newTeamItem);
+    });
+
+    function attachRemoveTeamEvent(btn) {
+        btn.addEventListener('click', function() {
+            const teamItems = teamList.querySelectorAll('.team-item');
+            if (teamItems.length > 1) {
+                this.closest('.team-item').remove();
+            }
+        });
+    }
+
+    document.querySelectorAll('.remove-team-btn').forEach(btn => attachRemoveTeamEvent(btn));
+
+    function attachTeamMemberSelectionHandlers(root) {
+        const selects = root.querySelectorAll('.team-member-select');
+        selects.forEach(select => {
+            const item = select.closest('.team-item');
+            const roleInput = item.querySelector('.team-member-role');
+            const defaultRole = select.selectedOptions[0]?.dataset?.defaultRole || 'Team Member';
+
+            if (!roleInput.value.trim()) {
+                roleInput.value = defaultRole;
+                roleInput.dataset.autofilled = 'true';
+            }
+
+            select.addEventListener('change', function() {
+                const selectedOption = this.selectedOptions[0];
+                const fallbackRole = selectedOption?.dataset?.defaultRole || 'Team Member';
+
+                if (!roleInput.value.trim() || roleInput.dataset.autofilled === 'true') {
+                    roleInput.value = fallbackRole;
+                    roleInput.dataset.autofilled = 'true';
+                }
+            });
+
+            roleInput.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    this.dataset.autofilled = 'false';
+                }
+            });
+        });
+    }
+
+    attachTeamMemberSelectionHandlers(document);
+});
+</script>
 @endsection

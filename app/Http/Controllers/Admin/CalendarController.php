@@ -172,28 +172,39 @@ class CalendarController extends Controller
 
         $booking = $event->booking;
         $client = $booking ? $booking->client : null;
-        $leadMember = $event->eventMembers->first();
+        $leadMember = $event->eventMembers->first(fn($em) => $em->isCoordinator()) ?? $event->eventMembers->first();
+
+        $effectiveStart = $event->effective_start_time;
+        $effectiveEnd = $event->effective_end_time;
+        $scheduleLabel = $effectiveStart && $effectiveEnd
+            ? Carbon::parse($effectiveStart)->format('H:i') . ' - ' . Carbon::parse($effectiveEnd)->format('H:i') . ' WIB'
+            : ($effectiveStart ? Carbon::parse($effectiveStart)->format('H:i') . ' WIB' : 'Belum ada jadwal');
 
         return response()->json([
             'id' => $event->id,
             'title' => $event->name,
             'couple_name' => $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'N/A',
             'type' => 'client_event',
+            'event_type' => $event->event_type ? ucfirst(str_replace('_', ' ', $event->event_type)) : 'Akad / Resepsi',
             'event_date' => $event->event_date ? $event->event_date->format('d F Y') : 'N/A',
             'venue' => $booking ? $booking->venue_name : 'N/A',
             'venue_city' => $booking ? $booking->venue_city : null,
-            'schedule' => $event->start_time && $event->end_time 
-                ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i') . ' WIB'
-                : 'Belum ditentukan',
+            'venue_address' => $booking ? $booking->venue_address : null,
+            'schedule' => $scheduleLabel,
             'status' => $event->status,
             'guest_count' => $event->guest_count ?? ($booking ? $booking->guest_count : null),
-            'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : null),
-            'lead_director' => $leadMember && $leadMember->member ? $leadMember->member->name : null,
+            'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : 'Custom Vendor'),
+            'lead_director' => $leadMember && $leadMember->member ? ($leadMember->member->call_sign ?: $leadMember->member->name) : 'Belum ditentukan',
+            'lead_director_full' => $leadMember && $leadMember->member ? $leadMember->member->name : null,
+            'lead_director_role' => $leadMember ? $leadMember->role : 'Coordinator',
+            'lead_director_phone' => $leadMember && $leadMember->member ? $leadMember->member->phone : null,
             'vendor_count' => $event->schedules->count(),
             'vendors' => $event->schedules->map(function($schedule) {
                 return [
-                    'name' => $schedule->vendor ? $schedule->vendor->name : 'N/A',
-                    'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'N/A',
+                    'name' => $schedule->vendor ? $schedule->vendor->name : ($schedule->activity ?: 'Vendor'),
+                    'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'Vendor Rekanan',
+                    'start_time' => $schedule->start_time ? Carbon::parse($schedule->start_time)->format('H:i') : null,
+                    'end_time' => $schedule->end_time ? Carbon::parse($schedule->end_time)->format('H:i') : null,
                     'status' => $schedule->status
                 ];
             }),
@@ -201,7 +212,9 @@ class CalendarController extends Controller
             'team_members' => $event->eventMembers->map(function($em) {
                 return [
                     'name' => $em->member ? $em->member->name : 'N/A',
-                    'role' => $em->role ?? ($em->member ? $em->member->position : 'N/A')
+                    'call_sign' => $em->member ? $em->member->call_sign : null,
+                    'role' => $em->role ?? ($em->member ? $em->member->position : 'Crew'),
+                    'is_coordinator' => $em->isCoordinator()
                 ];
             }),
             'notes' => $event->notes

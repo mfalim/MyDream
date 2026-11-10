@@ -25,6 +25,21 @@ class Package extends Model
         'is_featured' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $package) {
+            if (empty($package->slug)) {
+                $baseSlug = \Illuminate\Support\Str::slug($package->name);
+                $slug = $baseSlug;
+                $counter = 1;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $counter++;
+                }
+                $package->slug = $slug;
+            }
+        });
+    }
+
     public function getIsActiveAttribute(): bool
     {
         $availabilityDate = $this->getRawOriginal('availability_date');
