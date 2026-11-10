@@ -35,6 +35,8 @@ class PackageController extends Controller
                 'duration' => 'nullable|numeric|min:0.01|max:365',
                 'guest_capacity' => 'required|integer|min:1|max:10000',
                 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'description' => 'nullable|string|max:5000',
+                'event_period' => 'nullable|string|max:255',
                 'vendors' => 'nullable|array',
                 'vendors.*' => 'integer|distinct|exists:vendors,id',
             ],
@@ -79,6 +81,17 @@ class PackageController extends Controller
         if (Schema::hasColumn('packages', 'guest_capacity')) {
             $payload['guest_capacity'] = $request->guest_capacity;
         }
+        if (Schema::hasColumn('packages', 'description')) {
+            $payload['description'] = $request->description;
+        }
+
+        if (Schema::hasColumn('packages', 'event_period')) {
+            $payload['event_period'] = $request->event_period;
+        }
+
+        if (Schema::hasColumn('packages', 'is_featured')) {
+            $payload['is_featured'] = $request->boolean('is_featured');
+        }
 
         $package = Package::create($payload);
 
@@ -115,6 +128,8 @@ class PackageController extends Controller
                 'duration' => 'nullable|numeric|min:0.01|max:365',
                 'guest_capacity' => 'required|integer|min:1|max:10000',
                 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'description' => 'nullable|string|max:5000',
+                'event_period' => 'nullable|string|max:255',
                 'vendors' => 'nullable|array',
                 'vendors.*' => 'integer|distinct|exists:vendors,id',
             ],
@@ -150,6 +165,14 @@ class PackageController extends Controller
 
         if (Schema::hasColumn('packages', 'guest_capacity')) {
             $updatePayload['guest_capacity'] = $request->guest_capacity;
+        }
+
+        if (Schema::hasColumn('packages', 'event_period')) {
+            $updatePayload['event_period'] = $request->event_period;
+        }
+
+        if (Schema::hasColumn('packages', 'is_featured')) {
+            $updatePayload['is_featured'] = $request->boolean('is_featured');
         }
 
         $package->update($updatePayload);

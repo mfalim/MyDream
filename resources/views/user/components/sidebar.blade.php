@@ -60,6 +60,36 @@
 
         </a>
 
+<<<<<<< HEAD
+=======
+        {{-- INSPIRASI --}}
+        <a href="{{ route('user.inspiration') }}"
+            class="nav-item {{ request()->routeIs('user.inspiration*') ? 'active' : '' }}">
+            <i class="bi bi-stars"></i>
+            <span>Cerita &amp; Inspirasi</span>
+        </a>
+
+        {{-- TAGIHAN --}}
+        <a href="{{ route('user.billing') }}"
+            class="nav-item {{ request()->routeIs('user.billing') ? 'active' : '' }}">
+            <i class="bi bi-receipt"></i>
+            <span>Tagihan &amp; Pembayaran</span>
+        </a>
+
+        {{-- ANGGARAN --}}
+
+        <a href="#" class="nav-item">
+            <i class="bi bi-wallet2"></i>
+            <span>Anggaran &amp; Pembayaran</span>
+        </a>
+
+        {{-- TAMU --}}
+        <a href="#" class="nav-item">
+            <i class="bi bi-people"></i>
+            <span>Tamu &amp; Meja VIP</span>
+        </a>
+
+>>>>>>> origin/balle
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
             @csrf

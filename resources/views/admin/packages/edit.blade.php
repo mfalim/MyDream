@@ -52,6 +52,31 @@
                     </div>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Foto Paket</label>
+                    @if ($package->photo)
+                        <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}"
+                            class="d-block rounded mb-2" style="width: 180px; height: 110px; object-fit: cover;">
+                    @endif
+                    <input type="file" name="photo" class="form-control" accept=".jpg,.jpeg,.png,.webp">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi Paket <small class="text-muted">(opsional)</small></label>
+                    <textarea name="description" class="form-control" rows="4">{{ old('description', $package->description) }}</textarea>
+                    <small class="text-muted">Tampil di halaman paket pada website.</small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Periode Acara <small class="text-muted">(opsional)</small></label>
+                    <input type="text" name="event_period" class="form-control" value="{{ old('event_period', $package->event_period) }}" placeholder="mis. Sepanjang tahun">
+                </div>
+
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input" type="checkbox" role="switch" name="is_featured" value="1" id="is_featured" @checked(old('is_featured', $package->is_featured))>
+                    <label class="form-check-label" for="is_featured">Tampilkan sebagai "Pilihan MyDream" di website</label>
+                </div>
+
             </div>
         </div>
 

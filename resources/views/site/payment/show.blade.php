@@ -61,6 +61,9 @@
                 @if ($lastRejected && count($options))
                     <div class="rounded-3xl bg-maroon-light p-6 text-sm text-maroon">
                         Pembayaran sebelumnya ({{ \App\Support\Format::rupiah($lastRejected->amount) }}) tidak dapat diverifikasi. Silakan transfer ulang atau hubungi admin.
+                        @if ($lastRejected->admin_note)
+                            <br><strong>Catatan admin:</strong> {{ $lastRejected->admin_note }}
+                        @endif
                     </div>
                 @endif
 
