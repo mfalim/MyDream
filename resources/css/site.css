@@ -95,3 +95,122 @@
   .hero-slide:first-child { opacity: 1; }
   .js [data-reveal] { opacity: 1; transform: none; transition: none; }
 }
+
+/* ---------- Interaksi global (semua halaman publik) ---------- */
+@layer base {
+  html { scroll-padding-top: 5.5rem; }
+  :focus-visible { outline: 2px solid var(--color-maroon); outline-offset: 3px; }
+}
+
+@layer components {
+  /* Garis kemajuan scroll di paling atas */
+  #scroll-progress {
+    position: fixed; top: 0; left: 0; z-index: 60; height: 3px; width: 0;
+    background: linear-gradient(90deg, var(--color-gold), var(--color-maroon));
+    transition: width 0.1s linear;
+  }
+
+  /* Navbar: mengecil dan berbayang saat di-scroll */
+  .site-header { transition: box-shadow 0.3s ease; }
+  .site-header.is-scrolled { box-shadow: 0 10px 28px -14px rgb(43 33 28 / 0.35); }
+  .site-header.is-scrolled .nav-inner { height: 4rem; }
+
+  /* Garis bawah animasi pada menu */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ''; position: absolute; left: 0; bottom: -6px; height: 2px; width: 100%;
+    background: var(--color-maroon); transform: scaleX(0); transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .nav-link:hover::after, .nav-link.is-active::after { transform: scaleX(1); }
+
+  /* Menu mobile: membuka dengan halus */
+  .mobile-nav {
+    max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; padding-bottom: 0; border-top-width: 0;
+    transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.4s ease;
+  }
+  .peer:checked ~ .mobile-nav { max-height: 34rem; opacity: 1; padding-top: 1rem; padding-bottom: 1rem; border-top-width: 1px; }
+
+  /* Judul halaman muncul bertahap */
+  .reveal-in { animation: reveal-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes reveal-rise {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Foto muncul halus setelah selesai dimuat */
+  .js img[data-fade] { transition: opacity 0.6s ease; }
+  .js img[data-fade]:not(.is-loaded) { opacity: 0; }
+
+  /* Tombol/tautan sedang diproses */
+  .is-loading { pointer-events: none; opacity: 0.85; }
+  .is-loading::after {
+    content: ''; display: inline-block; width: 1em; height: 1em; margin-left: 0.5rem;
+    border: 2px solid currentColor; border-right-color: transparent; border-radius: 9999px;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Notifikasi (toast) */
+  #toasts {
+    position: fixed; top: 5.5rem; right: 1rem; z-index: 80; display: flex; flex-direction: column; gap: 0.75rem;
+    width: min(22rem, calc(100vw - 2rem)); pointer-events: none;
+  }
+  .toast {
+    pointer-events: auto; display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.9rem 1rem;
+    border-radius: 1rem; background: #fff; color: var(--color-ink); font-size: 0.875rem; line-height: 1.4;
+    box-shadow: 0 18px 40px -16px rgb(43 33 28 / 0.4); border-left: 4px solid var(--color-emerald);
+    opacity: 0; transform: translateX(24px); transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .toast.is-in { opacity: 1; transform: none; }
+  .toast[data-type='error'] { border-left-color: var(--color-maroon); }
+  .toast button { margin-left: auto; color: rgb(43 33 28 / 0.4); font-size: 1.1rem; line-height: 1; }
+  .toast button:hover { color: var(--color-maroon); }
+
+  /* Tombol kembali ke atas */
+  #to-top {
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 55; width: 2.9rem; height: 2.9rem;
+    display: flex; align-items: center; justify-content: center; border-radius: 9999px;
+    background: var(--color-maroon); color: #fff; box-shadow: 0 14px 30px -12px rgb(122 31 43 / 0.6);
+    opacity: 0; pointer-events: none; transform: translateY(14px);
+    transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s ease;
+  }
+  #to-top.is-visible { opacity: 1; pointer-events: auto; transform: none; }
+  #to-top:hover { background: var(--color-maroon-dark); }
+
+  /* Tombol salin */
+  .copy-btn {
+    display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.35rem 0.8rem; border-radius: 9999px;
+    border: 1px solid rgb(122 31 43 / 0.35); color: var(--color-maroon); font-size: 0.75rem; font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .copy-btn:hover { background: var(--color-maroon-light); }
+  .copy-btn.is-copied { background: var(--color-emerald); border-color: var(--color-emerald); color: #fff; }
+
+  /* Lightbox galeri */
+  [data-gallery] img { cursor: zoom-in; }
+  html.lb-open { overflow: hidden; }
+  .lb {
+    position: fixed; inset: 0; z-index: 90; display: flex; align-items: center; justify-content: center;
+    background: rgb(43 33 28 / 0.92); opacity: 0; transition: opacity 0.25s ease;
+  }
+  .lb.is-in { opacity: 1; }
+  .lb-img { max-width: 92vw; max-height: 80vh; border-radius: 0.75rem; box-shadow: 0 30px 80px -20px #000; }
+  .lb-btn {
+    position: absolute; display: flex; align-items: center; justify-content: center; width: 2.9rem; height: 2.9rem;
+    border-radius: 9999px; background: rgb(255 255 255 / 0.14); color: #fff; font-size: 1.6rem; line-height: 1;
+    transition: background-color 0.2s ease;
+  }
+  .lb-btn:hover { background: rgb(255 255 255 / 0.28); }
+  .lb-close { top: 1rem; right: 1rem; }
+  .lb-prev { left: 1rem; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 1rem; top: 50%; transform: translateY(-50%); }
+  .lb-count { position: absolute; bottom: 1.25rem; left: 50%; transform: translateX(-50%); color: rgb(255 255 255 / 0.8); font-size: 0.8rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-in, .toast, .lb, #to-top { animation: none; transition: none; }
+  .reveal-in { opacity: 1; }
+  .js img[data-fade]:not(.is-loaded) { opacity: 1; }
+  html { scroll-behavior: auto; }
+}

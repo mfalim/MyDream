@@ -19,11 +19,11 @@
             <div class="space-y-8 lg:col-span-2">
                 {{-- GALERI --}}
                 @php $main = $gallery->first(); @endphp
-                <div class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
+                <div data-gallery="g" class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
                     <img src="{{ \App\Support\Media::url($main) }}" alt="{{ $package->name }}" class="h-full w-full object-cover">
                 </div>
                 @if ($gallery->count() > 1)
-                    <div class="grid grid-cols-4 gap-3">
+                    <div data-gallery="g" class="grid grid-cols-4 gap-3">
                         @foreach ($gallery->slice(1) as $photo)
                             <div class="aspect-square overflow-hidden rounded-xl bg-cream-dark">
                                 <img src="{{ \App\Support\Media::url($photo) }}" alt="Galeri {{ $package->name }}" loading="lazy" class="h-full w-full object-cover">

@@ -3,10 +3,6 @@
 @section('title', 'MyDream Wedding Organizer - Pasti Nikahmu Beda')
 @section('description', 'Wedding organizer di Jember dan Surabaya. Konsep personal, vendor terkurasi, dan koordinasi penuh sampai hari H.')
 
-@push('head')
-    <script>document.documentElement.classList.add('js')</script>
-@endpush
-
 @section('content')
 
     @php
@@ -321,48 +317,5 @@
         </div>
     </section>
 
-    @push('scripts')
-        <script>
-            (function () {
-                var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                // Muncul saat di-scroll
-                var items = document.querySelectorAll('[data-reveal]');
-                if (reduce || !('IntersectionObserver' in window)) {
-                    items.forEach(function (el) { el.classList.add('is-visible'); });
-                } else {
-                    var io = new IntersectionObserver(function (entries) {
-                        entries.forEach(function (entry) {
-                            if (entry.isIntersecting) { entry.target.classList.add('is-visible'); io.unobserve(entry.target); }
-                        });
-                    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-                    items.forEach(function (el) { io.observe(el); });
-                }
-
-                // Hitung naik untuk angka
-                var counters = document.querySelectorAll('[data-count]');
-                var run = function (el) {
-                    var target = parseInt(el.dataset.count, 10) || 0;
-                    if (reduce || target === 0) { return; }
-                    var start = null;
-                    var step = function (t) {
-                        if (start === null) { start = t; }
-                        var p = Math.min((t - start) / 1400, 1);
-                        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))).toLocaleString('id-ID');
-                        if (p < 1) { requestAnimationFrame(step); }
-                    };
-                    requestAnimationFrame(step);
-                };
-                if ('IntersectionObserver' in window) {
-                    var co = new IntersectionObserver(function (entries) {
-                        entries.forEach(function (entry) {
-                            if (entry.isIntersecting) { run(entry.target); co.unobserve(entry.target); }
-                        });
-                    }, { threshold: 0.6 });
-                    counters.forEach(function (el) { co.observe(el); });
-                }
-            })();
-        </script>
-    @endpush
 
 @endsection

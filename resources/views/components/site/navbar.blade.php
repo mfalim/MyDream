@@ -13,14 +13,14 @@
     ];
 @endphp
 
-<header class="sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur">
-    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+<header class="site-header sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur">
+    <div class="nav-inner mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 transition-[height] duration-300 sm:px-6 lg:px-8">
 
         <a href="{{ route('home') }}" class="shrink-0 font-display text-2xl font-semibold text-maroon">MyDream</a>
 
         <nav class="hidden items-center gap-6 text-sm font-medium lg:flex">
             @foreach ($links as [$label, $url, $active])
-                <a href="{{ $url }}" class="transition-colors hover:text-maroon {{ $active ? 'text-maroon' : 'text-ink/80' }}">{{ $label }}</a>
+                <a href="{{ $url }}" class="nav-link transition-colors hover:text-maroon {{ $active ? 'is-active text-maroon' : 'text-ink/80' }}">{{ $label }}</a>
             @endforeach
         </nav>
 
@@ -64,9 +64,9 @@
         </div>
     </div>
 
-    {{-- Menu mobile: checkbox murni CSS, tanpa JavaScript --}}
+    {{-- Menu mobile: checkbox murni CSS (membuka dengan animasi lewat site.css) --}}
     <input type="checkbox" id="site-menu-toggle" class="peer hidden">
-    <nav class="hidden flex-col gap-1 border-t border-black/5 bg-cream px-4 py-4 peer-checked:flex lg:hidden">
+    <nav class="mobile-nav flex flex-col gap-1 border-t border-black/5 bg-cream px-4 lg:hidden">
         @foreach ($links as [$label, $url, $active])
             <a href="{{ $url }}" class="rounded-lg px-3 py-2 hover:bg-maroon-light {{ $active ? 'font-semibold text-maroon' : '' }}">{{ $label }}</a>
         @endforeach

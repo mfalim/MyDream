@@ -19,7 +19,7 @@
         <p class="mt-2 text-sm text-ink/50">{{ $article->author ? 'Oleh ' . $article->author . ' · ' : '' }}{{ $article->date_label }}</p>
 
         @if ($article->photo)
-            <div class="mt-8 aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
+            <div data-gallery="g" class="mt-8 aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
                 <img src="{{ \App\Support\Media::url($article->photo) }}" alt="{{ $article->title }}" class="h-full w-full object-cover">
             </div>
         @endif
@@ -29,6 +29,8 @@
                 <p class="whitespace-pre-line">{{ $paragraph }}</p>
             @endforeach
         </div>
+
+        <x-site.share :title="$article->title" />
 
         <div class="mt-10 rounded-2xl bg-maroon-light p-6 text-center">
             <p class="font-display text-lg font-semibold">Tertarik dengan Konsep Wedding Ini?</p>

@@ -19,7 +19,7 @@
     </section>
 
     <article class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <div class="aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
+        <div data-gallery="g" class="aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
             <img src="{{ \App\Support\Media::url($event->photo) }}" alt="{{ $event->title }}" class="h-full w-full object-cover">
         </div>
 
@@ -55,6 +55,8 @@
                 </div>
             </div>
         @endif
+
+        <x-site.share :title="$event->title" />
 
         @if ($event->status !== 'finished')
             <div class="mt-10 rounded-2xl bg-maroon-light p-6 text-center">

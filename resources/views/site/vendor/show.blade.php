@@ -17,11 +17,11 @@
         <div class="grid gap-10 lg:grid-cols-3">
 
             <div class="space-y-8 lg:col-span-2">
-                <div class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
+                <div data-gallery="g" class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
                     <img src="{{ \App\Support\Media::url($cover?->photo ?? $vendor->photo) }}" alt="{{ $vendor->name }}" class="h-full w-full object-cover">
                 </div>
                 @if ($otherPhotos->isNotEmpty())
-                    <div class="grid grid-cols-4 gap-3">
+                    <div data-gallery="g" class="grid grid-cols-4 gap-3">
                         @foreach ($otherPhotos as $photo)
                             <div class="aspect-square overflow-hidden rounded-xl bg-cream-dark">
                                 <img src="{{ \App\Support\Media::url($photo->photo) }}" alt="Galeri {{ $vendor->name }}" loading="lazy" class="h-full w-full object-cover">

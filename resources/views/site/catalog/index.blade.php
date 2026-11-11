@@ -17,7 +17,12 @@
         <div class="grid gap-8 lg:grid-cols-4">
 
             {{-- FILTER --}}
-            <form action="{{ route('catalog.index') }}" method="GET" class="h-fit space-y-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div>
+                <button type="button" data-toggle="#catalog-filter" aria-expanded="false" class="mb-3 flex w-full items-center justify-between rounded-2xl bg-white px-5 py-3 text-sm font-semibold shadow-sm ring-1 ring-black/5 lg:hidden">
+                    <span>Filter &amp; Pencarian</span>
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                </button>
+            <form id="catalog-filter" data-autosubmit action="{{ route('catalog.index') }}" method="GET" class="hidden h-fit space-y-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:block">
                 <div class="flex items-center justify-between">
                     <h2 class="font-display text-base font-semibold">Filter</h2>
                     <a href="{{ route('catalog.index') }}" class="text-xs font-medium text-maroon hover:underline">Reset</a>
@@ -84,6 +89,7 @@
 
                 <x-site.button type="submit" class="w-full">Terapkan Filter</x-site.button>
             </form>
+            </div>
 
             {{-- HASIL --}}
             <div class="space-y-10 lg:col-span-3">

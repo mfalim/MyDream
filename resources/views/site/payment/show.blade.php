@@ -100,7 +100,10 @@
                                 <div class="rounded-2xl bg-cream-dark/60 p-5">
                                     <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Transfer ke rekening</p>
                                     <p class="mt-2 font-display text-lg font-semibold">{{ $bank['name'] }}</p>
-                                    <p class="font-display text-2xl font-semibold tracking-wider text-maroon">{{ $bank['number'] }}</p>
+                                    <div class="flex flex-wrap items-center gap-3">
+                                        <p class="font-display text-2xl font-semibold tracking-wider text-maroon">{{ $bank['number'] }}</p>
+                                        <button type="button" data-copy="{{ $bank['number'] }}" class="copy-btn">Salin</button>
+                                    </div>
                                     @if ($bank['holder'])
                                         <p class="text-sm text-ink/60">a.n. {{ $bank['holder'] }}</p>
                                     @endif
@@ -110,7 +113,8 @@
 
                             <div>
                                 <label for="proof" class="text-xs font-medium text-ink/60">Bukti transfer (opsional, JPG/PNG/PDF maks. 2 MB)</label>
-                                <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" class="{{ $field }}">
+                                <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" data-preview="#proof-preview" class="{{ $field }}">
+                                <div id="proof-preview" class="mt-3 flex flex-wrap gap-3"></div>
                                 @error('proof') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                             </div>
 

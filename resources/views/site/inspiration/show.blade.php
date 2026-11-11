@@ -18,7 +18,7 @@
         <h1 class="mt-3 font-display text-3xl font-semibold sm:text-4xl">{{ $item->title }}</h1>
         <p class="mt-2 text-sm text-ink/50">{{ $item->display_couple }}{{ $item->city ? ' · ' . $item->city : '' }}</p>
 
-        <div class="mt-8 aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
+        <div data-gallery="g" class="mt-8 aspect-[16/9] overflow-hidden rounded-3xl bg-cream-dark">
             <img src="{{ \App\Support\Media::url($item->cover) }}" alt="{{ $item->title }}" class="h-full w-full object-cover">
         </div>
 
@@ -55,7 +55,7 @@
         @endif
 
         @if ($item->photos->count() > 1)
-            <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            <div data-gallery="g" class="mt-8 grid gap-4 sm:grid-cols-3">
                 @foreach ($item->photos->slice(1) as $photo)
                     <div class="aspect-square overflow-hidden rounded-2xl bg-cream-dark">
                         <img src="{{ \App\Support\Media::url($photo->photo) }}" alt="Galeri {{ $item->title }}" loading="lazy" class="h-full w-full object-cover">
@@ -84,6 +84,8 @@
                 </div>
             </div>
         @endif
+
+        <x-site.share :title="$item->title" />
 
         <div class="mt-10 rounded-2xl bg-maroon-light p-6 text-center">
             <p class="font-display text-lg font-semibold">Tertarik dengan Konsep Ini?</p>
