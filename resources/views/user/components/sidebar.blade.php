@@ -60,8 +60,6 @@
 
         </a>
 
-<<<<<<< HEAD
-=======
         {{-- INSPIRASI --}}
         <a href="{{ route('user.inspiration') }}"
             class="nav-item {{ request()->routeIs('user.inspiration*') ? 'active' : '' }}">
@@ -88,8 +86,6 @@
             <i class="bi bi-people"></i>
             <span>Tamu &amp; Meja VIP</span>
         </a>
-
->>>>>>> origin/balle
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
             @csrf

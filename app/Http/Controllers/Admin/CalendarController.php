@@ -32,22 +32,24 @@ class CalendarController extends Controller
             ->map(function ($event) {
                 $booking = $event->booking;
                 $client = $booking ? $booking->client : null;
+                $displayTitle = $client ? ($client->groom_name . ' & ' . $client->bride_name) : ($event->name ?: 'Pernikahan');
                 
                 return [
                     'id' => $event->id,
                     'date' => $event->event_date->format('Y-m-d'),
-                    'title' => $event->name,
-                    'couple_name' => $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'N/A',
+                    'title' => $event->name ?: $displayTitle,
+                    'couple_name' => $displayTitle,
                     'type' => 'client_event',
                     'event_type' => $event->event_type,
-                    'venue' => $booking ? $booking->venue_name : 'N/A',
+                    'venue' => $booking ? $booking->venue_name : 'Venue Rekanan',
                     'time' => $event->start_time ? Carbon::parse($event->start_time)->format('H:i') : null,
                     'schedule' => $event->start_time && $event->end_time 
                         ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i')
                         : null,
                     'status' => $event->status,
                     'vendor_count' => $event->schedules->count(),
-                    'team_count' => $event->eventMembers->count()
+                    'team_count' => $event->eventMembers->count(),
+                    'url' => route('admin.events.show', $event->id)
                 ];
             });
 
@@ -58,16 +60,17 @@ class CalendarController extends Controller
                     'id' => $event->id,
                     'date' => $event->event_date->format('Y-m-d'),
                     'title' => $event->title,
-                    'couple_name' => null,
+                    'couple_name' => $event->title,
                     'type' => 'organizer_event',
                     'event_type' => $event->event_type,
-                    'venue' => $event->location,
+                    'venue' => $event->location ?: 'Internal Office',
                     'time' => $event->start_time ? Carbon::parse($event->start_time)->format('H:i') : null,
                     'schedule' => $event->start_time && $event->end_time 
                         ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i')
                         : null,
                     'status' => $event->status,
-                    'priority' => $event->priority
+                    'priority' => $event->priority,
+                    'url' => route('admin.organizer-event.show', $event->id)
                 ];
             });
 
@@ -97,32 +100,35 @@ class CalendarController extends Controller
             ->map(function ($event) {
                 $booking = $event->booking;
                 $client = $booking ? $booking->client : null;
-                $leadDirector = $event->eventMembers->first();
+                $displayCouple = $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'Klien';
+                $leadDirector = $event->eventMembers->first(fn($em) => $em->isCoordinator()) ?? $event->eventMembers->first();
                 
                 return [
                     'id' => $event->id,
-                    'title' => $event->name,
-                    'couple_name' => $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'N/A',
+                    'title' => $event->name ?: ('Pernikahan ' . $displayCouple),
+                    'couple_name' => $displayCouple,
                     'type' => 'client_event',
-                    'event_type' => $event->event_type ? ucfirst(str_replace('_', ' ', $event->event_type)) : 'N/A',
-                    'venue' => $booking ? $booking->venue_name : 'N/A',
+                    'event_type' => $event->event_type ? ucfirst(str_replace('_', ' ', $event->event_type)) : 'Wedding',
+                    'venue' => $booking ? $booking->venue_name : 'Venue Rekanan',
                     'venue_city' => $booking ? $booking->venue_city : null,
                     'schedule' => $event->start_time && $event->end_time 
-                        ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i')
-                        : 'Belum ditentukan',
+                        ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i') . ' WIB'
+                        : 'Waktu belum ditentukan',
                     'status' => ucfirst($event->status),
-                    'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : 'N/A'),
+                    'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : 'Custom Package'),
                     'vendor_count' => $event->schedules->count(),
                     'vendors' => $event->schedules->map(function($schedule) {
                         return [
-                            'name' => $schedule->vendor ? $schedule->vendor->name : 'N/A',
-                            'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'N/A',
+                            'name' => $schedule->vendor ? $schedule->vendor->name : ($schedule->activity ?: 'Vendor'),
+                            'category' => $schedule->vendor && $schedule->vendor->category ? $schedule->vendor->category->name : 'Vendor',
                             'status' => $schedule->status
                         ];
                     }),
                     'team_count' => $event->eventMembers->count(),
-                    'lead_director' => $leadDirector && $leadDirector->member ? $leadDirector->member->name : 'Belum ditentukan',
-                    'notes' => $event->notes
+                    'lead_director' => $leadDirector && $leadDirector->member ? ($leadDirector->member->call_sign ?: $leadDirector->member->name) : 'Belum ditentukan',
+                    'notes' => $event->notes,
+                    'url' => route('admin.events.show', $event->id),
+                    'edit_url' => route('admin.events.edit', $event->id)
                 ];
             });
 
@@ -135,16 +141,18 @@ class CalendarController extends Controller
                     'couple_name' => null,
                     'type' => 'organizer_event',
                     'event_type' => ucfirst(str_replace('_', ' ', $event->event_type)),
-                    'venue' => $event->location ?? 'Internal',
+                    'venue' => $event->location ?: 'Internal Office MyDream',
                     'venue_city' => null,
                     'schedule' => $event->start_time && $event->end_time 
-                        ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i')
-                        : 'Belum ditentukan',
+                        ? Carbon::parse($event->start_time)->format('H:i') . ' - ' . Carbon::parse($event->end_time)->format('H:i') . ' WIB'
+                        : 'Waktu fleksibel',
                     'status' => ucfirst($event->status),
                     'priority' => ucfirst($event->priority),
                     'attendees' => $event->attendees,
                     'description' => $event->description,
-                    'notes' => $event->notes
+                    'notes' => $event->notes,
+                    'url' => route('admin.organizer-event.show', $event->id),
+                    'edit_url' => route('admin.organizer-event.edit', $event->id)
                 ];
             });
 
@@ -161,13 +169,37 @@ class CalendarController extends Controller
         ]);
     }
 
-    public function getEventDetail($id)
+    public function getEventDetail(Request $request, $id)
     {
+        if ($request->query('type') === 'organizer_event') {
+            $orgEvent = OrganizerEvent::find($id);
+            if (!$orgEvent) {
+                return response()->json(['error' => 'Agenda tidak ditemukan'], 404);
+            }
+
+            return response()->json([
+                'id' => $orgEvent->id,
+                'title' => $orgEvent->title,
+                'type' => 'organizer_event',
+                'event_type' => ucfirst(str_replace('_', ' ', $orgEvent->event_type)),
+                'event_date' => $orgEvent->event_date ? $orgEvent->event_date->translatedFormat('l, d F Y') : 'N/A',
+                'venue' => $orgEvent->location ?: 'Internal Office MyDream',
+                'schedule' => $orgEvent->start_time ? (is_string($orgEvent->start_time) ? substr($orgEvent->start_time, 0, 5) : $orgEvent->start_time->format('H:i')) . ($orgEvent->end_time ? ' - ' . (is_string($orgEvent->end_time) ? substr($orgEvent->end_time, 0, 5) : $orgEvent->end_time->format('H:i')) : '') . ' WIB' : 'Waktu fleksibel',
+                'status' => ucfirst($orgEvent->status),
+                'priority' => ucfirst($orgEvent->priority),
+                'attendees' => $orgEvent->attendees,
+                'description' => $orgEvent->description,
+                'notes' => $orgEvent->notes,
+                'url' => route('admin.organizer-event.show', $orgEvent->id),
+                'edit_url' => route('admin.organizer-event.edit', $orgEvent->id),
+            ]);
+        }
+
         $event = Event::with(['booking.client', 'schedules.vendor.category', 'eventMembers.member', 'package'])
             ->find($id);
 
         if (!$event) {
-            return response()->json(['error' => 'Event not found'], 404);
+            return response()->json(['error' => 'Event tidak ditemukan'], 404);
         }
 
         $booking = $event->booking;
@@ -182,16 +214,16 @@ class CalendarController extends Controller
 
         return response()->json([
             'id' => $event->id,
-            'title' => $event->name,
+            'title' => $event->name ?: ($client ? 'Pernikahan ' . $client->groom_name . ' & ' . $client->bride_name : 'Event Wedding'),
             'couple_name' => $client ? ($client->groom_name . ' & ' . $client->bride_name) : 'N/A',
             'type' => 'client_event',
             'event_type' => $event->event_type ? ucfirst(str_replace('_', ' ', $event->event_type)) : 'Akad / Resepsi',
-            'event_date' => $event->event_date ? $event->event_date->format('d F Y') : 'N/A',
-            'venue' => $booking ? $booking->venue_name : 'N/A',
+            'event_date' => $event->event_date ? $event->event_date->translatedFormat('l, d F Y') : 'N/A',
+            'venue' => $booking ? $booking->venue_name : 'Venue Rekanan',
             'venue_city' => $booking ? $booking->venue_city : null,
             'venue_address' => $booking ? $booking->venue_address : null,
             'schedule' => $scheduleLabel,
-            'status' => $event->status,
+            'status' => ucfirst($event->status),
             'guest_count' => $event->guest_count ?? ($booking ? $booking->guest_count : null),
             'package' => $event->package ? $event->package->name : ($booking && $booking->package ? $booking->package->name : 'Custom Vendor'),
             'lead_director' => $leadMember && $leadMember->member ? ($leadMember->member->call_sign ?: $leadMember->member->name) : 'Belum ditentukan',
@@ -217,7 +249,9 @@ class CalendarController extends Controller
                     'is_coordinator' => $em->isCoordinator()
                 ];
             }),
-            'notes' => $event->notes
+            'notes' => $event->notes,
+            'url' => route('admin.events.show', $event->id),
+            'edit_url' => route('admin.events.edit', $event->id),
         ]);
     }
 }

@@ -1,0 +1,254 @@
+/* ==========================================================================
+   KALENDER & JADWAL ACARA (MASTER CALENDAR)
+   MyDream Wedding Organizer - Botanical Emerald & Champagne Gold Theme
+   File: resources/css/admin/calendar/index.css
+   ========================================================================== */
+
+.calendar-page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header */
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.calendar-header .eyebrow {
+    color: #55756d;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.calendar-header h2 {
+    color: #173f39;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1.2;
+}
+.calendar-header p {
+    color: #556b62;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Main Card */
+.calendar-main-card {
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    overflow: hidden;
+}
+
+/* Toolbar Navigasi Bulan */
+.calendar-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #eef3f1;
+    background: #ffffff;
+}
+
+.calendar-month-title {
+    color: #173f39;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.1;
+}
+
+.calendar-nav-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #d4dfda;
+    background: #ffffff;
+    color: #073d36;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.calendar-nav-btn:hover {
+    background: #073d36;
+    color: #ffffff;
+    border-color: #073d36;
+}
+
+.calendar-today-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #d4dfda;
+    background: #ffffff;
+    color: #073d36;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.calendar-today-btn:hover {
+    background: #edf5f2;
+    border-color: #a4c4b7;
+}
+
+/* Tabel Kalender */
+.calendar-table {
+    width: 100%;
+    margin-bottom: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.calendar-table thead th {
+    background: #f7faf9;
+    color: #4b6259;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 12px 6px;
+    border-bottom: 1px solid #e4ebe8;
+}
+
+.calendar-table td.calendar-day {
+    height: 105px;
+    vertical-align: top;
+    padding: 8px;
+    border: 1px solid #eef3f1;
+    background: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+    position: relative;
+}
+
+.calendar-table td.calendar-day:hover {
+    background-color: #fafcfb;
+    border-color: #c2dbd0;
+}
+
+.calendar-table td.calendar-day.today {
+    background-color: #f0f8f5;
+}
+.calendar-table td.calendar-day.today .day-number {
+    background: #073d36;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-table td.calendar-day.selected {
+    background-color: #edf7f3 !important;
+    outline: 2px solid #073d36;
+    outline-offset: -2px;
+    z-index: 2;
+}
+
+.calendar-table td.calendar-day.other-month {
+    background-color: #fbfdfc;
+    color: #a0b0a8;
+}
+
+.calendar-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.day-number {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #3b5249;
+}
+.other-month .day-number {
+    color: #a0b0a8;
+    font-weight: 400;
+}
+
+/* Badges Event di Cell Kalender */
+.cal-badge {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 3px;
+    line-height: 1.3;
+    transition: opacity 0.15s;
+}
+.cal-badge:hover {
+    opacity: 0.85;
+}
+.cal-badge-client {
+    background: #edf5f2;
+    color: #073d36;
+    border: 1px solid #c2dbd0;
+}
+.cal-badge-org {
+    background: #fdf6ec;
+    color: #92530c;
+    border: 1px solid #fae1c3;
+}
+
+/* Sidebar List Acara Tanggal Terpilih */
+.cal-sidebar-card {
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    padding: 20px;
+}
+
+.cal-event-item {
+    border-radius: 10px;
+    border: 1px solid #e4ebe8;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: #ffffff;
+    transition: all 0.2s;
+}
+.cal-event-item:hover {
+    border-color: #073d36;
+    box-shadow: 0 4px 12px rgba(7, 61, 54, 0.06);
+}
+.cal-event-item.client-border {
+    border-left: 4px solid #073d36;
+}
+.cal-event-item.org-border {
+    border-left: 4px solid #b45309;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    .calendar-table td.calendar-day {
+        height: 75px;
+        padding: 4px;
+    }
+    .calendar-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+

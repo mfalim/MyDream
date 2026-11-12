@@ -9,10 +9,42 @@ use Illuminate\Http\Request;
 
 class OrganizerEventController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $organizerEvents = OrganizerEvent::latest()->paginate(20);
-        return view('admin.organizer_event.index', compact('organizerEvents'));
+        $query = OrganizerEvent::query();
+
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('event_type', $request->type);
+        }
+
+        if ($request->filled('priority') && $request->priority !== 'all') {
+            $query->where('priority', $request->priority);
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('attendees', 'like', "%{$search}%");
+            });
+        }
+
+        $organizerEvents = $query->orderByDesc('event_date')->paginate(15)->withQueryString();
+
+        $stats = [
+            'total' => OrganizerEvent::count(),
+            'scheduled' => OrganizerEvent::where('status', 'scheduled')->count(),
+            'completed' => OrganizerEvent::where('status', 'completed')->count(),
+            'high_priority' => OrganizerEvent::where('priority', 'high')->count(),
+        ];
+
+        return view('admin.organizer_event.index', compact('organizerEvents', 'stats'));
     }
 
     public function create()

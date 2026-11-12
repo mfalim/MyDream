@@ -124,6 +124,11 @@ class Event extends Model
         return $this->belongsTo(Booking::class);
     }
 
+    public function publicEvent()
+    {
+        return $this->hasOne(PublicEvent::class, 'event_id');
+    }
+
     public function package()
     {
         return $this->belongsTo(Package::class);
@@ -188,5 +193,31 @@ class Event extends Model
         }
 
         return $start ? date('H:i', strtotime($start)) . ' WIB' : date('H:i', strtotime($end)) . ' WIB';
+    }
+
+    /**
+     * Seluruh vendor yang terlibat di acara ini (dari jadwal/rundown, paket acara, atau paket booking).
+     */
+    public function getAllVendorsAttribute()
+    {
+        $vendors = collect();
+
+        if ($this->relationLoaded('schedules')) {
+            $vendors = $vendors->merge($this->schedules->pluck('vendor')->filter());
+        } else {
+            $vendors = $vendors->merge($this->schedules()->with('vendor.category')->get()->pluck('vendor')->filter());
+        }
+
+        if ($this->relationLoaded('package') && $this->package) {
+            $vendors = $vendors->merge($this->package->vendors ?? []);
+        } elseif ($this->package_id) {
+            $vendors = $vendors->merge($this->package()->with('vendors.category')->first()?->vendors ?? []);
+        }
+
+        if ($this->relationLoaded('booking') && $this->booking?->package) {
+            $vendors = $vendors->merge($this->booking->package->vendors ?? []);
+        }
+
+        return $vendors->unique('id')->values();
     }
 }

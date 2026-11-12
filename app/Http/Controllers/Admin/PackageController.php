@@ -14,7 +14,7 @@ class PackageController extends Controller
 {
     public function index()
     {
-        $packages = Package::with('vendors')->latest()->get();
+        $packages = Package::with(['vendors.photos', 'vendors.category'])->latest()->get();
 
         return view('admin.packages.index', compact('packages'));
     }
@@ -124,7 +124,7 @@ class PackageController extends Controller
         $request->validate(
             [
                 'name' => 'required|string|max:255|unique:packages,name,' . $package->id,
-                'availability_date' => 'required|date|after_or_equal:today',
+                'availability_date' => 'required|date',
                 'duration' => 'nullable|numeric|min:0.01|max:365',
                 'guest_capacity' => 'required|integer|min:1|max:10000',
                 'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -138,7 +138,7 @@ class PackageController extends Controller
                 'name.unique' => 'Nama paket sudah digunakan',
                 'name.max' => 'Nama paket maksimal 255 karakter',
                 'availability_date.required' => 'Tanggal ketersediaan harus diisi',
-                'availability_date.after_or_equal' => 'Tanggal ketersediaan tidak boleh kurang dari hari ini',
+                'availability_date.date' => 'Format tanggal ketersediaan tidak valid',
                 'duration.min' => 'Durasi minimal 0.01 hari',
                 'duration.max' => 'Durasi maksimal 365 hari',
                 'guest_capacity.required' => 'Kapasitas tamu harus diisi',
@@ -155,6 +155,10 @@ class PackageController extends Controller
             'name' => $request->name,
         ];
 
+        if ($package->name !== $request->name) {
+            $updatePayload['slug'] = $this->uniqueSlug($request->name);
+        }
+
         if (Schema::hasColumn('packages', 'availability_date')) {
             $updatePayload['availability_date'] = $request->availability_date;
         }
@@ -167,6 +171,10 @@ class PackageController extends Controller
             $updatePayload['guest_capacity'] = $request->guest_capacity;
         }
 
+        if (Schema::hasColumn('packages', 'description')) {
+            $updatePayload['description'] = $request->description;
+        }
+
         if (Schema::hasColumn('packages', 'event_period')) {
             $updatePayload['event_period'] = $request->event_period;
         }
@@ -175,17 +183,20 @@ class PackageController extends Controller
             $updatePayload['is_featured'] = $request->boolean('is_featured');
         }
 
-        $package->update($updatePayload);
-
         if ($request->hasFile('photo')) {
-            if ($package->photo) {
+            if ($package->photo && ! Str::startsWith($package->photo, ['http://', 'https://'])) {
                 Storage::disk('public')->delete($package->photo);
             }
 
-            $package->update([
-                'photo' => $request->file('photo')->store('packages', 'public'),
-            ]);
+            $updatePayload['photo'] = $request->file('photo')->store('packages', 'public');
+        } elseif ($request->boolean('remove_photo')) {
+            if ($package->photo && ! Str::startsWith($package->photo, ['http://', 'https://'])) {
+                Storage::disk('public')->delete($package->photo);
+            }
+            $updatePayload['photo'] = null;
         }
+
+        $package->update($updatePayload);
 
         $package->vendors()->syncWithPivotValues($request->input('vendors', []), ['status' => 'active']);
 

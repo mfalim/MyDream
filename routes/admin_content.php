@@ -16,6 +16,12 @@ Route::prefix('admin')
             ->parameters(['public-events' => 'event'])
             ->except(['show']);
 
+        Route::post('public-events/{event}/toggle-publish', [PublicEventController::class, 'togglePublish'])
+            ->name('public-events.toggle-publish');
+
+        Route::post('public-events/quick-promote/{eventId}', [PublicEventController::class, 'quickPromote'])
+            ->name('public-events.quick-promote');
+
         Route::resource('articles', ArticleController::class)->except(['show']);
 
         // Cerita dari client: ditinjau (setujui / minta revisi), tidak dibuat dari admin.

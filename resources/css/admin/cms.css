@@ -458,3 +458,107 @@
         align-items: stretch;
     }
 }
+
+/* ==========================================================================
+   NAVIGATION TABS & PROMOTED BADGES
+   ========================================================================== */
+.nav-tabs-wo {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid #e4ebe8;
+    margin-bottom: 20px;
+}
+.nav-tabs-wo button {
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 18px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #556b62;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.nav-tabs-wo button:hover {
+    color: #073d36;
+}
+.nav-tabs-wo button.active {
+    color: #073d36;
+    border-bottom-color: #073d36;
+}
+.nav-tabs-wo .badge-count {
+    background: #eef3f1;
+    color: #073d36;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11.5px;
+}
+.nav-tabs-wo button.active .badge-count {
+    background: #073d36;
+    color: #fff;
+}
+.badge-promoted-yes {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.badge-promoted-no {
+    background: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ==========================================================================
+   FORM LINKED EVENT & VENDOR COMPONENTS
+   ========================================================================== */
+.linked-event-box {
+    background: #edf4f1;
+    border: 1px solid #c2dbd0;
+}
+.vendor-auto-box {
+    background: #f7faf9;
+    border: 1px solid #c2dbd0;
+}
+.vendor-auto-badge {
+    background: #ffffff;
+    color: #073d36;
+    border: 1px solid #a4c4b7;
+    font-size: 12.5px;
+    font-weight: 500;
+}
+.btn-emerald-sm {
+    background: #073d36;
+    color: #ffffff;
+    border: 1px solid #073d36;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-emerald-sm:hover {
+    background: #052c27;
+    color: #dfc28b;
+}
+

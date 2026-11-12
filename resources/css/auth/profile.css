@@ -1,0 +1,381 @@
+/* ==========================================================================
+   MYDREAM AUTH - PROFILE COMPLETION STYLES
+   Editorial Wedding Theme (Cream, Ink, Maroon, Gold)
+   File: resources/css/auth/profile.css
+   ========================================================================== */
+
+:root {
+    --color-cream: #FBF3EC;
+    --color-cream-dark: #F3E6D8;
+    --color-ink: #2B211C;
+    --color-ink-muted: #6B5B53;
+    --color-maroon: #7A1F2B;
+    --color-maroon-dark: #5C1620;
+    --color-maroon-light: #F4E4E6;
+    --color-emerald: #1F4D3D;
+    --color-gold: #B08D57;
+    --color-gold-light: #EBD9BD;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #0E0907;
+    background-image: 
+        radial-gradient(ellipse at 50% 15%, rgba(92, 22, 32, 0.45) 0%, transparent 65%),
+        radial-gradient(circle at 15% 85%, rgba(176, 141, 87, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 85% 90%, rgba(31, 77, 61, 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse at center, #1B120E 0%, #0A0605 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    position: relative;
+    overflow-x: hidden;
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   PROFILE CONTAINER CARD
+   ========================================================================== */
+.profile-container {
+    width: 980px;
+    max-width: 100%;
+    min-height: 580px;
+    background: #ffffff;
+    border-radius: 32px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 
+        0 30px 80px -15px rgba(0, 0, 0, 0.75),
+        0 0 50px rgba(176, 141, 87, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.12);
+    position: relative;
+    z-index: 2;
+}
+
+/* ==========================================================================
+   LEFT - EDITORIAL WEDDING HERO
+   ========================================================================== */
+.image-section {
+    width: 42%;
+    position: relative;
+    background-color: var(--color-ink);
+    background-image: url('/images/hero/hero-home.jpg');
+    background-size: cover;
+    background-position: center center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 44px 36px;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        145deg,
+        rgba(43, 33, 28, 0.90) 0%,
+        rgba(43, 33, 28, 0.65) 55%,
+        rgba(92, 22, 32, 0.78) 100%
+    );
+    z-index: 1;
+}
+
+.image-top {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.hero-pill .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--color-gold);
+    box-shadow: 0 0 8px var(--color-gold);
+}
+
+.image-content {
+    position: relative;
+    z-index: 2;
+}
+
+.brand-logo {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.brand-logo span {
+    color: var(--color-gold);
+    font-style: italic;
+}
+
+.image-content h1 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 30px;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.image-content h1 .highlight {
+    font-style: italic;
+    color: var(--color-gold);
+}
+
+.image-content p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 22px;
+}
+
+.step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.step-indicator i {
+    color: var(--color-gold);
+    font-size: 16px;
+}
+
+/* ==========================================================
+   RIGHT - FORM SECTION
+   ========================================================== */
+.profile-section {
+    width: 58%;
+    padding: 44px 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.profile-content {
+    width: 100%;
+}
+
+.profile-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-maroon);
+    margin-bottom: 8px;
+}
+
+.profile-content h2 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 30px;
+    color: var(--color-ink);
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.description {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-ink-muted);
+    margin-bottom: 24px;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group.full-width {
+    grid-column: span 2;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 6px;
+}
+
+.form-group label span.required {
+    color: var(--color-maroon);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper i {
+    position: absolute;
+    left: 14px;
+    color: #9c8a81;
+    font-size: 15px;
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.input-wrapper input {
+    width: 100%;
+    height: 46px;
+    border: 1px solid rgba(43, 33, 28, 0.15);
+    border-radius: 12px;
+    padding: 10px 14px 10px 40px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--color-ink);
+    background: #ffffff;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    background: #ffffff;
+    border-color: var(--color-maroon);
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.12);
+}
+
+.input-wrapper input:focus + i,
+.input-wrapper:focus-within i {
+    color: var(--color-maroon);
+}
+
+.error {
+    color: var(--color-maroon);
+    font-size: 11.5px;
+    font-weight: 500;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Submit Button - Landing Page Style */
+.submit-button {
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 9999px;
+    background: var(--color-maroon);
+    color: #ffffff;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.25s ease;
+    box-shadow: 0 8px 20px rgba(122, 31, 43, 0.22);
+    margin-top: 10px;
+}
+
+.submit-button:hover {
+    background: var(--color-maroon-dark);
+    transform: translateY(-1.5px);
+    box-shadow: 0 12px 24px rgba(122, 31, 43, 0.3);
+}
+
+.security {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+    font-size: 12px;
+    color: var(--color-ink-muted);
+}
+
+.security i {
+    color: var(--color-maroon);
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+@media (max-width: 860px) {
+    body {
+        padding: 16px;
+    }
+    .profile-container {
+        flex-direction: column;
+        min-height: auto;
+        border-radius: 24px;
+    }
+    .image-section {
+        width: 100%;
+        min-height: 220px;
+        padding: 30px 24px;
+    }
+    .image-content p,
+    .step-indicator {
+        display: none;
+    }
+    .image-content h1 {
+        font-size: 22px;
+        margin-bottom: 0;
+    }
+    .profile-section {
+        width: 100%;
+        padding: 36px 24px;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    .form-group.full-width {
+        grid-column: span 1;
+    }
+}
+

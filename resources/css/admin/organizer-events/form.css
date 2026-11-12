@@ -1,0 +1,81 @@
+/* ==========================================================================
+   ORGANIZER EVENT - FORM (TAMBAH & EDIT AGENDA INTERNAL WO)
+   MyDream Wedding Organizer - Botanical Emerald Theme
+   File: resources/css/admin/organizer-events/form.css
+   ========================================================================== */
+
+.org-event-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Header Form */
+.org-event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.org-event-header h2 {
+    color: #173f39;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 4px;
+}
+.org-event-header p {
+    color: #556b62;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Kartu Form Section */
+.org-detail-card {
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    padding: 24px;
+}
+
+/* Tombol */
+.btn-emerald {
+    background: #073d36;
+    color: #ffffff;
+    border: 1px solid #073d36;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-emerald:hover {
+    background: #052c27;
+    color: #dfc28b;
+}
+
+.btn-outline-back {
+    background: #ffffff;
+    color: #4b6259;
+    border: 1px solid #cad9d3;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-outline-back:hover {
+    background: #f2f7f4;
+    color: #173f39;
+}
+

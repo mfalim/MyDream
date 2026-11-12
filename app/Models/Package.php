@@ -54,6 +54,22 @@ class Package extends Model
         return (float) $vendors->sum('price');
     }
 
+    /**
+     * Foto sampul paket: prioritas foto paket sendiri, fallback ke foto vendor pertama dalam paket.
+     */
+    public function getCoverPhotoAttribute(): ?string
+    {
+        if ($this->photo) {
+            return $this->photo;
+        }
+
+        if ($this->relationLoaded('vendors')) {
+            return $this->vendors->flatMap(fn ($v) => $v->relationLoaded('photos') ? $v->photos->pluck('photo') : $v->photos()->pluck('photo'))->filter()->first();
+        }
+
+        return $this->vendors()->with('photos')->get()->flatMap(fn ($v) => $v->photos->pluck('photo'))->filter()->first();
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);

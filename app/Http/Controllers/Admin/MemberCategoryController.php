@@ -132,6 +132,9 @@ class MemberCategoryController extends Controller
             'search' => $search,
             'typeFilter' => $typeFilter,
             'typeOptions' => self::TYPE_LABELS,
+            'divisionCount' => MemberDivision::count(),
+            'positionCount' => MemberPosition::count(),
+            'specializationCount' => MemberSpecialization::count(),
         ]);
     }
 

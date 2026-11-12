@@ -66,20 +66,17 @@
 
                 {{-- Foto Paket --}}
                 <div class="vendor-main-photo">
-
-                    @if ($package->photo)
-
-                        <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
-
+                    @php
+                        $cover = $package->cover_photo;
+                    @endphp
+                    @if ($cover)
+                        <img src="{{ \App\Support\Media::url($cover) }}" alt="{{ $package->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                     @else
-
                         <div class="vendor-no-main-photo">
                             <span>📦</span>
                             <p>Foto paket belum tersedia</p>
                         </div>
-
                     @endif
-
                 </div>
 
 
