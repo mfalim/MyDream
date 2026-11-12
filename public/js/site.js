@@ -21,7 +21,7 @@
     $$('main h1').forEach(function (h1) {
       [h1.previousElementSibling, h1, h1.nextElementSibling].forEach(function (el, i) {
         if (!el || (el !== h1 && el.tagName !== 'P')) { return; }
-        if (el.closest('[data-reveal]') || /animate-fade-up|reveal-in/.test(el.className)) { return; }
+        if (el.closest('[data-reveal], [data-hero]') || /animate-fade-up|reveal-in|hero-in/.test(el.className)) { return; }
         el.classList.add('reveal-in');
         el.style.animationDelay = (i * 0.12) + 's';
       });
@@ -326,6 +326,88 @@
     });
   }
 
+
+  /* ---------- 9. Parallax & efek kursor (beranda) ---------- */
+  function startParallax() {
+    var els = $$('[data-parallax]');
+    var hero = $('[data-hero]');
+    if (reduce || (!els.length && !hero)) { return; }
+    var heroBg = hero ? $('[data-hero-bg]', hero) : null;
+    var heroContent = hero ? $('[data-hero-content]', hero) : null;
+    var ticking = false;
+
+    var frame = function () {
+      var vh = w.innerHeight;
+      var y = w.pageYOffset || root.scrollTop || 0;
+
+      els.forEach(function (el) {
+        var r = el.getBoundingClientRect();
+        if (r.bottom < -250 || r.top > vh + 250) { return; }
+        var speed = parseFloat(el.getAttribute('data-parallax')) || 0.1;
+        var off = (r.top + r.height / 2 - vh / 2) * speed;
+        el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+      });
+
+      if (hero && y < hero.offsetHeight + 200) {
+        var p = Math.min(y / (hero.offsetHeight || 1), 1);
+        if (heroBg) { heroBg.style.transform = 'translate3d(0,' + (y * 0.3).toFixed(1) + 'px,0)'; }
+        if (heroContent) {
+          heroContent.style.transform = 'translate3d(0,' + (y * 0.16).toFixed(1) + 'px,0)';
+          heroContent.style.opacity = String(Math.max(0, 1 - p * 1.15).toFixed(3));
+        }
+      }
+      ticking = false;
+    };
+    w.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; w.requestAnimationFrame(frame); }
+    }, { passive: true });
+    w.addEventListener('resize', frame);
+    frame();
+  }
+
+  function startPointerFx() {
+    var fine = w.matchMedia && w.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (reduce || !fine) { return; }
+
+    // Cahaya lembut mengikuti kursor di hero
+    var hero = $('[data-hero]');
+    if (hero) {
+      hero.addEventListener('pointermove', function (e) {
+        var r = hero.getBoundingClientRect();
+        hero.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        hero.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    }
+
+    // Kartu miring 3D + sorot cahaya
+    $$('[data-tilt]').forEach(function (card) {
+      card.addEventListener('pointermove', function (e) {
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width;
+        var y = (e.clientY - r.top) / r.height;
+        card.style.setProperty('--mx', (x * 100) + '%');
+        card.style.setProperty('--my', (y * 100) + '%');
+        card.style.transition = 'transform 0.12s ease-out, box-shadow 0.3s ease';
+        card.style.transform = 'perspective(900px) rotateX(' + ((0.5 - y) * 9).toFixed(2) + 'deg) rotateY(' + ((x - 0.5) * 11).toFixed(2) + 'deg)';
+      });
+      card.addEventListener('pointerleave', function () {
+        card.style.transition = '';
+        card.style.transform = '';
+      });
+    });
+
+    // Tombol magnetik
+    $$('[data-magnetic]').forEach(function (el) {
+      el.addEventListener('pointermove', function (e) {
+        var r = el.getBoundingClientRect();
+        var dx = e.clientX - (r.left + r.width / 2);
+        var dy = e.clientY - (r.top + r.height / 2);
+        el.style.translate = (dx * 0.22).toFixed(1) + 'px ' + (dy * 0.32).toFixed(1) + 'px';
+      });
+      el.addEventListener('pointerleave', function () { el.style.translate = ''; });
+    });
+  }
+
   /* ---------- Jalankan ---------- */
   function init() {
     tagAutomatic();
@@ -337,6 +419,8 @@
     startWidgets();
     startImages();
     startLightbox();
+    startParallax();
+    startPointerFx();
   }
 
   if (d.readyState === 'loading') { d.addEventListener('DOMContentLoaded', init); } else { init(); }
