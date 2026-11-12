@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\MemberCategoryController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\PackageController;
@@ -12,7 +13,8 @@ use App\Http\Controllers\Admin\OrganizerEventController;
 use App\Http\Controllers\Admin\TrackingController;
 use App\Http\Controllers\Admin\UserMemberController;
 
-Route::prefix('admin')
+Route::middleware('auth')
+    ->prefix('admin')
     ->name('admin.')
     ->group(function () {
 
@@ -37,6 +39,12 @@ Route::prefix('admin')
             'destroy',
         ]);
 
+        Route::resource('member-categories', MemberCategoryController::class)->only([
+            'index',
+            'store',
+            'update',
+            'destroy',
+        ]);
 
         // =========================================================
         // PACKAGES
@@ -57,11 +65,11 @@ Route::prefix('admin')
         // EVENT DAY
         // =========================================================
 
-        Route::resource('event_day', BookingController::class)->only([
-            'index',
-            'create',
-            'store',
-        ]);
+        // Route::resource('event_day', BookingController::class)->only([
+        //     'index',
+        //     'create',
+        //     'store',
+        // ]);
 
         Route::get('/event/{id}', [BookingController::class, 'show'])->name('event.show');
         Route::get('/event/{id}/edit', [BookingController::class, 'edit'])->name('event.edit');
@@ -180,13 +188,6 @@ Route::prefix('admin')
             'show',
             'edit',
             'update',
-            'destroy',
-        ]);
-
-        Route::resource('user-members', UserMemberController::class)->only([
-            'index',
-            'create',
-            'store',
             'destroy',
         ]);
 

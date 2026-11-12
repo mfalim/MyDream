@@ -12,11 +12,11 @@
         $status = strtolower($member->status ?? 'standby');
         $statusText = match ($status) {
             'aktif' => 'Aktif di Lapangan',
-            'resiko' => 'Gladi Resik',
-            'selesai' => 'Selesai',
+            'inaktif' => 'Tidak Aktif',
+            'standby' => 'Standby / On-Call',
             default => 'Standby / On-Call',
         };
-        $statusClass = in_array($status, ['resiko'], true) ? 'warning' : (in_array($status, ['standby', 'selesai'], true) ? 'gray' : '');
+        $statusClass = $status === 'inaktif' ? 'warning' : ($status === 'standby' ? 'gray' : '');
     @endphp
 
     <div class="member-detail-page">
@@ -45,11 +45,7 @@
             <div class="member-detail-card">
                 <div class="member-detail-profile">
                     <div class="member-detail-avatar">
-                        @if ($member->photo)
-                            <img src="{{ asset('storage/' . $member->photo) }}" alt="{{ $member->name }}">
-                        @else
-                            👤
-                        @endif
+                        👤
                     </div>
                     <h3>{{ $member->name }}</h3>
                     <p>{{ $member->position ?: 'Anggota Tim' }}</p>

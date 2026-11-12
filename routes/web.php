@@ -36,6 +36,8 @@ Route::prefix('member')->name('member.')->middleware('auth')->group(function () 
     Route::post('/dashboard/schedule/{id}/status', [MemberDashboardController::class, 'updateScheduleStatus'])->name('schedule.status');
 });
 
+require __DIR__ . '/site.php';
 require __DIR__ . '/frontend.php';
 require __DIR__ . '/admin.php';
+require __DIR__ . '/admin_content.php';
 require __DIR__ . '/user.php';

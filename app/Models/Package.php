@@ -9,16 +9,20 @@ class Package extends Model
     protected $fillable = [
         'name',
         'slug',
+        'description',
         'availability_date',
         'guest_capacity',
         'duration',
+        'event_period',
         'photo',
+        'is_featured',
     ];
 
     protected $casts = [
         'guest_capacity' => 'integer',
         'availability_date' => 'date',
         'duration' => 'decimal:2',
+        'is_featured' => 'boolean',
     ];
 
     public function getIsActiveAttribute(): bool

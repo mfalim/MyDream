@@ -22,7 +22,7 @@
 
         <div class="card-body">
 
-            <form action="{{ route('admin.packages.store') }}" method="POST">
+            <form action="{{ route('admin.packages.store') }}" method="POST" enctype="multipart/form-data">
 
                 @csrf
 
@@ -49,6 +49,30 @@
                     <input type="date" name="availability_date" class="form-control"
                         value="{{ old('availability_date') }}" required>
 
+                </div>
+
+                <div class="mb-4">
+                    <label for="photo" class="form-label">
+                        Foto Paket Wedding
+                    </label>
+
+                    <input
+                        type="file"
+                        name="photo"
+                        id="photo"
+                        class="form-control"
+                        accept=".jpg,.jpeg,.png,.webp"
+                    >
+
+                    <small class="text-muted">
+                        Format: JPG, JPEG, PNG, WEBP. Maksimal 2 MB.
+                    </small>
+
+                    @error('photo')
+                        <div class="text-danger mt-1">
+                            {{ $message }}
+                        </div>
+                    @enderror
                 </div>
 
 

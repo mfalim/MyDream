@@ -81,10 +81,10 @@ Route::prefix('user')
         Route::post('/checkout', [CheckoutController::class, 'store'])
             ->name('checkout.store');
 
-        Route::get('/payment/{bookingId}', [CheckoutController::class, 'payment'])
+        Route::get('/payment/{bookingId}', [\App\Http\Controllers\Site\PaymentController::class, 'show'])
             ->name('payment');
 
-       Route::get('/payment/{bookingId}', [CheckoutController::class, 'payment'])
+       Route::get('/payment/{bookingId}', [\App\Http\Controllers\Site\PaymentController::class, 'show'])
     ->name('payment');
 
         /*

@@ -112,7 +112,8 @@
                     $leadCoordinator = null;
                     if ($events->isNotEmpty()) {
                         $firstEvent = $events->first();
-                        $leadMember = $firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator');
+                        $leadMember = $firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')
+                            ?? $firstEvent->eventMembers->firstWhere('role', 'Coordinator');
                         $leadCoordinator = $leadMember?->member;
                     }
                     

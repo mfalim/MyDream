@@ -45,7 +45,9 @@
                     $client = $booking ? $booking->client : null;
                     $leadMember = $event->eventMembers->first();
                     $statusBadge = [
+                        'draft' => 'secondary',
                         'scheduled' => 'secondary',
+                        'upcoming' => 'primary',
                         'ongoing' => 'warning',
                         'completed' => 'success',
                         'cancelled' => 'danger',
@@ -60,6 +62,11 @@
                         }
                     }
 
+                    $effectiveStart = $event->effective_start_time;
+                    $effectiveEnd = $event->effective_end_time;
+                    $timeLabel = $effectiveStart && $effectiveEnd
+                        ? date('H:i', strtotime($effectiveStart)) . ' - ' . date('H:i', strtotime($effectiveEnd)) . ' WIB'
+                        : ($effectiveStart ? date('H:i', strtotime($effectiveStart)) . ' WIB' : 'Belum ada jadwal');
                 @endphp
                 <div class="col-md-6 col-lg-3">
                     <div class="card border-0 shadow-sm h-100">
@@ -78,11 +85,7 @@
                                 {{ strtoupper($event->status) }}
                             </span>
                             <span class="badge bg-dark position-absolute top-0 end-0 m-2">
-                                @if ($event->start_time)
-                                    {{ date('H:i', strtotime($event->start_time)) }} WIB
-                                @else
-                                    Belum ada jadwal
-                                @endif
+                                {{ $timeLabel }}
                             </span>
                         </div>
                         <div class="card-body">
@@ -210,22 +213,143 @@
             modalBody.innerHTML = '<div class="text-center py-5"><div class="spinner-border" role="status"></div></div>';
             modal.show();
 
-            fetch(`/admin/event/${eventId}`, {
+            fetch(`/admin/events/${eventId}/detail`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
             })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const content = doc.querySelector('.container-fluid');
-                if (content) {
-                    modalBody.innerHTML = content.innerHTML;
-                } else {
-                    modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    modalBody.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+                    return;
                 }
+
+                const info = data;
+                const statusClass = {
+                    draft: 'secondary',
+                    scheduled: 'secondary',
+                    upcoming: 'primary',
+                    ongoing: 'warning',
+                    completed: 'success',
+                    cancelled: 'danger'
+                }[info.status] || 'secondary';
+
+                const leadName = info.lead_director || 'Belum ditentukan';
+                const venue = info.venue || 'N/A';
+                const packageName = info.package || 'Tidak ada paket';
+                const vendorList = (info.vendors || []).length
+                    ? (info.vendors || []).map(v => `
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                            <div>
+                                <div class="fw-semibold">${v.name}</div>
+                                <small class="text-muted">${v.category || 'N/A'}</small>
+                            </div>
+                            <span class="badge bg-${v.status === 'approved' ? 'success' : v.status === 'rejected' ? 'danger' : 'secondary'} text-uppercase">${v.status || 'pending'}</span>
+                        </div>
+                    `).join('')
+                    : '<div class="text-muted">Belum ada vendor yang ditambahkan</div>';
+
+                const teamList = (info.team_members || []).length
+                    ? (info.team_members || []).map(member => `
+                        <div class="col-md-6 mb-2">
+                            <div class="fw-semibold">${member.name}</div>
+                            <small class="text-muted">${member.role || 'Belum ditentukan'}</small>
+                        </div>
+                    `).join('')
+                    : '<div class="col-12 text-muted">Belum ada tim yang ditambahkan</div>';
+
+                modalBody.innerHTML = `
+                    <div class="container-fluid px-0">
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h3 class="fw-bold mb-1">${info.title || 'Event'}</h3>
+                                    <p class="text-muted mb-2">${info.couple_name || 'Event Detail'}</p>
+                                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                                        <span class="badge bg-${statusClass}">${String(info.status || 'upcoming').toUpperCase()}</span>
+                                        <span class="text-muted"><i class="bi bi-clock"></i> ${info.schedule || 'Waktu belum ditentukan'}</span>
+                                    </div>
+                                </div>
+                                <a href="/admin/events/${info.id}/edit" class="btn btn-dark btn-sm">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4">
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">LOKASI</div>
+                                        <div class="fw-bold">${venue}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">TANGGAL</div>
+                                        <div class="fw-bold">${info.event_date || 'N/A'}</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="small text-muted">TAMU UNDANGAN</div>
+                                        <div class="fw-bold">${info.guest_count ?? 'N/A'} Orang</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3"><i class="bi bi-person-badge-fill text-primary"></i> KOORDINATOR UTAMA</h5>
+                                        <div class="fw-bold">${leadName}</div>
+                                    </div>
+                                </div>
+
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3"><i class="bi bi-box-seam-fill text-info"></i> PAKET PILIHAN</h5>
+                                        <div class="fw-bold">${packageName}</div>
+                                    </div>
+                                </div>
+
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3"><i class="bi bi-shop-window text-success"></i> VENDOR REKOMENDASI TERIKAT</h5>
+                                        ${vendorList}
+                                    </div>
+                                </div>
+
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3"><i class="bi bi-people-fill text-warning"></i> TIM ON-DUTY</h5>
+                                        <div class="row">${teamList}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="card border-0 shadow-sm mb-4">
+                                    <div class="card-body p-4">
+                                        <h5 class="fw-bold mb-3">Info Event</h5>
+                                        <div class="mb-3"><div class="small text-muted">Tipe Event</div><div class="fw-semibold">${info.event_type || 'N/A'}</div></div>
+                                        <div class="mb-3"><div class="small text-muted">Status</div><div class="fw-semibold">${String(info.status || 'upcoming').charAt(0).toUpperCase() + String(info.status || 'upcoming').slice(1)}</div></div>
+                                        <div class="mb-3"><div class="small text-muted">Total Vendor</div><div class="fw-semibold">${info.vendor_count ?? 0} Vendor</div></div>
+                                        <div class="mb-3"><div class="small text-muted">Total Tim</div><div class="fw-semibold">${info.team_count ?? 0} Orang</div></div>
+                                    </div>
+                                </div>
+                                ${info.notes ? `
+                                    <div class="card border-0 shadow-sm mb-4">
+                                        <div class="card-body p-4">
+                                            <h5 class="fw-bold mb-3">Catatan</h5>
+                                            <p class="text-muted small mb-0">${info.notes}</p>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
             })
             .catch(error => {
                 modalBody.innerHTML = '<div class="alert alert-danger">Gagal memuat detail acara</div>';

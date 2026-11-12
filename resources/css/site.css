@@ -1,0 +1,36 @@
+/*
+  CSS halaman publik MyDream (Tailwind v4). Sengaja terpisah dari app.css:
+  tidak memuat Bootstrap, jadi tidak bentrok dengan halaman admin/dashboard.
+  Hanya memindai view publik baru (source(none) + @source).
+*/
+@import "tailwindcss" source(none);
+
+@source "../views/layouts/site.blade.php";
+@source "../views/components/site";
+@source "../views/site";
+
+@theme {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-cream: #FBF3EC;
+  --color-cream-dark: #F3E6D8;
+  --color-ink: #2B211C;
+  --color-maroon: #7A1F2B;
+  --color-maroon-dark: #5C1620;
+  --color-maroon-light: #F4E4E6;
+  --color-emerald: #1F4D3D;
+  --color-gold: #B08D57;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+  }
+}
