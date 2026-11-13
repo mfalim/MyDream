@@ -32,7 +32,7 @@
                 </button>
             </form>
 
-            <a href="{{ route('cart.index') }}" aria-label="Keranjang" class="relative p-2 text-ink/70 hover:text-maroon">
+            <a href="{{ route('cart.index') }}" aria-label="Keranjang" data-cart-target class="relative p-2 text-ink/70 hover:text-maroon">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.25-4.59 3.375-6.885a1.125 1.125 0 00-1.007-1.615H5.106M7.5 14.25L5.106 5.653M7.5 14.25L4.5 4.395" /></svg>
                 @if ($cartCount > 0)
                     <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-maroon text-[10px] font-semibold text-white">{{ $cartCount }}</span>

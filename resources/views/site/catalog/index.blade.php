@@ -5,19 +5,15 @@
 
 @section('content')
 
-    <section class="border-b border-black/5 bg-white">
-        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Pencarian Lengkap</p>
-            <h1 class="mt-2 font-display text-4xl font-semibold">Katalog Paket &amp; Vendor</h1>
-            <p class="mt-3 max-w-2xl text-ink/60">Gunakan filter untuk menemukan paket atau vendor yang sesuai kebutuhanmu.</p>
-        </div>
-    </section>
+    <x-site.page-hero eyebrow="Pencarian Lengkap" title="Katalog Paket & Vendor"
+        subtitle="Gunakan filter untuk menemukan paket atau vendor yang sesuai kebutuhanmu."
+        image="katalog" fallback="photo-1465495976277-4387d4b0b4c6" />
 
     <section class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="grid gap-8 lg:grid-cols-4">
 
             {{-- FILTER --}}
-            <div>
+            <div class="lg:sticky lg:top-24 lg:self-start">
                 <button type="button" data-toggle="#catalog-filter" aria-expanded="false" class="mb-3 flex w-full items-center justify-between rounded-2xl bg-white px-5 py-3 text-sm font-semibold shadow-sm ring-1 ring-black/5 lg:hidden">
                     <span>Filter &amp; Pencarian</span>
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
@@ -92,14 +88,14 @@
             </div>
 
             {{-- HASIL --}}
-            <div class="space-y-10 lg:col-span-3">
+            <div data-results class="space-y-10 lg:col-span-3">
                 <div class="flex flex-wrap items-center justify-between gap-3">
-                    <p class="text-sm text-ink/60">Menampilkan <span class="font-semibold text-ink">{{ $packages->count() + $vendors->count() }}</span> hasil</p>
+                    <p class="text-sm text-ink/60">Menampilkan <span class="font-semibold text-ink" data-count="{{ $packages->count() + $vendors->count() }}">{{ $packages->count() + $vendors->count() }}</span> hasil</p>
                     @if (count($chips))
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs font-medium text-ink/50">Filter aktif:</span>
                             @foreach ($chips as $chip)
-                                <a href="{{ $chip['url'] }}" class="inline-flex items-center gap-1.5 rounded-full bg-maroon-light px-3 py-1.5 text-xs font-medium text-maroon transition-colors hover:bg-maroon hover:text-white">
+                                <a href="{{ $chip['url'] }}" data-reveal="pop" style="--d: {{ $loop->index * 0.08 }}s" class="inline-flex items-center gap-1.5 rounded-full bg-maroon-light px-3 py-1.5 text-xs font-medium text-maroon transition-colors hover:bg-maroon hover:text-white">
                                     {{ $chip['label'] }} <span aria-hidden="true">&times;</span>
                                 </a>
                             @endforeach

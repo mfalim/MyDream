@@ -5,25 +5,20 @@
 
 @section('content')
 
-    <section class="border-b border-black/5 bg-white">
-        <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-            <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Cerita Nyata dari Client</p>
-            <h1 class="mt-2 font-display text-4xl font-semibold">Inspirasi Pernikahan</h1>
-            <p class="mt-3 max-w-2xl text-ink/60">Konsep dan cerita dari pasangan yang sudah menikah bersama MyDream, ditulis langsung oleh mereka dan ditinjau tim kami.</p>
-
-            @if ($themes->isNotEmpty())
-                <div class="mt-6 flex flex-wrap gap-2">
-                    <a href="{{ route('inspiration.index') }}" class="rounded-full px-4 py-2 text-xs font-semibold {{ ! $activeTheme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">Semua</a>
-                    @foreach ($themes as $theme)
-                        <a href="{{ route('inspiration.index', ['theme' => $theme]) }}" class="rounded-full px-4 py-2 text-xs font-medium {{ $activeTheme === $theme ? 'bg-maroon text-white' : 'bg-cream text-ink/70 ring-1 ring-black/10 hover:bg-maroon-light hover:text-maroon' }}">{{ $theme }}</a>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-    </section>
+    <x-site.page-hero eyebrow="Cerita Nyata dari Client" title="Inspirasi Pernikahan"
+        subtitle="Konsep dan cerita dari pasangan yang sudah menikah bersama MyDream, ditulis langsung oleh mereka dan ditinjau tim kami."
+        image="inspirasi" fallback="photo-1522673607200-164d1b6ce486">
+        @if ($themes->isNotEmpty())
+            <a href="{{ route('inspiration.index') }}" class="glass-chip {{ ! $activeTheme ? 'is-active' : '' }}">Semua</a>
+            @foreach ($themes as $theme)
+                <a href="{{ route('inspiration.index', ['theme' => $theme]) }}" class="glass-chip {{ $activeTheme === $theme ? 'is-active' : '' }}">{{ $theme }}</a>
+            @endforeach
+        @endif
+    </x-site.page-hero>
 
     <section class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         @if ($items->isNotEmpty())
+            <p class="mb-8 text-sm text-ink/60" data-reveal><span class="font-semibold text-ink" data-count="{{ $items->count() }}">{{ $items->count() }}</span> cerita{{ $activeTheme ? ' bertema ' . $activeTheme : '' }}</p>
             <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 @foreach ($items as $item)
                     <x-site.inspiration-card :item="$item" />

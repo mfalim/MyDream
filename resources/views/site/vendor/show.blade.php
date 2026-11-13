@@ -17,8 +17,9 @@
         <div class="grid gap-10 lg:grid-cols-3">
 
             <div class="space-y-8 lg:col-span-2">
-                <div data-gallery="g" class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
-                    <img src="{{ \App\Support\Media::url($cover?->photo ?? $vendor->photo) }}" alt="{{ $vendor->name }}" class="h-full w-full object-cover">
+                <div data-gallery="g" data-reveal="mask" style="--mr: 1.5rem" class="group relative aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
+                    <img src="{{ \App\Support\Media::url($cover?->photo ?? $vendor->photo) }}" alt="{{ $vendor->name }}" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105">
+                    <span class="pointer-events-none absolute bottom-4 right-4 rounded-full bg-ink/60 px-3 py-1.5 text-xs font-medium text-white opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100">Klik untuk perbesar</span>
                 </div>
                 @if ($otherPhotos->isNotEmpty())
                     <div data-gallery="g" class="grid grid-cols-4 gap-3">
@@ -38,7 +39,7 @@
                     @endif
                 </div>
 
-                <div class="grid gap-4 rounded-2xl bg-cream-dark/60 p-6 sm:grid-cols-3">
+                <div data-reveal class="grid gap-4 rounded-2xl bg-cream-dark/60 p-6 sm:grid-cols-3">
                     <div>
                         <p class="text-xs uppercase tracking-wide text-ink/40">Lokasi</p>
                         <p class="mt-1 text-sm font-medium">{{ $vendor->city ?: '-' }}</p>
@@ -66,14 +67,14 @@
                 @endif
             </div>
 
-            <aside class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
-                <x-site.price :amount="$vendor->price" prefix="Mulai dari" />
+            <aside data-reveal="right" style="--d: .25s" class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
+                <x-site.price :amount="$vendor->price" prefix="Mulai dari" :animate="true" />
                 <p class="text-xs text-ink/50">Pesan vendor satuan: pilih minimal 3 vendor di keranjang untuk lanjut ke checkout, atau pilih paket lengkap.</p>
 
                 @auth
-                    <form action="{{ route('user.cart.add-vendor', $vendor->id) }}" method="POST">
+                    <form action="{{ route('user.cart.add-vendor', $vendor->id) }}" method="POST" data-fly-cart>
                         @csrf
-                        <x-site.button type="submit" size="lg" class="w-full">Tambah ke Keranjang</x-site.button>
+                        <x-site.button type="submit" size="lg" class="btn-shine w-full">Tambah ke Keranjang</x-site.button>
                     </form>
                 @else
                     <x-site.button :href="route('login')" size="lg" class="w-full">Masuk untuk Memesan</x-site.button>

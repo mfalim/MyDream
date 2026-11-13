@@ -3,12 +3,22 @@
 @php
     $labels = ['upcoming' => ['Akan Datang', 'category'], 'ongoing' => ['Sedang Berlangsung', 'maroon'], 'finished' => ['Selesai', 'dark']];
     [$label, $variant] = $labels[$event->status];
+    $start = $event->starts_on->copy()->locale('id');
 @endphp
 
 <a href="{{ route('event.show', $event->slug) }}" class="group block overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
     <div class="relative aspect-[4/3] overflow-hidden bg-cream-dark">
         <img src="{{ \App\Support\Media::url($event->photo) }}" alt="{{ $event->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 {{ $event->status === 'finished' ? 'grayscale' : '' }}">
-        <x-site.badge :variant="$variant" class="absolute left-3 top-3">{{ $label }}</x-site.badge>
+        <x-site.badge :variant="$variant" class="absolute left-3 top-3 gap-1.5">
+            @if ($event->status === 'ongoing')
+                <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-white"></span></span>
+            @endif
+            {{ $label }}
+        </x-site.badge>
+        <div class="absolute right-3 top-3 flex h-14 w-14 flex-col items-center justify-center rounded-2xl bg-white/95 text-center shadow-lg backdrop-blur transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
+            <span class="font-display text-xl font-semibold leading-none text-maroon">{{ $start->format('d') }}</span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider text-ink/60">{{ $start->translatedFormat('M') }}</span>
+        </div>
     </div>
     <div class="space-y-1.5 p-5">
         <h3 class="font-display text-lg font-semibold leading-snug">{{ $event->title }}</h3>
