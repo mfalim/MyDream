@@ -8,10 +8,107 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
 {
+    /**
+     * Login menggunakan Username / Email + Password.
+     */
+    public function loginWithCredentials(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'login' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string'],
+        ], [
+            'login.required' => 'Username atau Email wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput($request->only('login') + ['auth_tab' => 'login']);
+        }
+
+        $login = trim((string) $request->input('login'));
+        $password = (string) $request->input('password');
+
+        $user = filter_var($login, FILTER_VALIDATE_EMAIL)
+            ? User::where('email', $login)->first()
+            : User::where('username', $login)->orWhere('email', $login)->first();
+
+        // Pendekatan 1 (Strict Auth Separation): Akun yang dibuat via Google OAuth
+        // tanpa password tidak bisa login melalui form password.
+        if ($user && ! empty($user->google_id) && empty($user->password)) {
+            return back()
+                ->withInput(['login' => $login, 'auth_tab' => 'login'])
+                ->with('error', 'Akun ini terdaftar melalui Google. Silakan gunakan tombol Lanjutkan dengan Google.');
+        }
+
+        if (! $user || empty($user->password) || ! Hash::check($password, $user->password)) {
+            return back()
+                ->withInput(['login' => $login, 'auth_tab' => 'login'])
+                ->with('error', 'Username/Email atau password yang Anda masukkan salah.');
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return $this->redirectAfterLogin($user);
+    }
+
+    /**
+     * Registrasi akun Klien baru menggunakan Username (+ Email opsional) & Password.
+     */
+    public function registerWithCredentials(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required', 'string', 'max:120'],
+            'username' => ['required', 'string', 'min:3', 'max:50', 'alpha_dash', 'unique:users,username'],
+            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'username.required' => 'Username wajib diisi.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.alpha_dash' => 'Username hanya boleh berisi huruf, angka, tanda hubung (-), dan garis bawah (_).',
+            'username.unique' => 'Username tersebut sudah digunakan, silakan pilih username lain.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email tersebut sudah terdaftar pada akun lain.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 6 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        if ($validator->fails()) {
+            return back()
+                ->withErrors($validator)
+                ->withInput($request->only(['name', 'username', 'email']) + ['auth_tab' => 'register']);
+        }
+
+        $data = $validator->validated();
+        $email = ! empty($data['email']) ? strtolower(trim($data['email'])) : null;
+
+        $user = User::create([
+            'name' => trim($data['name']),
+            'username' => strtolower(trim($data['username'])),
+            'email' => $email,
+            'password' => $data['password'],
+            'role' => 'client',
+            'status' => 'approved',
+            'google_id' => null,
+            'avatar' => null,
+        ]);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return $this->redirectAfterLogin($user);
+    }
+
     public function redirect(Request $request)
     {
         if ($request->filled('mobile_session')) {
@@ -40,10 +137,31 @@ class GoogleAuthController extends Controller
             $googleUser = Socialite::driver('google')->stateless()->user();
         }
 
+        // Pendekatan 1 (Strict Auth Separation):
+        // Jika email sudah didaftarkan sebagai akun Klien menggunakan Password (bukan Google SSO),
+        // tolak login via Google agar metode autentikasi tetap terpisah dan aman.
+        if (! empty($googleUser->email)) {
+            $existingUser = User::where('email', $googleUser->email)->first();
+            if ($existingUser && $existingUser->role === 'client' && ! empty($existingUser->password) && empty($existingUser->google_id)) {
+                return redirect('/login')->with(
+                    'error',
+                    'Email ini sudah terdaftar menggunakan Password. Silakan masuk menggunakan Username/Email & Password Anda.'
+                );
+            }
+        }
+
         $user = User::createOrLogin($googleUser);
 
         Auth::login($user);
 
+        return $this->redirectAfterLogin($user);
+    }
+
+    /**
+     * Alur pengecekan status dan redirect pasca-login (digunakan bersama oleh Google OAuth & Password Login).
+     */
+    protected function redirectAfterLogin(User $user)
+    {
         if ($user->status === 'pending') {
             Auth::logout();
 
@@ -62,7 +180,7 @@ class GoogleAuthController extends Controller
 
         if ($user->role == 'member') {
             $member = \App\Models\Member::where('user_id', $user->id)->first();
-            if (! $member) {
+            if (! $member || empty($member->call_sign)) {
                 return redirect('/member/profile/complete');
             }
 

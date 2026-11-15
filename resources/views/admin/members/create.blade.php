@@ -86,13 +86,49 @@
                             type="email"
                             name="email"
                             class="form-control-custom"
-                            value="{{ old('name', $member->email ?? '') }}"
+                            value="{{ old('email', $member->email ?? $member->user->email ?? '') }}"
                             placeholder="contoh: member@example.com"
                             required
                         >
 
                         <div class="input-note">
-                            Email digunakan untuk login melalui Google OAuth.
+                            Email digunakan untuk login melalui Google OAuth atau sebagai email login password.
+                        </div>
+                    </div>
+
+                    {{-- Username & Password Opsional --}}
+                    <div class="form-group">
+                        <label class="form-label-custom">
+                            Username Login (Opsional)
+                        </label>
+
+                        <input
+                            type="text"
+                            name="username"
+                            class="form-control-custom"
+                            value="{{ old('username', $member->user->username ?? '') }}"
+                            placeholder="contoh: kru_budi"
+                        >
+
+                        <div class="input-note">
+                            Opsional jika member ingin login menggunakan username &amp; password.
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label-custom">
+                            Password Login (Opsional)
+                        </label>
+
+                        <input
+                            type="password"
+                            name="password"
+                            class="form-control-custom"
+                            placeholder="{{ isset($member) && $member->exists ? 'Kosongkan jika tidak ingin mengubah password' : 'Minimal 6 karakter (opsional)' }}"
+                        >
+
+                        <div class="input-note">
+                            Isi jika member login menggunakan password (tanpa Google SSO).
                         </div>
                     </div>
 

@@ -11,6 +11,9 @@ Route::get('/login', function () {
     return view('login.login');
 })->name('login');
 
+Route::post('/login', [GoogleAuthController::class, 'loginWithCredentials'])->name('login.attempt');
+Route::post('/register', [GoogleAuthController::class, 'registerWithCredentials'])->name('register.attempt');
+
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 

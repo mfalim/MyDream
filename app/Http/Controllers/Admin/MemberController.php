@@ -92,6 +92,8 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'email' => 'required|email|max:255|unique:users,email',
+            'username' => 'nullable|string|min:3|max:50|alpha_dash|unique:users,username',
+            'password' => 'nullable|string|min:6',
             'position' => 'required|string|max:100',
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
@@ -103,6 +105,10 @@ class MemberController extends Controller
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email tersebut sudah terdaftar.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.alpha_dash' => 'Username hanya boleh huruf, angka, tanda hubung (-), atau garis bawah (_).',
+            'username.unique' => 'Username tersebut sudah digunakan.',
+            'password.min' => 'Password minimal 6 karakter.',
             'position.required' => 'Posisi atau jabatan wajib dipilih.',
             'specialization.string' => 'Spesialisasi tidak valid.',
             'division.required' => 'Divisi wajib dipilih.',
@@ -114,7 +120,9 @@ class MemberController extends Controller
 
         DB::transaction(function () use ($validated, $request) {
             $user = User::create([
-                'email' => $validated['email'],
+                'email' => strtolower(trim($validated['email'])),
+                'username' => ! empty($validated['username']) ? strtolower(trim($validated['username'])) : null,
+                'password' => ! empty($validated['password']) ? $validated['password'] : null,
                 'name' => explode('@', $validated['email'])[0],
                 'role' => 'member',
                 'status' => 'approved',
@@ -135,19 +143,18 @@ class MemberController extends Controller
             ]);
         });
 
-        // Penugasan member akan disimpan ke tabel members
-        // setelah struktur tabel dan relasinya dipastikan.
-
         return redirect()
             ->route('admin.members.index')
             ->with(
                 'success',
-                'Akun member berhasil didaftarkan. Member dapat login melalui Google OAuth menggunakan email tersebut.'
+                'Akun member berhasil didaftarkan. Member dapat login melalui Google OAuth atau Username/Email & Password.'
             );
     }
 
     public function edit(Member $member)
     {
+        $member->loadMissing('user');
+
         return view('admin.members.edit', [
             'member' => $member,
             'positions' => MemberPosition::orderBy('name')->get(),
@@ -160,6 +167,8 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'email' => 'required|email|max:255|unique:users,email,' . $member->user_id,
+            'username' => 'nullable|string|min:3|max:50|alpha_dash|unique:users,username,' . $member->user_id,
+            'password' => 'nullable|string|min:6',
             'position' => 'required|string|max:100',
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
@@ -171,6 +180,10 @@ class MemberController extends Controller
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email tersebut sudah digunakan.',
+            'username.min' => 'Username minimal 3 karakter.',
+            'username.alpha_dash' => 'Username hanya boleh huruf, angka, tanda hubung (-), atau garis bawah (_).',
+            'username.unique' => 'Username tersebut sudah digunakan.',
+            'password.min' => 'Password minimal 6 karakter.',
             'position.required' => 'Posisi atau jabatan wajib dipilih.',
             'division.required' => 'Divisi wajib dipilih.',
             'division.in' => 'Divisi yang dipilih tidak valid.',
@@ -191,14 +204,21 @@ class MemberController extends Controller
         ]);
 
         if ($member->user) {
-            $member->user->update([
-                'email' => $validated['email'],
-            ]);
+            $userPayload = [
+                'email' => strtolower(trim($validated['email'])),
+                'username' => ! empty($validated['username']) ? strtolower(trim($validated['username'])) : null,
+            ];
+
+            if (! empty($validated['password'])) {
+                $userPayload['password'] = $validated['password'];
+            }
+
+            $member->user->update($userPayload);
         }
 
         return redirect()
             ->route('admin.members.index')
-            ->with('success', 'Data awal member berhasil diperbarui.');
+            ->with('success', 'Data member berhasil diperbarui.');
     }
 
     public function destroy(Member $member)

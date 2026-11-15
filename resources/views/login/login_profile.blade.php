@@ -156,8 +156,7 @@
                         <!-- EMAIL (FULL WIDTH) -->
                         <div class="form-group full-width">
                             <label for="email">
-                                <span>Alamat Email Utama</span>
-                                <span class="required">*</span>
+                                <span>Alamat Email Utama <small style="font-weight: 400; opacity: 0.7;">(Opsional)</small></span>
                             </label>
                             <div class="input-wrapper">
                                 <i class="bi bi-envelope"></i>
@@ -166,8 +165,7 @@
                                     id="email"
                                     name="email"
                                     value="{{ old('email', auth()->user()?->email ?? '') }}"
-                                    placeholder="contoh@email.com"
-                                    required
+                                    placeholder="contoh@email.com (boleh dikosongkan)"
                                 >
                             </div>
                             @error('email')

@@ -119,8 +119,26 @@ class GoogleAuthController extends Controller
      */
     public function issueAuthResponse(object $googleUser, string $deviceName = 'flutter-token'): JsonResponse
     {
+        if (! empty($googleUser->email)) {
+            $existingUser = User::where('email', $googleUser->email)->first();
+            if ($existingUser && $existingUser->role === 'client' && ! empty($existingUser->password) && empty($existingUser->google_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email ini sudah terdaftar menggunakan Password. Silakan masuk menggunakan Username/Email & Password Anda.',
+                ], 403);
+            }
+        }
+
         $user = User::createOrLogin($googleUser);
 
+        return $this->buildUserAuthResponse($user, $deviceName);
+    }
+
+    /**
+     * Validasi status & profil user lalu terbitkan respons token Sanctum standar untuk Mobile Flutter.
+     */
+    public function buildUserAuthResponse(User $user, string $deviceName = 'flutter-token'): JsonResponse
+    {
         if ($user->status === 'pending') {
             return response()->json([
                 'success' => false,
@@ -154,19 +172,24 @@ class GoogleAuthController extends Controller
             default => '/user/dashboard',
         };
 
+        $hasPassword = ! empty($user->password);
         $token = $user->createToken($deviceName)->plainTextToken;
         $user->setRelation('client', $client);
         if ($member) {
             $user->setRelation('member', $member);
         }
 
+        $userPayload = $user->toArray();
+        $userPayload['has_password'] = $hasPassword;
+
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil.',
             'data' => [
-                'user' => $user,
+                'user' => $userPayload,
                 'client' => $client,
                 'member' => $member,
+                'has_password' => $hasPassword,
                 'token' => $token,
                 'token_type' => 'Bearer',
                 'role' => $user->role,
