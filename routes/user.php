@@ -9,10 +9,15 @@ use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\VendorConfirmationController;
 use App\Http\Controllers\User\EventController;
+use App\Http\Controllers\User\RiwayatController;
+use App\Http\Controllers\User\UlasanController;
+use App\Http\Controllers\User\BillingController;
+use App\Http\Controllers\User\InspirationController;
+use App\Http\Middleware\EnsureUserRole;
 
 Route::prefix('user')
     ->name('user.')
-    ->middleware('auth')
+    ->middleware(['auth', EnsureUserRole::class . ':client'])
     ->group(function () {
 
         /*
@@ -22,6 +27,11 @@ Route::prefix('user')
         */
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/riwayat-pembelian', [RiwayatController::class, 'index'])->name('history.index');
+        Route::get('/riwayat-pembelian/{booking}', [RiwayatController::class, 'show'])->name('history.show');
+        Route::get('/ulasan', [UlasanController::class, 'index'])->name('reviews.index');
+        Route::post('/ulasan', [UlasanController::class, 'store'])->name('reviews.store');
 
         /*
         |--------------------------------------------------------------------------
@@ -38,15 +48,15 @@ Route::prefix('user')
         */
         Route::get('/explore-vendor', [ExploreController::class, 'index'])
             ->name('explore-vendor')
-            ->withoutMiddleware('auth');
+            ->withoutMiddleware(['auth', EnsureUserRole::class . ':client']);
 
         Route::get('/explore-vendor/vendor/{id}', [ExploreController::class, 'show'])
             ->name('vendor-overview')
-            ->withoutMiddleware('auth');
+            ->withoutMiddleware(['auth', EnsureUserRole::class . ':client']);
 
         Route::get('/explore-vendor/package/{id}', [ExploreController::class, 'showPackage'])
             ->name('package-overview')
-            ->withoutMiddleware('auth');
+            ->withoutMiddleware(['auth', EnsureUserRole::class . ':client']);
 
         /*
         |--------------------------------------------------------------------------
@@ -77,9 +87,6 @@ Route::prefix('user')
         Route::get('/payment/{bookingId}', [\App\Http\Controllers\Site\PaymentController::class, 'show'])
             ->name('payment');
 
-       Route::get('/payment/{bookingId}', [\App\Http\Controllers\Site\PaymentController::class, 'show'])
-    ->name('payment');
-
         /*
         |--------------------------------------------------------------------------
         | 5. EVENT / STATUS ACARA
@@ -104,4 +111,15 @@ Route::prefix('user')
 
         Route::get('/rundown-timeline/{date}', [RundownController::class, 'show'])
             ->name('rundown.detail');
+
+        /*
+        |--------------------------------------------------------------------------
+        | 7. TAGIHAN & CERITA INSPIRASI
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/tagihan', [BillingController::class, 'index'])->name('billing');
+
+        Route::get('/inspirasi', [InspirationController::class, 'index'])->name('inspiration');
+        Route::get('/inspirasi/{booking}', [InspirationController::class, 'form'])->whereNumber('booking')->name('inspiration.form');
+        Route::post('/inspirasi/{booking}', [InspirationController::class, 'save'])->whereNumber('booking')->name('inspiration.save');
     });

@@ -40,6 +40,42 @@
     margin: 0;
 }
 
+/* Tombol header kalender */
+.btn-emerald,
+.btn-outline-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.btn-emerald {
+    background: #073d36;
+    color: #ffffff;
+    border: 1px solid #073d36;
+}
+
+.btn-emerald:hover {
+    background: #052c27;
+    color: #dfc28b;
+}
+
+.btn-outline-back {
+    background: #ffffff;
+    color: #4b6259;
+    border: 1px solid #cad9d3;
+}
+
+.btn-outline-back:hover {
+    background: #f2f7f4;
+    color: #173f39;
+}
+
 /* Main Card */
 .calendar-main-card {
     background: #ffffff;

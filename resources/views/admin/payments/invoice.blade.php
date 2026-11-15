@@ -89,7 +89,7 @@
                             <td>{{ $idx + 1 }}</td>
                             <td class="fw-semibold">{{ $s->vendor?->name ?? $s->activity }}</td>
                             <td>{{ $s->vendor?->category?->name ?? 'Layanan Pernikahan' }}</td>
-                            <td class="text-end num-tabular">{{ $rupiah($s->vendor?->price ?? $s->effective_fee) }}</td>
+                            <td class="text-end num-tabular">{{ $rupiah($s->price ?? $s->vendor?->price ?? $s->effective_fee) }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -131,10 +131,16 @@
                         <tr>
                             <td>{{ $payment->created_at?->locale('id')->translatedFormat('d M Y, H:i') }}</td>
                             <td class="fw-semibold">{{ $tLabel }}</td>
-                            <td class="small">{{ $payment->bank_info ?: 'Transfer Bank' }}</td>
+                            <td class="small">
+                                @if ($payment->method === 'midtrans')
+                                    Midtrans Gateway ({{ $payment->midtrans_order_id ?? 'Otomatis' }})
+                                @else
+                                    {{ $payment->bank_info ?: 'Transfer Bank' }}
+                                @endif
+                            </td>
                             <td>
                                 <span class="fin-badge {{ $payment->status }}">
-                                    {{ $payment->status === 'verified' ? 'Terverifikasi Sah' : ($payment->status === 'pending' ? 'Menunggu Verifikasi' : 'Ditolak') }}
+                                    {{ $payment->status === 'verified' ? 'Terverifikasi Sah' : ($payment->status === 'pending' ? 'Menunggu Verifikasi' : ($payment->status === 'initiated' ? 'Diproses Midtrans' : 'Ditolak')) }}
                                 </span>
                                 @if ($payment->proof_url)
                                     <a href="{{ $payment->proof_url }}" target="_blank" class="ms-1 small text-decoration-underline no-print">Lihat Struk</a>

@@ -18,6 +18,9 @@ class Article extends Model
         'published_at',
         'package_id',
         'is_published',
+        'event_id',
+        'client_id',
+        'rating',
     ];
 
     protected $casts = [
@@ -46,6 +49,16 @@ class Article extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 
     /** Tayang: dipublikasikan dan tanggal tayangnya belum di masa depan. */

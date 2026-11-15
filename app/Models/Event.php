@@ -151,6 +151,10 @@ class Event extends Model
         return $this->hasMany(Schedule::class);
     }
 
+    public function articles()
+    {
+        return $this->hasMany(Article::class);
+    }
     public function getEffectiveStartTimeAttribute(): ?string
     {
         $stored = $this->attributes['start_time'] ?? null;

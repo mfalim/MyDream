@@ -20,6 +20,7 @@ class PaymentController extends Controller
 {
     private const STATUSES = [
         'pending' => 'Menunggu Verifikasi',
+        'initiated' => 'Diproses Midtrans',
         'verified' => 'Terverifikasi',
         'rejected' => 'Ditolak',
     ];
@@ -42,7 +43,7 @@ class PaymentController extends Controller
         $bookingFilter = $request->query('booking_id', '');
 
         // 1. Data Inflow Pembayaran Klien (Tabel payments)
-        $payments = Payment::with(['booking.client', 'booking.package'])
+        $payments = Payment::with(['booking.client', 'booking.package', 'events'])
             ->where('status', $status)
             ->latest('id')
             ->get();
@@ -55,7 +56,7 @@ class PaymentController extends Controller
         $bookings = Booking::with([
             'client',
             'package',
-            'payments' => fn ($q) => $q->latest('id'),
+            'payments' => fn ($q) => $q->with('events')->latest('id'),
             'events.schedules.vendor.category',
             'events.eventMembers.member',
         ])->latest('id')->get();
@@ -112,7 +113,7 @@ class PaymentController extends Controller
             $clientPaid = (float) $booking->paid_amount;
             $clientRemaining = max(0, $contractTotal - $clientPaid);
 
-            $catalogVendorTotal = (float) $schedules->sum(fn (Schedule $s) => (float) ($s->vendor?->price ?? 0));
+            $catalogVendorTotal = (float) $schedules->sum(fn (Schedule $s) => (float) ($s->price ?? $s->vendor?->price ?? 0));
             $vendorTotalFee = (float) $schedules->sum(fn (Schedule $s) => $s->effective_fee);
             $vendorPaid = (float) $schedules->sum('paid_amount');
             $vendorRemaining = max(0, $vendorTotalFee - $vendorPaid);
@@ -211,7 +212,7 @@ class PaymentController extends Controller
         DB::transaction(function () use ($booking, $validated, $proofPath, $bankInfo) {
             $booking->ensureInvoiceNumber();
 
-            Payment::create([
+            $payment = Payment::create([
                 'booking_id' => $booking->id,
                 'type' => $validated['type'],
                 'amount' => (float) $validated['amount'],
@@ -222,6 +223,13 @@ class PaymentController extends Controller
                 'admin_note' => $validated['admin_note'] ?? 'Diverifikasi langsung oleh Admin.',
                 'verified_at' => now(),
             ]);
+
+            $payment->recordLifecycleEvent(
+                'admin_manual_entry',
+                null,
+                null,
+                'Pembayaran manual dicatat dan diverifikasi oleh Admin.'
+            );
 
             $booking->syncPaymentStatus();
         });
@@ -346,11 +354,19 @@ class PaymentController extends Controller
         }
 
         DB::transaction(function () use ($payment, $status, $note) {
+            $previousStatus = $payment->status;
+            $previousTransactionStatus = $payment->transaction_status;
             $payment->update([
                 'status' => $status,
                 'admin_note' => $note,
                 'verified_at' => now(),
             ]);
+            $payment->recordLifecycleEvent(
+                'admin_manual_review',
+                $previousStatus,
+                $previousTransactionStatus,
+                $status === 'verified' ? 'Pembayaran transfer diverifikasi admin.' : 'Pembayaran transfer ditolak admin.',
+            );
             $payment->booking->syncPaymentStatus();
         });
 

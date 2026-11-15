@@ -19,11 +19,11 @@
         <div class="d-flex align-items-center gap-2">
             <a href="{{ route('admin.organizer-event.create') }}" class="btn-outline-back">
                 <i class="bi bi-calendar-plus"></i>
-                <span>+ Agenda Internal WO</span>
+                <span>Tambah Agenda Internal WO</span>
             </a>
             <a href="{{ route('admin.events.create') }}" class="btn-emerald">
                 <i class="bi bi-plus-lg"></i>
-                <span>+ Jadwal Acara Klien</span>
+                <span>Tambah Jadwal Acara Klien</span>
             </a>
         </div>
     </div>

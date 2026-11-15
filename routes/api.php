@@ -30,11 +30,14 @@ use App\Http\Controllers\Api\Site\PackageController;
 use App\Http\Controllers\Api\Site\StoreController;
 use App\Http\Controllers\Api\Site\VendorController as SiteVendorController;
 use App\Http\Controllers\Api\VendorController;
+use App\Http\Controllers\Site\PaymentController as SitePaymentController;
 use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/auth/login', [AuthController::class, 'login'])->name('api.auth.login');
 Route::post('/auth/register', [AuthController::class, 'register'])->name('api.auth.register');
+Route::post('/midtrans/notification', [SitePaymentController::class, 'notification'])
+    ->name('midtrans.notification');
 Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->name('api.auth.google');
 Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('api.auth.google.redirect');
 Route::get('/auth/google/poll', [GoogleAuthController::class, 'pollAuthResult'])->name('api.auth.google.poll');
@@ -115,6 +118,9 @@ Route::middleware(['auth:sanctum', EnsureUserRole::class . ':client'])->prefix('
     Route::post('/bookings', [ClientController::class, 'createBooking'])->name('bookings.store');
     Route::get('/bookings/{bookingId}/payments', [ClientController::class, 'bookingPayments'])->name('bookings.payments.index');
     Route::post('/bookings/{bookingId}/payments', [ClientController::class, 'submitPayment'])->name('bookings.payments.store');
+    Route::post('/bookings/{bookingId}/payments/midtrans', [SitePaymentController::class, 'pay'])
+        ->whereNumber('bookingId')
+        ->name('bookings.payments.midtrans');
     Route::get('/events', [ClientController::class, 'events'])->name('events.index');
     Route::post('/events', [ClientController::class, 'createEvent'])->name('events.store');
 });

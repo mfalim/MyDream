@@ -1,7 +1,7 @@
 @extends('layouts.site')
 
 @section('title', 'Artikel & Blog - MyDream Wedding Organizer')
-@section('description', 'Cerita pernikahan nyata, tips perencanaan, dan panduan memilih vendor dari tim MyDream.')
+@section('description', 'Cerita pengalaman client, tips perencanaan, dan panduan memilih vendor dari MyDream.')
 
 @section('content')
 
@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
             <p class="text-xs font-semibold uppercase tracking-widest text-emerald">Cerita &amp; Tips</p>
             <h1 class="mt-2 font-display text-4xl font-semibold">Artikel &amp; Blog MyDream</h1>
-            <p class="mt-3 max-w-2xl text-ink/60">Cerita pernikahan nyata, panduan perencanaan, dan tips memilih vendor dari tim MyDream.</p>
+            <p class="mt-3 max-w-2xl text-ink/60">Pengalaman client, panduan perencanaan, dan tips memilih vendor untuk membantu mewujudkan hari istimewa Anda.</p>
 
             @if ($categories->isNotEmpty())
                 <div class="mt-6 flex flex-wrap gap-2">

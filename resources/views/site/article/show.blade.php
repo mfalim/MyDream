@@ -16,6 +16,9 @@
     <article class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
         <x-site.badge variant="gold">{{ $article->category }}</x-site.badge>
         <h1 class="mt-3 font-display text-3xl font-semibold sm:text-4xl">{{ $article->title }}</h1>
+        @if ($article->rating)
+            <p class="mt-2 text-amber-600" aria-label="{{ $article->rating }} dari 5 bintang">{{ str_repeat('★', (int) $article->rating) }}<span class="text-ink/20">{{ str_repeat('☆', 5 - (int) $article->rating) }}</span> <span class="text-sm font-semibold">{{ $article->rating }}/5</span></p>
+        @endif
         <p class="mt-2 text-sm text-ink/50">{{ $article->author ? 'Oleh ' . $article->author . ' · ' : '' }}{{ $article->date_label }}</p>
 
         @if ($article->photo)

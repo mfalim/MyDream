@@ -112,6 +112,7 @@ class ClientController extends Controller
                 'status' => 'pending',
                 'proof_path' => $proof,
             ]);
+            $payment->recordLifecycleEvent('bank_transfer_submission', null, null, 'Permintaan pembayaran transfer dibuat.');
             $booking->syncPaymentStatus();
 
             return $payment;

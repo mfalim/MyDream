@@ -6,6 +6,7 @@ use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
 use App\Http\Controllers\Member\ProfileController as MemberProfileController;
+use App\Http\Middleware\EnsureUserRole;
 
 Route::get('/login', function () {
     return view('login.login');
@@ -27,12 +28,12 @@ Route::post('/logout', function () {
     ->middleware('auth')
     ->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', EnsureUserRole::class . ':client'])->group(function () {
     Route::get('/login/profile', [ClientController::class, 'profile'])->name('client.profile');
     Route::post('/login/profile', [ClientController::class, 'storeProfile'])->name('client.profile.store');
 });
 
-Route::prefix('member')->name('member.')->middleware('auth')->group(function () {
+Route::prefix('member')->name('member.')->middleware(['auth', EnsureUserRole::class . ':member'])->group(function () {
     Route::get('/profile/complete', [MemberProfileController::class, 'showCompleteForm'])->name('profile.complete');
     Route::post('/profile/complete', [MemberProfileController::class, 'storeProfile'])->name('profile.store');
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
@@ -44,6 +45,4 @@ Route::prefix('member')->name('member.')->middleware('auth')->group(function () 
 require __DIR__ . '/site.php';
 require __DIR__ . '/frontend.php';
 require __DIR__ . '/admin.php';
-require __DIR__ . '/admin_content.php';
 require __DIR__ . '/user.php';
-require __DIR__ . '/user_content.php';

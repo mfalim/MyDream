@@ -10,6 +10,7 @@ use App\Http\Controllers\Site\PackageController;
 use App\Http\Controllers\Site\PaymentController;
 use App\Http\Controllers\Site\StoreController;
 use App\Http\Controllers\Site\VendorController;
+use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
 
 // Halaman publik baru (Tailwind). Nama route & URL sama dengan versi lama agar link lain tidak putus.
@@ -34,7 +35,7 @@ Route::get('/blog/{slug}', [ArticleController::class, 'show'])->name('blog.show'
 Route::get('/tentang-kami', [AboutController::class, 'index'])->name('about');
 
 // Pembayaran (step 3). Keranjang & checkout tetap memakai controller tim (User\CartController, User\CheckoutController).
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', EnsureUserRole::class . ':client'])->group(function () {
     Route::get('/pembayaran/{bookingId}', [PaymentController::class, 'show'])->whereNumber('bookingId')->name('payment.index');
     Route::post('/pembayaran/{bookingId}', [PaymentController::class, 'pay'])->whereNumber('bookingId')->name('payment.pay');
     Route::get('/pembayaran/{bookingId}/sukses', [PaymentController::class, 'success'])->whereNumber('bookingId')->name('payment.success');

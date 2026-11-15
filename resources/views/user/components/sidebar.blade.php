@@ -60,32 +60,20 @@
 
         </a>
 
-        {{-- INSPIRASI --}}
-        <a href="{{ route('user.inspiration') }}"
-            class="nav-item {{ request()->routeIs('user.inspiration*') ? 'active' : '' }}">
-            <i class="bi bi-stars"></i>
-            <span>Cerita &amp; Inspirasi</span>
+        {{-- ULASAN --}}
+        <a href="{{ route('user.reviews.index') }}"
+            class="nav-item {{ request()->routeIs('user.reviews.*') ? 'active' : '' }}">
+            <i class="bi bi-star"></i>
+            <span>Ulasan</span>
         </a>
 
-        {{-- TAGIHAN --}}
-        <a href="{{ route('user.billing') }}"
-            class="nav-item {{ request()->routeIs('user.billing') ? 'active' : '' }}">
-            <i class="bi bi-receipt"></i>
-            <span>Tagihan &amp; Pembayaran</span>
+        {{-- RIWAYAT PEMBELIAN --}}
+        <a href="{{ route('user.history.index') }}"
+            class="nav-item {{ request()->routeIs('user.history.*') ? 'active' : '' }}">
+            <i class="bi bi-clock-history"></i>
+            <span>Riwayat Pembelian</span>
         </a>
 
-        {{-- ANGGARAN --}}
-
-        <a href="#" class="nav-item">
-            <i class="bi bi-wallet2"></i>
-            <span>Anggaran &amp; Pembayaran</span>
-        </a>
-
-        {{-- TAMU --}}
-        <a href="#" class="nav-item">
-            <i class="bi bi-people"></i>
-            <span>Tamu &amp; Meja VIP</span>
-        </a>
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST" style="display: inline;">
             @csrf

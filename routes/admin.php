@@ -13,8 +13,13 @@ use App\Http\Controllers\Admin\OrganizerEventController;
 use App\Http\Controllers\Admin\TrackingController;
 use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\UserMemberController;
+use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\InspirationController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\PublicEventController;
+use App\Http\Middleware\EnsureUserRole;
 
-Route::middleware('auth')
+Route::middleware(['auth', EnsureUserRole::class . ':admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
@@ -247,4 +252,33 @@ Route::middleware('auth')
 
         Route::post('/events/{id}/complete', [BookingController::class, 'complete'])
             ->name('events.complete');
+
+        // =========================================================
+        // KONTEN PUBLIK (PUBLIC EVENTS, ARTIKEL, INSPIRASI)
+        // =========================================================
+
+        Route::resource('public-events', PublicEventController::class)
+            ->parameters(['public-events' => 'event'])
+            ->except(['show']);
+
+        Route::post('public-events/{event}/toggle-publish', [PublicEventController::class, 'togglePublish'])
+            ->name('public-events.toggle-publish');
+
+        Route::post('public-events/quick-promote/{eventId}', [PublicEventController::class, 'quickPromote'])
+            ->name('public-events.quick-promote');
+
+        Route::resource('articles', ArticleController::class)->except(['show']);
+
+        Route::resource('inspirations', InspirationController::class)->only(['index', 'edit', 'update', 'destroy']);
+
+        // =========================================================
+        // PUSAT KEUANGAN & ALUR KAS
+        // =========================================================
+
+        Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::post('payments/manual', [PaymentController::class, 'storeManualPayment'])->name('payments.store-manual');
+        Route::get('payments/bookings/{booking}/invoice', [PaymentController::class, 'invoice'])->name('payments.invoice');
+        Route::post('payments/{payment}/verify', [PaymentController::class, 'verify'])->name('payments.verify');
+        Route::post('payments/{payment}/reject', [PaymentController::class, 'reject'])->name('payments.reject');
+        Route::post('payments/schedules/{schedule}/payout', [PaymentController::class, 'updateVendorPayout'])->name('payments.vendor-payout');
     });

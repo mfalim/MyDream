@@ -8,7 +8,6 @@ use App\Models\Vendor;
 use App\Models\Package;
 use App\Models\Client;
 use App\Models\Booking;
-use App\Models\Member;
 use App\Models\Event;
 use App\Models\Schedule;
 use App\Models\EventMember;
@@ -31,33 +30,8 @@ class DatabaseSeeder extends Seeder
             'status' => 'approved',
         ]);
 
-        // Create member users
-        $memberUser1 = User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'budi@example.com',
-            'google_id' => 'budi_123456',
-            'avatar' => 'https://ui-avatars.com/api/?name=Budi+Santoso',
-            'role' => 'member',
-            'status' => 'approved',
-        ]);
-
-        $memberUser2 = User::create([
-            'name' => 'Siti Rahayu',
-            'email' => 'siti@example.com',
-            'google_id' => 'siti_123456',
-            'avatar' => 'https://ui-avatars.com/api/?name=Siti+Rahayu',
-            'role' => 'member',
-            'status' => 'approved',
-        ]);
-
-        $memberUser3 = User::create([
-            'name' => 'Ahmad Fadli',
-            'email' => 'fadli@example.com',
-            'google_id' => 'fadli_123456',
-            'avatar' => 'https://ui-avatars.com/api/?name=Ahmad+Fadli',
-            'role' => 'member',
-            'status' => 'approved',
-        ]);
+        // Create 15 member users and their corresponding member profiles.
+        $this->call(MemberSeeder::class);
 
         // Create client user
         $clientUser = User::create([
@@ -133,56 +107,6 @@ class DatabaseSeeder extends Seeder
                     'updated_at' => now(),
                 ]);
             }
-        }
-
-        // Create Members
-        $members = [
-            [
-                'user_id' => $memberUser1->id,
-                'member_code' => 'MBR001',
-                'name' => 'Budi Santoso',
-                'call_sign' => 'Budi',
-                'phone' => '081234567800',
-                'email' => 'budi@example.com',
-                'domicile' => 'Jakarta',
-                'division' => 'Coordinator',
-                'position' => 'Lead Coordinator',
-                'specialization' => 'Event Management',
-                'daily_fee' => 500000,
-                'status' => 'aktif',
-            ],
-            [
-                'user_id' => $memberUser2->id,
-                'member_code' => 'MBR002',
-                'name' => 'Siti Rahayu',
-                'call_sign' => 'Siti',
-                'phone' => '081234567801',
-                'email' => 'siti@example.com',
-                'domicile' => 'Jakarta',
-                'division' => 'Documentation',
-                'position' => 'Photographer',
-                'specialization' => 'Photography',
-                'daily_fee' => 400000,
-                'status' => 'aktif',
-            ],
-            [
-                'user_id' => $memberUser3->id,
-                'member_code' => 'MBR003',
-                'name' => 'Ahmad Fadli',
-                'call_sign' => 'Fadli',
-                'phone' => '081234567802',
-                'email' => 'fadli@example.com',
-                'domicile' => 'Jakarta',
-                'division' => 'Technical',
-                'position' => 'Technical Support',
-                'specialization' => 'Sound System',
-                'daily_fee' => 350000,
-                'status' => 'aktif',
-            ],
-        ];
-
-        foreach ($members as $memberData) {
-            Member::create($memberData);
         }
 
         // Create Clients & Bookings & Events
@@ -281,11 +205,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         echo "\nSeeding completed successfully!\n";
-        echo "- 5 users created (1 admin, 3 members, 1 client)\n";
+        echo "- 17 users created (1 admin, 15 members, 1 client)\n";
         echo "- " . count($categories) . " categories created\n";
         echo "- " . count($vendorData) . " vendors created\n";
         echo "- " . count($packages) . " packages created with vendors\n";
-        echo "- " . count($members) . " members created with user relations\n";
+        echo "- 15 members created with user relations\n";
         echo "- 1 client, 1 booking, 1 event created\n";
     }
 }

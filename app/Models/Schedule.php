@@ -9,6 +9,7 @@ class Schedule extends Model
     protected $fillable = [
         'event_id',
         'vendor_id',
+        'price',
         'member_id',
         'activity',
         'location',
@@ -41,6 +42,10 @@ class Schedule extends Model
     {
         if ($this->agreed_fee !== null && (float) $this->agreed_fee > 0) {
             return (float) $this->agreed_fee;
+        }
+
+        if ($this->price !== null && (float) $this->price > 0) {
+            return (float) $this->price;
         }
 
         return (float) ($this->vendor?->price ?? 0);

@@ -166,7 +166,7 @@
                 <div class="vc-empty">Booking ini belum memiliki data acara.</div>
             @endforelse
         @empty
-            <div class="vc-empty">Belum ada booking atau vendor.</div>
+            <div class="vc-empty">Belum ada event yang tersedia.</div>
         @endforelse
         <div class="vc-empty vc-no-results" hidden>Tidak ada acara yang cocok dengan pencarian dan filter status.</div>
     </div>

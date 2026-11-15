@@ -199,7 +199,19 @@
                                     <span class="text-muted small ms-1">({{ $payment->created_at?->format('d/m/Y H:i') }})</span>
                                 </td>
                                 <td>
-                                    <span class="small fw-semibold">{{ $payment->bank_info ?: 'Transfer Rekening WO' }}</span>
+                                    @if ($payment->method === 'midtrans')
+                                        <div class="small fw-semibold text-primary">
+                                            <i class="bi bi-lightning-charge-fill"></i> Midtrans Payment Gateway
+                                        </div>
+                                        <div class="text-muted" style="font-size: 11px;">
+                                            Order ID: <code>{{ $payment->midtrans_order_id ?? '-' }}</code>
+                                            @if ($payment->transaction_status)
+                                                · <span class="badge text-bg-light border">{{ strtoupper($payment->transaction_status) }}</span>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="small fw-semibold">{{ $payment->bank_info ?: 'Transfer Rekening WO' }}</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if ($payment->proof_url)
@@ -208,6 +220,10 @@
                                             <i class="bi bi-eye-fill text-success"></i>
                                             <span>Preview Struk</span>
                                         </button>
+                                    @elseif ($payment->method === 'midtrans')
+                                        <span class="fin-badge verified">
+                                            <i class="bi bi-shield-check"></i> Otomatis Midtrans
+                                        </span>
                                     @else
                                         <span class="fin-badge unpaid">Tanpa Struk</span>
                                     @endif
@@ -280,7 +296,7 @@
                                 $event = $schedule->event;
                                 $booking = $event?->booking;
                                 $vendor = $schedule->vendor;
-                                $catalogFee = (float) ($vendor?->price ?? $schedule->effective_fee);
+                                $catalogFee = (float) ($schedule->price ?? $vendor?->price ?? $schedule->effective_fee);
                                 $effectiveFee = $schedule->effective_fee;
                                 $woCommission = max(0, $catalogFee - $effectiveFee);
                                 $paidVendor = (float) ($schedule->paid_amount ?? 0);
