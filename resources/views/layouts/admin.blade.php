@@ -86,16 +86,29 @@
                         <span>Tracking Booking</span>
                     </a>
 
-                    <a href="{{ route('admin.payroll.index') }}"
-                        class="nav-item {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}">
-                        <i class="bi bi-cash-stack"></i>
-                        <span>Honor &amp; Pencairan</span>
-                    </a>
-
                     <a href="{{ route('admin.organizer-event.index') }}"
                         class="nav-item {{ request()->routeIs('admin.organizer-event.*') ? 'active' : '' }}">
                         <i class="bi bi-diagram-3"></i>
                         <span>Agenda Internal WO</span>
+                    </a>
+                </div>
+
+                {{-- KEUANGAN & ARUS KAS --}}
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <span>KEUANGAN &amp; KAS</span>
+                    </div>
+
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                        <i class="bi bi-wallet2"></i>
+                        <span>Pusat Keuangan &amp; Kas</span>
+                    </a>
+
+                    <a href="{{ route('admin.payroll.index') }}"
+                        class="nav-item {{ request()->routeIs('admin.payroll.*') ? 'active' : '' }}">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>Honorarium Kru</span>
                     </a>
                 </div>
 

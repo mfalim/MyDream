@@ -109,8 +109,8 @@
                             @endif
 
                             <div>
-                                <label for="proof" class="text-xs font-medium text-ink/60">Bukti transfer (opsional, JPG/PNG/PDF maks. 2 MB)</label>
-                                <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" class="{{ $field }}">
+                                <label for="proof" class="text-xs font-medium text-ink/60">Bukti transfer <span class="text-maroon font-semibold">*</span> (wajib, JPG/PNG/PDF maks. 2 MB)</label>
+                                <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" required class="{{ $field }}">
                                 @error('proof') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                             </div>
 

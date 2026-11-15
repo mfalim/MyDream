@@ -96,6 +96,9 @@ class MemberController extends Controller
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
             'daily_fee' => 'required|numeric|min:0',
+            'bank_name' => 'nullable|string|max:80',
+            'bank_account_number' => 'nullable|string|max:60',
+            'bank_account_holder' => 'nullable|string|max:120',
         ], [
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
@@ -126,6 +129,9 @@ class MemberController extends Controller
                 'specialization' => $validated['specialization'] ?? null,
                 'division' => $validated['division'],
                 'daily_fee' => $validated['daily_fee'],
+                'bank_name' => $validated['bank_name'] ?? null,
+                'bank_account_number' => $validated['bank_account_number'] ?? null,
+                'bank_account_holder' => $validated['bank_account_holder'] ?? null,
             ]);
         });
 
@@ -158,6 +164,9 @@ class MemberController extends Controller
             'specialization' => 'nullable|string|max:255',
             'division' => 'required|string|in:' . implode(',', self::DIVISIONS),
             'daily_fee' => 'required|numeric|min:0',
+            'bank_name' => 'nullable|string|max:80',
+            'bank_account_number' => 'nullable|string|max:60',
+            'bank_account_holder' => 'nullable|string|max:120',
         ], [
             'email.required' => 'Email member wajib diisi.',
             'email.email' => 'Format email tidak valid.',
@@ -176,6 +185,9 @@ class MemberController extends Controller
             'specialization' => $validated['specialization'] ?? null,
             'division' => $validated['division'],
             'daily_fee' => $validated['daily_fee'],
+            'bank_name' => $validated['bank_name'] ?? $member->bank_name,
+            'bank_account_number' => $validated['bank_account_number'] ?? $member->bank_account_number,
+            'bank_account_holder' => $validated['bank_account_holder'] ?? $member->bank_account_holder,
         ]);
 
         if ($member->user) {

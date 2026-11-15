@@ -211,6 +211,40 @@
                         </select>
                     </div>
 
+                    {{-- Rekening Bank Pencairan Honor --}}
+                    <div class="form-group">
+                        <label class="form-label-custom">Nama Bank Rekening</label>
+                        <input
+                            type="text"
+                            name="bank_name"
+                            class="form-control-custom"
+                            value="{{ old('bank_name', $member->bank_name ?? '') }}"
+                            placeholder="contoh: BCA / Mandiri / BRI"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label-custom">Nomor Rekening</label>
+                        <input
+                            type="text"
+                            name="bank_account_number"
+                            class="form-control-custom"
+                            value="{{ old('bank_account_number', $member->bank_account_number ?? '') }}"
+                            placeholder="Nomor rekening untuk transfer honor"
+                        >
+                    </div>
+
+                    <div class="form-group full">
+                        <label class="form-label-custom">Atas Nama Rekening</label>
+                        <input
+                            type="text"
+                            name="bank_account_holder"
+                            class="form-control-custom"
+                            value="{{ old('bank_account_holder', $member->bank_account_holder ?? '') }}"
+                            placeholder="Nama pemilik rekening"
+                        >
+                    </div>
+
                 </div>
             </div>
 

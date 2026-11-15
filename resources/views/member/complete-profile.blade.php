@@ -110,6 +110,23 @@
                             @enderror
                         </div>
 
+                        <div class="info-meta">
+                            <div class="mb-3">
+                                <label for="bank_name" class="form-label">Nama Bank (Pencairan Honor)</label>
+                                <input type="text" class="form-control" id="bank_name" name="bank_name" value="{{ old('bank_name') }}" placeholder="BCA / Mandiri / BRI">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="bank_account_number" class="form-label">Nomor Rekening</label>
+                                <input type="text" class="form-control" id="bank_account_number" name="bank_account_number" value="{{ old('bank_account_number') }}" placeholder="Nomor rekening aktif">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="bank_account_holder" class="form-label">Atas Nama Rekening</label>
+                            <input type="text" class="form-control" id="bank_account_holder" name="bank_account_holder" value="{{ old('bank_account_holder', $user->name) }}">
+                        </div>
+
                         <button type="submit" class="btn profile-submit">
                             <i class="bi bi-check-circle"></i> Simpan Profile & Lanjutkan
                         </button>

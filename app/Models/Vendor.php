@@ -12,11 +12,23 @@ class Vendor extends Model
         'category_id',
         'price',
         'phone',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_holder',
         'address',
         'city',
         'instagram',
         'description',
     ];
+
+    public function getFormattedBankAccountAttribute(): ?string
+    {
+        if (! $this->bank_name && ! $this->bank_account_number) {
+            return null;
+        }
+
+        return trim(($this->bank_name ?: 'Bank') . ' ' . ($this->bank_account_number ?: '-') . ($this->bank_account_holder ? ' a.n. ' . $this->bank_account_holder : ''));
+    }
 
     protected static function booted(): void
     {

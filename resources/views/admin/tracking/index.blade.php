@@ -3,12 +3,22 @@
 @section('title', 'Monitoring & Tracking Booking')
 @section('page-title', 'Monitoring & Tracking Booking')
 
+@push('styles')
+    @vite('resources/css/admin/tracking.css')
+@endpush
+
 @section('content')
 <div class="container-fluid px-4 py-4">
-    <div class="d-flex justify-content-between align-items-start mb-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
         <div>
-            <h1 class="display-6 fw-bold mb-2">Monitoring & Tracking Booking</h1>
-            <p class="text-muted mb-0">Kelola booking client dan approve dengan assign coordinator</p>
+            <h1 class="h3 fw-bold mb-1">Monitoring &amp; Tracking Booking</h1>
+            <p class="text-muted mb-0">Kelola kesiapan operasional booking, status pembayaran klien, dan penugasan koordinator acara</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ route('admin.payments.index') }}" class="btn btn-wo-primary">
+                <i class="bi bi-wallet2"></i>
+                <span>Pusat Keuangan &amp; Kas</span>
+            </a>
         </div>
     </div>
 
@@ -78,7 +88,7 @@
                     <th>Client</th>
                     <th>Paket</th>
                     <th>Venue</th>
-                    <th>Total Harga</th>
+                    <th>Kontrak &amp; Kas Klien</th>
                     <th>Event</th>
                     <th>Progress Vendor</th>
                     <th>Status</th>
@@ -95,6 +105,23 @@
                         'rejected' => 'danger',
                         default => 'secondary'
                     };
+
+                    $payStatus = $booking->payment_status ?: 'unpaid';
+                    $payBadgeClass = match($payStatus) {
+                        'paid' => 'success',
+                        'dp_paid' => 'info',
+                        'awaiting_verification' => 'warning',
+                        default => 'danger'
+                    };
+                    $payLabel = match($payStatus) {
+                        'paid' => 'Lunas',
+                        'dp_paid' => 'DP Terbayar',
+                        'awaiting_verification' => 'Cek Bukti Transfer',
+                        default => 'Belum Bayar'
+                    };
+                    $paidAmt = (float) ($booking->paid_amount ?? 0);
+                    $totalAmt = (float) ($booking->total_price ?? 0);
+                    $remAmt = max(0, $totalAmt - $paidAmt);
                     
                     $eventData = $eventsByBooking->get($booking->id);
                     $events = $eventData ? $eventData['events'] : collect();
@@ -137,7 +164,17 @@
                             @endif
                         </div>
                     </td>
-                    <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
+                    <td>
+                        <div class="fw-bold">Rp {{ number_format($totalAmt, 0, ',', '.') }}</div>
+                        <div class="mt-1">
+                            <span class="badge bg-{{ $payBadgeClass }}-subtle text-{{ $payBadgeClass }} border border-{{ $payBadgeClass }}-subtle">
+                                {{ $payLabel }}
+                            </span>
+                        </div>
+                        <small class="text-muted d-block mt-1">
+                            Masuk: Rp {{ number_format($paidAmt, 0, ',', '.') }}
+                        </small>
+                    </td>
                     <td>
                         @if($events->isNotEmpty())
                             <span class="badge bg-info">{{ $events->count() }} Event</span>
@@ -175,14 +212,19 @@
                         @endif
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary approve-btn" data-booking-id="{{ $booking->id }}" data-bs-toggle="modal" data-bs-target="#approveModal{{ $booking->id }}">
-                            <i class="bi bi-check-circle"></i> Kelola
-                        </button>
-                        @if($events->isNotEmpty())
-                        <a href="{{ route('admin.tracking.show', $events->first()->id) }}" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        @endif
+                        <div class="d-flex align-items-center gap-1">
+                            <button class="btn btn-sm btn-outline-primary approve-btn" data-booking-id="{{ $booking->id }}" data-bs-toggle="modal" data-bs-target="#approveModal{{ $booking->id }}">
+                                <i class="bi bi-check-circle"></i> Kelola
+                            </button>
+                            <a href="{{ route('admin.payments.index', ['tab' => 'vendor_payouts', 'booking_id' => $booking->id]) }}" class="btn btn-sm btn-outline-success" title="Kelola Kas & Vendor Booking Ini">
+                                <i class="bi bi-wallet2"></i>
+                            </a>
+                            @if($events->isNotEmpty())
+                            <a href="{{ route('admin.tracking.show', $events->first()->id) }}" class="btn btn-sm btn-outline-secondary" title="Detail Tracking">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            @endif
+                        </div>
                     </td>
                 </tr>
 
@@ -203,9 +245,16 @@
                                     <label class="form-label fw-semibold">Venue</label>
                                     <p class="mb-0">{{ $booking->venue_name }}</p>
                                 </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Total Harga</label>
-                                    <p class="mb-0">Rp {{ number_format($booking->total_price, 0, ',', '.') }}</p>
+                                <div class="p-3 rounded-3 border bg-light mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="small fw-bold text-uppercase text-muted">Status Kas Klien</span>
+                                        <span class="badge bg-{{ $payBadgeClass }}">{{ $payLabel }}</span>
+                                    </div>
+                                    <div class="fw-bold">Kontrak: Rp {{ number_format($totalAmt, 0, ',', '.') }}</div>
+                                    <div class="small text-muted">
+                                        Dana Masuk: <strong class="text-success">Rp {{ number_format($paidAmt, 0, ',', '.') }}</strong>
+                                        · Sisa Piutang: <strong class="text-danger">Rp {{ number_format($remAmt, 0, ',', '.') }}</strong>
+                                    </div>
                                 </div>
                                 <hr>
                                 <div class="mb-3">

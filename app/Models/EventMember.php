@@ -17,13 +17,21 @@ class EventMember extends Model
         'allowance',
         'total_fee',
         'payment_status',
+        'payout_proof_path',
+        'paid_at',
     ];
 
     protected $casts = [
         'actual_hours' => 'decimal:2',
         'allowance' => 'decimal:2',
         'total_fee' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
+
+    public function getPayoutProofUrlAttribute(): ?string
+    {
+        return $this->payout_proof_path ? asset('storage/' . ltrim($this->payout_proof_path, '/')) : null;
+    }
 
     protected static function booted(): void
     {

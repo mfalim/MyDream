@@ -60,10 +60,11 @@ class PaymentController extends Controller
 
         $data = $request->validate([
             'scheme' => ['required', Rule::in(array_keys($options))],
-            'proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ], [
             'scheme.required' => 'Pilih skema pembayaran terlebih dahulu.',
             'scheme.in' => 'Skema pembayaran tidak valid.',
+            'proof.required' => 'Bukti transfer wajib diunggah untuk proses verifikasi.',
             'proof.mimes' => 'Bukti transfer harus berupa JPG, PNG, atau PDF.',
             'proof.max' => 'Ukuran bukti transfer maksimal 2 MB.',
         ]);

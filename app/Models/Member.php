@@ -22,8 +22,20 @@ class Member extends Model
         'emergency_name',
         'emergency_phone',
         'daily_fee',
+        'bank_name',
+        'bank_account_number',
+        'bank_account_holder',
         'status',
     ];
+
+    public function getFormattedBankAccountAttribute(): ?string
+    {
+        if (! $this->bank_name && ! $this->bank_account_number) {
+            return null;
+        }
+
+        return trim(($this->bank_name ?: 'Bank') . ' ' . ($this->bank_account_number ?: '-') . ($this->bank_account_holder ? ' a.n. ' . $this->bank_account_holder : ''));
+    }
 
     protected $casts = [
         'daily_fee' => 'decimal:2',

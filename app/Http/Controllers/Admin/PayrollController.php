@@ -65,17 +65,37 @@ class PayrollController extends Controller
     }
 
     /**
-     * Update cepat status pembayaran per individu (ACC atau Cairkan).
+     * Update cepat status pembayaran per individu (ACC atau Cairkan + Upload Bukti Transfer).
      */
     public function updateStatus(Request $request, $id)
     {
         $validated = $request->validate([
             'payment_status' => 'required|in:pending,approved,paid',
             'notes' => 'nullable|string|max:1000',
+            'payout_proof' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bank_name' => 'nullable|string|max:80',
+            'bank_account_number' => 'nullable|string|max:60',
+            'bank_account_holder' => 'nullable|string|max:120',
         ]);
 
         $eventMember = EventMember::with('member')->findOrFail($id);
         $eventMember->payment_status = $validated['payment_status'];
+
+        if ($validated['payment_status'] === 'paid') {
+            $eventMember->paid_at = now();
+        }
+
+        if ($request->hasFile('payout_proof')) {
+            $eventMember->payout_proof_path = $request->file('payout_proof')->store('payroll-proofs', 'public');
+        }
+
+        if ($eventMember->member && ($request->filled('bank_name') || $request->filled('bank_account_number'))) {
+            $eventMember->member->update([
+                'bank_name' => $validated['bank_name'] ?: $eventMember->member->bank_name,
+                'bank_account_number' => $validated['bank_account_number'] ?: $eventMember->member->bank_account_number,
+                'bank_account_holder' => $validated['bank_account_holder'] ?: $eventMember->member->bank_account_holder,
+            ]);
+        }
 
         if (!empty($validated['notes'])) {
             $timestamp = now()->format('d/m/Y H:i');
@@ -96,10 +116,11 @@ class PayrollController extends Controller
                 'message' => 'Status pembayaran berhasil diperbarui menjadi ' . ucfirst($validated['payment_status']),
                 'payment_status' => $eventMember->payment_status,
                 'total_fee' => 'Rp ' . number_format((float) $eventMember->total_fee, 0, ',', '.'),
+                'payout_proof_url' => $eventMember->payout_proof_url,
             ]);
         }
 
-        return redirect()->back()->with('success', 'Status honor kru berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Status & bukti pencairan honor kru berhasil diperbarui.');
     }
 
     /**
@@ -122,6 +143,9 @@ class PayrollController extends Controller
 
         foreach ($members as $em) {
             $em->payment_status = $targetStatus;
+            if ($targetStatus === 'paid') {
+                $em->paid_at = now();
+            }
             if (!empty($validated['notes'])) {
                 $noteEntry = "[{$timestamp} - Batch {$statusLabel}]: " . trim($validated['notes']);
                 $em->notes = $em->notes ? $em->notes . "\n" . $noteEntry : $noteEntry;

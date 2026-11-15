@@ -176,6 +176,9 @@ class CheckoutController extends Controller
                         'start_time' => $validated['event_date'] . ' 09:00:00',
                         'end_time' => $validated['event_date'] . ' 17:00:00',
                         'status' => 'pending',
+                        'agreed_fee' => $vendor->price,
+                        'paid_amount' => 0,
+                        'payment_status' => 'unpaid',
                     ]);
                 }
             }
@@ -190,6 +193,9 @@ class CheckoutController extends Controller
                         'start_time' => $validated['event_date'] . ' 09:00:00',
                         'end_time' => $validated['event_date'] . ' 17:00:00',
                         'status' => 'pending',
+                        'agreed_fee' => $vendor->price,
+                        'paid_amount' => 0,
+                        'payment_status' => 'unpaid',
                     ]);
                 }
             }

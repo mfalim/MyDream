@@ -87,6 +87,21 @@
 
                 </div>
 
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Nama Bank Rekening <small class="text-muted">(opsional)</small></label>
+                        <input type="text" name="bank_name" class="form-control" value="{{ old('bank_name') }}" placeholder="mis. BCA / Mandiri / BRI">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Nomor Rekening <small class="text-muted">(opsional)</small></label>
+                        <input type="text" name="bank_account_number" class="form-control" value="{{ old('bank_account_number') }}" placeholder="Nomor rekening pencairan">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Atas Nama Rekening <small class="text-muted">(opsional)</small></label>
+                        <input type="text" name="bank_account_holder" class="form-control" value="{{ old('bank_account_holder') }}" placeholder="Nama pemilik rekening">
+                    </div>
+                </div>
+
 
                 <div class="mb-3">
 

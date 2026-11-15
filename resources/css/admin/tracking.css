@@ -28,10 +28,11 @@
 .tracking-header h2 {
     margin: 0 0 6px;
     color: #173f39;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.2;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
 }
 .tracking-header p {
     margin: 0;

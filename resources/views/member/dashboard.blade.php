@@ -251,6 +251,7 @@
                     <li><span>Divisi</span><strong>{{ $member->division ?? '-' }}</strong></li>
                     <li><span>Jabatan</span><strong>{{ $member->position ?? '-' }}</strong></li>
                     <li><span>Spesialisasi</span><strong>{{ $member->specialization ?? '-' }}</strong></li>
+                    <li><span>Rekening Honor</span><strong>{{ $member->formatted_bank_account ?? 'Belum Diisi' }}</strong></li>
                     <li><span>Status</span><strong>{{ ucfirst($member->status ?? 'aktif') }}</strong></li>
                 </ul>
             </div>
@@ -362,6 +363,11 @@
                             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                                 <span>Total Fee: <strong>Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}</strong></span>
                                 <span class="pill-badge {{ $myPayClass }}">{{ $myPayLabel }}</span>
+                                @if($eventMember->payout_proof_url)
+                                    <a href="{{ $eventMember->payout_proof_url }}" target="_blank" class="pill-badge pay-approved" style="text-decoration:none;">
+                                        <i class="bi bi-receipt"></i> Lihat Bukti Transfer
+                                    </a>
+                                @endif
                             </div>
                         </div>
 

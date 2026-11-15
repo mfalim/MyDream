@@ -55,6 +55,9 @@ class ProfileController extends Controller
             'ht_code' => 'nullable|string|max:50',
             'emergency_name' => 'nullable|string|max:255',
             'emergency_phone' => 'nullable|string|max:30',
+            'bank_name' => 'nullable|string|max:80',
+            'bank_account_number' => 'nullable|string|max:60',
+            'bank_account_holder' => 'nullable|string|max:120',
         ]);
 
         $member = Member::where('user_id', $user->id)->firstOrFail();
@@ -68,6 +71,9 @@ class ProfileController extends Controller
             'ht_code' => $validated['ht_code'],
             'emergency_name' => $validated['emergency_name'],
             'emergency_phone' => $validated['emergency_phone'],
+            'bank_name' => $validated['bank_name'] ?? $member->bank_name,
+            'bank_account_number' => $validated['bank_account_number'] ?? $member->bank_account_number,
+            'bank_account_holder' => $validated['bank_account_holder'] ?? $member->bank_account_holder,
         ]);
 
         return redirect()->route('member.dashboard')

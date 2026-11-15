@@ -16,6 +16,7 @@ export default defineConfig({
                 "resources/css/admin/organizer-events/form.css",
                 "resources/css/admin/organizer-events/detail.css",
                 "resources/css/admin/tracking.css",
+                "resources/css/admin/finance/index.css",
                 "resources/css/admin/cms.css",
                 "resources/css/admin/vendors/index.css",
                 "resources/css/admin/vendors/show.css",
