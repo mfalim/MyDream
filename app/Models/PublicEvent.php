@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 class PublicEvent extends Model
 {
     protected $fillable = [
+        'event_id',
         'title',
         'slug',
         'description',
@@ -46,6 +47,11 @@ class PublicEvent extends Model
                 $event->slug = $slug;
             }
         });
+    }
+
+    public function originalEvent()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
     }
 
     public function vendors()

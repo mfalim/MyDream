@@ -1,293 +1,526 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Dashboard Utama')
 @section('page-title', 'Dashboard')
 
+@push('styles')
+    @vite('resources/css/admin/dashboard.css')
+@endpush
+
 @section('content')
+<div class="dashboard-container">
 
-    <div class="mb-4">
-        <h3 class="mb-1">Dashboard</h3>
-        <p class="text-muted">
-            Selamat datang di halaman administrasi Wedding Organizer.
-        </p>
-    </div>
-
-    <!-- Statistik Utama -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-box-seam fs-5"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Paket Wedding</p>
-                            <h3 class="mb-0">{{ $totalPackages }}</h3>
-                        </div>
-                    </div>
-                </div>
+    {{-- ==========================================================
+       DASHBOARD HEADER & QUICK ACTIONS
+       ========================================================== --}}
+    <div class="dashboard-header">
+        <div>
+            <div class="eyebrow">
+                <i class="bi bi-stars"></i>
+                <span>EXECUTIVE SUMMARY &amp; OPERATIONAL OVERVIEW</span>
             </div>
+            <h2>Dashboard Utama Wedding Organizer</h2>
+            <p>Pantau performa bisnis, jadwal pernikahan klien, dan koordinasi internal tim dalam satu layar kendali.</p>
         </div>
 
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-shop fs-5"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Vendor</p>
-                            <h3 class="mb-0">{{ $totalVendors }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-calendar-check fs-5"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Total Booking</p>
-                            <h3 class="mb-0">{{ $totalBookings }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-heart-fill fs-5"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Total Event</p>
-                            <h3 class="mb-0">{{ $totalEvents }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="dashboard-actions">
+            <a href="{{ route('admin.calendar') }}" class="btn-dash-outline">
+                <i class="bi bi-calendar3"></i>
+                <span>Master Kalender</span>
+            </a>
+            <a href="{{ route('admin.tracking.index') }}" class="btn-dash-outline">
+                <i class="bi bi-journal-check"></i>
+                <span>Tracking Booking</span>
+            </a>
+            <a href="{{ route('admin.organizer-event.create') }}" class="btn-dash-primary">
+                <i class="bi bi-plus-lg"></i>
+                <span>Tambah Agenda Internal</span>
+            </a>
         </div>
     </div>
 
-    <!-- Statistik Booking & Event -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Status Booking</h5>
-                    <div class="row g-3">
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-warning mb-1">{{ $pendingBookings }}</h4>
-                                <small class="text-muted">Pending</small>
-                            </div>
-                        </div>
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-success mb-1">{{ $approvedBookings }}</h4>
-                                <small class="text-muted">Approved</small>
-                            </div>
-                        </div>
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-danger mb-1">{{ $rejectedBookings }}</h4>
-                                <small class="text-muted">Rejected</small>
-                            </div>
-                        </div>
-                    </div>
+    {{-- ==========================================================
+       KEY METRICS (4 CARDS GRID)
+       ========================================================== --}}
+    <div class="stats-grid-4">
+        {{-- CARD 1: REVENUE --}}
+        <div class="stat-card-luxury">
+            <div class="stat-top">
+                <div class="stat-label">Total Omzet Booking</div>
+                <div class="stat-icon-wrapper stat-icon-emerald">
+                    <i class="bi bi-cash-stack"></i>
                 </div>
+            </div>
+            <div class="stat-value">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</div>
+            <div class="stat-subtext">
+                <span>Bulan Ini:</span>
+                <span class="highlight">Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</span>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Status Event</h5>
-                    <div class="row g-3">
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-primary mb-1">{{ $scheduledEvents }}</h4>
-                                <small class="text-muted">Upcoming</small>
-                            </div>
-                        </div>
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-info mb-1">{{ $ongoingEvents }}</h4>
-                                <small class="text-muted">Ongoing</small>
-                            </div>
-                        </div>
-                        <div class="col-4 text-center">
-                            <div class="p-3 bg-light rounded">
-                                <h4 class="text-success mb-1">{{ $completedEvents }}</h4>
-                                <small class="text-muted">Completed</small>
-                            </div>
-                        </div>
-                    </div>
+        {{-- CARD 2: WEDDING EVENTS --}}
+        <div class="stat-card-luxury">
+            <div class="stat-top">
+                <div class="stat-label">Pernikahan Klien (Hari H)</div>
+                <div class="stat-icon-wrapper stat-icon-gold">
+                    <i class="bi bi-heart-fill"></i>
                 </div>
+            </div>
+            <div class="stat-value">{{ $totalEvents }} <span style="font-size: 15px; font-weight: 500;">Acara</span></div>
+            <div class="stat-subtext">
+                <span class="highlight">{{ $upcomingEventsCount }} Terjadwal</span>
+                <span>&bull;</span>
+                <span>{{ $completedEventsCount }} Selesai</span>
+            </div>
+        </div>
+
+        {{-- CARD 3: BOOKINGS --}}
+        <div class="stat-card-luxury">
+            <div class="stat-top">
+                <div class="stat-label">Total Booking Klien</div>
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ $totalBookings }} <span style="font-size: 15px; font-weight: 500;">Booking</span></div>
+            <div class="stat-subtext">
+                <span class="highlight text-success">{{ $approvedBookings }} Disetujui</span>
+                <span>&bull;</span>
+                <span class="text-warning">{{ $pendingBookings }} Menunggu</span>
+            </div>
+        </div>
+
+        {{-- CARD 4: INTERNAL ORGANIZER & KRU --}}
+        <div class="stat-card-luxury">
+            <div class="stat-top">
+                <div class="stat-label">Agenda Internal &amp; Kru</div>
+                <div class="stat-icon-wrapper stat-icon-purple">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+            <div class="stat-value">{{ $totalOrganizerEvents }} <span style="font-size: 15px; font-weight: 500;">Agenda</span></div>
+            <div class="stat-subtext">
+                <span class="highlight">{{ $totalMembers }} Kru Aktif</span>
+                <span>&bull;</span>
+                <span>{{ $totalVendors }} Mitra Vendor</span>
             </div>
         </div>
     </div>
 
-    <!-- Pendapatan -->
+    {{-- ==========================================================
+       INTERACTIVE CHARTS (ROW 2: AREA CHART & DONUT CHART)
+       ========================================================== --}}
     <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-cash-stack text-success fs-4 me-2"></i>
-                        <h5 class="card-title mb-0">Total Pendapatan</h5>
+        {{-- CHART 1: TREN PENDAPATAN & BOOKING --}}
+        <div class="col-lg-7">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h4 class="chart-title">
+                            <i class="bi bi-graph-up-arrow"></i>
+                            <span>Tren Pendapatan &amp; Volume Booking</span>
+                        </h4>
+                        <div class="chart-subtitle">Ringkasan performa 6 bulan terakhir dalam juta rupiah</div>
                     </div>
-                    <h2 class="text-success mb-0">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h2>
-                    <small class="text-muted">Dari booking yang approved</small>
                 </div>
+                <div id="revenueBookingChart" style="min-height: 300px;"></div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-calendar-month text-info fs-4 me-2"></i>
-                        <h5 class="card-title mb-0">Pendapatan Bulan Ini</h5>
+        {{-- CHART 2: DISTRIBUSI STATUS OPERASIONAL --}}
+        <div class="col-lg-5">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <h4 class="chart-title">
+                            <i class="bi bi-pie-chart-fill"></i>
+                            <span>Distribusi Operasional</span>
+                        </h4>
+                        <div class="chart-subtitle">Komposisi status booking &amp; event pernikahan</div>
                     </div>
-                    <h2 class="text-info mb-0">Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</h2>
-                    <small class="text-muted">{{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</small>
                 </div>
+                <div id="statusDistributionChart" style="min-height: 300px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- Tim & Client -->
+    {{-- ==========================================================
+       UPCOMING TIMELINE (HARI H PERNIKAHAN & AGENDA INTERNAL)
+       ========================================================== --}}
     <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-people-fill fs-5"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Tim Organizer Aktif</p>
-                            <h3 class="mb-0">{{ $totalMembers }}</h3>
-                        </div>
+        {{-- UPCOMING CLIENT EVENTS --}}
+        <div class="col-lg-6">
+            <div class="schedule-card">
+                <div class="chart-header">
+                    <div>
+                        <h4 class="chart-title">
+                            <i class="bi bi-calendar2-heart"></i>
+                            <span>Pernikahan Klien Terdekat</span>
+                        </h4>
+                        <div class="chart-subtitle">Jadwal hari H pernikahan klien MyDream</div>
                     </div>
+                    <a href="{{ route('admin.events.index') }}" class="btn-dash-outline py-1 px-3" style="font-size: 12px;">
+                        <span>Semua Event</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
-            </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 48px; height: 48px;">
-                                <i class="bi bi-person-hearts fs-5"></i>
+                <div class="schedule-list">
+                    @forelse($upcomingClientEvents as $ev)
+                        <div class="schedule-item client-event">
+                            <div class="schedule-date-badge">
+                                <span class="day">{{ $ev->event_date ? $ev->event_date->format('d') : '--' }}</span>
+                                <span class="month">{{ $ev->event_date ? $ev->event_date->format('M') : '' }}</span>
                             </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="text-muted mb-1 small">Total Client</p>
-                            <h3 class="mb-0">{{ $totalClients }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Event Mendatang & Booking Terbaru -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Event Mendatang (7 Hari)</h5>
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-sm btn-outline-primary">Lihat
-                            Semua</a>
-                    </div>
-                    @forelse($upcomingEvents as $event)
-                        <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
-                            <div class="flex-shrink-0 me-3">
-                                <div class="bg-primary text-white rounded text-center" style="width: 50px; padding: 8px;">
-                                    <div class="fw-bold">{{ $event->event_date->format('d') }}</div>
-                                    <small style="font-size: 0.7rem;">{{ $event->event_date->format('M') }}</small>
+                            <div class="schedule-info">
+                                <div class="schedule-title">
+                                    {{ $ev->name ?: ($ev->booking?->client ? 'Pernikahan ' . $ev->booking->client->groom_name . ' & ' . $ev->booking->client->bride_name : 'Event Pernikahan') }}
+                                </div>
+                                <div class="schedule-meta">
+                                    <div class="schedule-meta-item">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span>{{ $ev->booking?->venue_name ?: 'Venue belum diatur' }}</span>
+                                    </div>
+                                    @if($ev->package)
+                                        <div class="schedule-meta-item">
+                                            <i class="bi bi-box-seam"></i>
+                                            <span>{{ $ev->package->name }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $event->name }}</h6>
-                                <small class="text-muted d-block">{{ $event->booking->client->groom_name ?? 'N/A' }} &
-                                    {{ $event->booking->client->bride_name ?? 'N/A' }}</small>
-                                <small class="text-muted">{{ $event->schedules->count() }} vendor</small>
+                            <div>
+                                <a href="{{ route('admin.events.show', $ev->id) }}" class="btn btn-sm btn-light border" title="Buka Detail">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
                             </div>
                         </div>
                     @empty
-                        <p class="text-muted text-center py-3">Tidak ada event mendatang</p>
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-x fs-3 d-block mb-2"></i>
+                            <span>Belum ada jadwal acara pernikahan mendatang</span>
+                        </div>
                     @endforelse
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="card-title mb-0">Booking Terbaru</h5>
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-sm btn-outline-success">Lihat
-                            Semua</a>
+        {{-- UPCOMING INTERNAL ORGANIZER EVENTS --}}
+        <div class="col-lg-6">
+            <div class="schedule-card">
+                <div class="chart-header">
+                    <div>
+                        <h4 class="chart-title">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Agenda Internal WO Terdekat</span>
+                        </h4>
+                        <div class="chart-subtitle">Briefing, technical meeting, dan koordinasi kru</div>
                     </div>
-                    @forelse($recentBookings as $booking)
-                        <div class="d-flex align-items-start mb-3 pb-3 border-bottom">
-                            <div class="flex-shrink-0 me-3">
-                                @if ($booking->status == 'pending')
-                                    <span class="badge bg-warning">Pending</span>
-                                @elseif($booking->status == 'approved')
-                                    <span class="badge bg-success">Approved</span>
-                                @else
-                                    <span class="badge bg-danger">Rejected</span>
-                                @endif
+                    <a href="{{ route('admin.organizer-event.index') }}" class="btn-dash-outline py-1 px-3" style="font-size: 12px;">
+                        <span>Semua Agenda</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+
+                <div class="schedule-list">
+                    @forelse($upcomingOrganizerEvents as $orgEv)
+                        <div class="schedule-item internal-event">
+                            <div class="schedule-date-badge" style="background: var(--wo-emerald-800);">
+                                <span class="day">{{ $orgEv->event_date ? $orgEv->event_date->format('d') : '--' }}</span>
+                                <span class="month">{{ $orgEv->event_date ? $orgEv->event_date->format('M') : '' }}</span>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">{{ $booking->client->groom_name ?? 'N/A' }} &
-                                    {{ $booking->client->bride_name ?? 'N/A' }}</h6>
-                                <small class="text-muted d-block">{{ $booking->venue_name }}</small>
-                                <small class="text-muted">Rp
-                                    {{ number_format($booking->total_price, 0, ',', '.') }}</small>
+                            <div class="schedule-info">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="schedule-title mb-0">{{ $orgEv->title }}</span>
+                                    @if($orgEv->priority === 'high')
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle" style="font-size: 10px;">Prioritas Tinggi</span>
+                                    @endif
+                                </div>
+                                <div class="schedule-meta">
+                                    <div class="schedule-meta-item">
+                                        <i class="bi bi-clock"></i>
+                                        <span>{{ $orgEv->start_time ? substr($orgEv->start_time, 0, 5) : 'Waktu menyusul' }} WIB</span>
+                                    </div>
+                                    <div class="schedule-meta-item">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <span>{{ $orgEv->location ?: 'Kantor / Lokasi WO' }}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex-shrink-0 text-end">
-                                <small class="text-muted">{{ $booking->created_at->diffForHumans() }}</small>
+                            <div>
+                                <a href="{{ route('admin.organizer-event.show', $orgEv->id) }}" class="btn btn-sm btn-light border" title="Lihat Agenda">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
                             </div>
                         </div>
                     @empty
-                        <p class="text-muted text-center py-3">Belum ada booking</p>
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-calendar-check fs-3 d-block mb-2"></i>
+                            <span>Tidak ada agenda internal terdekat</span>
+                        </div>
                     @endforelse
                 </div>
             </div>
         </div>
     </div>
 
+    {{-- ==========================================================
+       RECENT BOOKING TRANSACTIONS TABLE
+       ========================================================== --}}
+    <div class="table-card-luxury">
+        <div class="table-card-header">
+            <div>
+                <h4 class="chart-title mb-1">
+                    <i class="bi bi-receipt-cutoff"></i>
+                    <span>Booking &amp; Transaksi Terbaru</span>
+                </h4>
+                <div class="chart-subtitle">Daftar pemesanan paket pernikahan terkini dari klien</div>
+            </div>
+            <a href="{{ route('admin.tracking.index') }}" class="btn-dash-outline py-1 px-3" style="font-size: 12px;">
+                <span>Buka Tracking Booking</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-luxury align-middle">
+                <thead>
+                    <tr>
+                        <th>Invoice / ID</th>
+                        <th>Calon Pengantin</th>
+                        <th>Paket Wedding</th>
+                        <th>Venue &amp; Kota</th>
+                        <th>Nilai Transaksi</th>
+                        <th>Status Booking</th>
+                        <th class="text-end">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($recentBookings as $b)
+                        <tr>
+                            <td>
+                                <strong class="text-dark">#BK-{{ str_pad($b->id, 4, '0', STR_PAD_LEFT) }}</strong>
+                                <small class="text-muted d-block" style="font-size: 11px;">{{ $b->created_at ? $b->created_at->diffForHumans() : '' }}</small>
+                            </td>
+                            <td>
+                                @if($b->client)
+                                    <strong>{{ $b->client->groom_name }} &amp; {{ $b->client->bride_name }}</strong>
+                                    <small class="text-muted d-block" style="font-size: 11px;">{{ $b->client->phone ?? $b->client->groom_phone ?? '-' }}</small>
+                                @else
+                                    <span class="text-muted">Klien Belum Terdaftar</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($b->package)
+                                    <span class="badge bg-light text-dark border">{{ $b->package->name }}</span>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div>{{ $b->venue_name ?: 'Venue belum diisi' }}</div>
+                                @if($b->venue_city)
+                                    <small class="text-muted" style="font-size: 11px;">{{ $b->venue_city }}</small>
+                                @endif
+                            </td>
+                            <td>
+                                <strong class="text-dark">Rp {{ number_format($b->total_price, 0, ',', '.') }}</strong>
+                            </td>
+                            <td>
+                                @if($b->status === 'approved')
+                                    <span class="badge-status badge-approved">
+                                        <i class="bi bi-check-circle-fill"></i> Disetujui
+                                    </span>
+                                @elseif($b->status === 'pending')
+                                    <span class="badge-status badge-pending">
+                                        <i class="bi bi-hourglass-split"></i> Menunggu
+                                    </span>
+                                @else
+                                    <span class="badge-status badge-rejected">
+                                        <i class="bi bi-x-circle-fill"></i> Ditolak
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ route('admin.tracking.index', ['booking_id' => $b->id]) }}" class="btn btn-sm btn-light border text-muted" title="Buka Detail">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i> Tracking
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                <span>Belum ada data booking yang masuk</span>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. CHART TREN PENDAPATAN & BOOKING
+    const monthsData = @json($months);
+    const revenueData = @json($revenueData);
+    const bookingCountData = @json($bookingCountData);
+
+    const revenueOptions = {
+        series: [
+            {
+                name: 'Pendapatan (Juta Rp)',
+                type: 'area',
+                data: revenueData
+            },
+            {
+                name: 'Volume Booking',
+                type: 'column',
+                data: bookingCountData
+            }
+        ],
+        chart: {
+            height: 310,
+            type: 'line',
+            toolbar: { show: false },
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
+        },
+        stroke: {
+            curve: 'smooth',
+            width: [3, 0]
+        },
+        fill: {
+            type: ['gradient', 'solid'],
+            gradient: {
+                shadeIntensity: 1,
+                opacityFrom: 0.45,
+                opacityTo: 0.05,
+                stops: [0, 90, 100]
+            }
+        },
+        colors: ['#073d36', '#dfc28b'],
+        labels: monthsData,
+        xaxis: {
+            type: 'category',
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+            labels: {
+                style: { colors: '#7a948e', fontSize: '11px' }
+            }
+        },
+        yaxis: [
+            {
+                title: { text: 'Juta Rupiah', style: { color: '#073d36', fontSize: '11px', fontWeight: 600 } },
+                labels: {
+                    formatter: function (val) { return 'Rp ' + val + 'M'; },
+                    style: { colors: '#7a948e', fontSize: '11px' }
+                }
+            },
+            {
+                opposite: true,
+                title: { text: 'Jumlah Booking', style: { color: '#dfc28b', fontSize: '11px', fontWeight: 600 } },
+                labels: {
+                    formatter: function (val) { return Math.round(val); },
+                    style: { colors: '#7a948e', fontSize: '11px' }
+                }
+            }
+        ],
+        grid: {
+            borderColor: '#eef3f0',
+            strokeDashArray: 4
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            fontSize: '12px',
+            markers: { radius: 12 }
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            y: {
+                formatter: function (val, opts) {
+                    if (opts.seriesIndex === 0) {
+                        return 'Rp ' + (val * 1000000).toLocaleString('id-ID');
+                    }
+                    return val + ' Pesanan';
+                }
+            }
+        }
+    };
+
+    const chartRevenue = new ApexCharts(document.querySelector("#revenueBookingChart"), revenueOptions);
+    chartRevenue.render();
+
+
+    // 2. CHART DISTRIBUSI STATUS OPERASIONAL (DONUT)
+    const donutLabels = @json($statusDonutLabels);
+    const donutSeries = @json($statusDonutSeries);
+
+    // Filter jika semua bernilai 0, berikan placeholder
+    const totalVal = donutSeries.reduce((a, b) => a + b, 0);
+    const safeSeries = totalVal === 0 ? [1, 1, 1, 1] : donutSeries;
+
+    const donutOptions = {
+        series: safeSeries,
+        labels: donutLabels,
+        chart: {
+            type: 'donut',
+            height: 310,
+            fontFamily: 'Plus Jakarta Sans, sans-serif'
+        },
+        colors: ['#073d36', '#dfc28b', '#2b6e62', '#e5dfd5'],
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '68%',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total Aktivitas',
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: '#7a948e',
+                            formatter: function () {
+                                return totalVal;
+                            }
+                        },
+                        value: {
+                            fontSize: '22px',
+                            fontWeight: 700,
+                            fontFamily: 'Plus Jakarta Sans, sans-serif',
+                            color: '#16302a',
+                            formatter: function (val) { return val; }
+                        }
+                    }
+                }
+            }
+        },
+        dataLabels: { enabled: false },
+        legend: {
+            position: 'bottom',
+            fontSize: '11.5px',
+            markers: { radius: 10 }
+        },
+        stroke: { width: 2, colors: ['#ffffff'] },
+        tooltip: {
+            y: {
+                formatter: function (val) {
+                    return val + ' Data';
+                }
+            }
+        }
+    };
+
+    const chartDonut = new ApexCharts(document.querySelector("#statusDistributionChart"), donutOptions);
+    chartDonut.render();
+});
+</script>
+@endpush

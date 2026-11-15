@@ -18,9 +18,10 @@
             <p>Monitoring jadwal resepsi aktif, gladi resik, dan timeline operasional WO PROJECT.</p>
         </div>
 
-        <a href="{{ route('user.rundown.create') }}" class="wo-btn wo-btn-dark">
+        <!-- <a href="{{ route('user.rundown.create') }}" class="wo-btn wo-btn-dark">
             <i class="bi bi-plus-circle"></i> Jadwal Acara Baru
-        </a>
+        </a> -->
+        
     </div>
 
 
@@ -39,9 +40,13 @@
             <strong>{{ $highlight['title'] }}</strong>
             <p>{{ $highlight['desc'] }}</p>
         </div>
-        <a href="{{ route('user.rundown.detail', $highlight['date']) }}" class="wo-btn wo-btn-dark">
-            Buka Overview Acara {{ $highlight['date_short'] }} <i class="bi bi-arrow-right"></i>
-        </a>
+        @if ($tabCounts['all'] > 0)
+            <a href="{{ route('user.rundown.detail', $highlight['date']) }}" class="wo-btn wo-btn-dark">
+                Buka Overview Acara {{ $highlight['date_short'] }} <i class="bi bi-arrow-right"></i>
+            </a>
+        @else
+            <span class="wo-badge wo-badge-neutral">Menunggu booking disetujui</span>
+        @endif
     </div>
 
 
@@ -132,9 +137,13 @@
                     </div>
                 </div>
 
-                <a href="{{ route('user.rundown.detail', $selected['date']) }}" class="wo-btn wo-btn-dark rc-full-btn">
-                    <i class="bi bi-box-arrow-up-right"></i> Buka Overview Lengkap {{ $selected['date_short'] }}
-                </a>
+                @if ($selected['event_count'] > 0)
+                    <a href="{{ route('user.rundown.detail', $selected['date']) }}" class="wo-btn wo-btn-dark rc-full-btn">
+                        <i class="bi bi-box-arrow-up-right"></i> Buka Overview Lengkap {{ $selected['date_short'] }}
+                    </a>
+                @else
+                    <span class="wo-badge wo-badge-neutral">Overview tersedia setelah booking disetujui</span>
+                @endif
             </div>
 
 
@@ -173,10 +182,10 @@ function changeMonth(direction) {
     const url = new URL(window.location.href);
     const currentYear = parseInt(url.searchParams.get('year') || {{ date('Y') }});
     const currentMonth = parseInt(url.searchParams.get('month') || {{ date('m') }});
-    
+
     let newYear = currentYear;
     let newMonth = currentMonth + direction;
-    
+
     if (newMonth > 12) {
         newMonth = 1;
         newYear++;
@@ -184,7 +193,7 @@ function changeMonth(direction) {
         newMonth = 12;
         newYear--;
     }
-    
+
     url.searchParams.set('year', newYear);
     url.searchParams.set('month', newMonth);
     window.location.href = url.toString();

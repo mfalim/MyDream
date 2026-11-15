@@ -169,6 +169,29 @@
                         </select>
                     </div>
 
+                    {{-- Tarif Harian --}}
+                    <div class="form-group">
+                        <label class="form-label-custom">
+                            Tarif Harian / Daily Fee
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="number"
+                            name="daily_fee"
+                            class="form-control-custom"
+                            value="{{ old('daily_fee', $member->daily_fee ?? '') }}"
+                            min="0"
+                            step="1000"
+                            placeholder="contoh: 500000"
+                            required
+                        >
+
+                        <div class="input-note">
+                            Tarif dasar member per hari untuk event internal wedding organizer.
+                        </div>
+                    </div>
+
                     {{-- Status --}}
                     <div class="form-group">
                         <label class="form-label-custom">

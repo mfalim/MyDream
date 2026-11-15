@@ -154,6 +154,8 @@ class CheckoutController extends Controller
                 'total_price' => $totalPrice,
                 'status' => 'pending',
             ]);
+            // Terbitkan invoice saat booking dibuat agar nomornya tersedia di riwayat.
+            $booking->ensureInvoiceNumber();
 
             $event = Event::create([
                 'booking_id' => $booking->id,

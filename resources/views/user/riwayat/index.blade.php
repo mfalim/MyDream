@@ -30,12 +30,41 @@
     @else
         <div class="history-list">
             @foreach($bookings as $booking)
+                @php
+                    $paidAmount = (float) $booking->payments->where('status', 'verified')->sum('amount');
+                    $verificationAmount = (float) $booking->payments->where('status', 'pending')->sum('amount');
+                    $midtransPendingAmount = (float) $booking->payments->where('status', 'initiated')->sum('amount');
+                    $remainingAmount = max(0, (float) $booking->total_price - $paidAmount);
+                    $latestPayment = $booking->payments->first();
+                    $isPaid = (float) $booking->total_price > 0 && $remainingAmount <= 0;
+                    $paymentLabel = match (true) {
+                        $isPaid => 'Lunas',
+                        $verificationAmount > 0 => 'Menunggu verifikasi',
+                        $midtransPendingAmount > 0 => 'Menunggu pembayaran Midtrans',
+                        $latestPayment?->status === 'rejected' && $paidAmount > 0 => 'Pelunasan gagal',
+                        $latestPayment?->status === 'rejected' => 'Pembayaran gagal',
+                        $paidAmount > 0 => 'DP terverifikasi',
+                        default => 'Belum dibayar',
+                    };
+                    $paymentBadge = match (true) {
+                        $isPaid, ($paidAmount > 0 && $verificationAmount === 0 && $midtransPendingAmount === 0 && $latestPayment?->status !== 'rejected') => 'wo-badge-green',
+                        $verificationAmount > 0 || $midtransPendingAmount > 0 => 'wo-badge-gold',
+                        $latestPayment?->status === 'rejected' => 'wo-badge-red',
+                        default => 'wo-badge-neutral',
+                    };
+                    $midtransLabels = ['created' => 'Transaksi dibuat', 'pending' => 'Menunggu pembayaran', 'capture' => 'Pembayaran diproses', 'challenge' => 'Menunggu pemeriksaan', 'settlement' => 'Berhasil', 'expire' => 'Kedaluwarsa', 'cancel' => 'Dibatalkan', 'deny' => 'Ditolak', 'refund' => 'Dikembalikan', 'partial_refund' => 'Pengembalian sebagian', 'request_failed' => 'Gagal membuat transaksi'];
+                @endphp
                 <article class="wo-card history-card">
                     <div class="history-card-top">
-                        <div><span class="wo-eyebrow">Dipesan {{ $booking->created_at?->format('d M Y') }}</span><h2>{{ $booking->package?->name ?? 'Pernikahan Custom' }}</h2></div>
+                        <div><span class="wo-eyebrow">Dipesan {{ $booking->created_at?->locale('id')->translatedFormat('d M Y') }}</span><h2>{{ $booking->package?->name ?? 'Pernikahan Custom' }}</h2><span class="history-invoice"><i class="bi bi-receipt"></i> Invoice {{ $booking->invoice_number ?? 'belum diterbitkan' }}</span></div>
                         <span class="wo-badge wo-badge-green">Disetujui</span>
                     </div>
                     <div class="history-meta"><span><i class="bi bi-geo-alt"></i> {{ $booking->venue_name }}, {{ $booking->venue_city }}</span><span><i class="bi bi-calendar-event"></i> {{ $booking->events->count() }} acara</span></div>
+                    <div class="history-payment-summary">
+                        <div><span>Status pembayaran</span><span class="wo-badge {{ $paymentBadge }}">{{ $paymentLabel }}</span>@if($latestPayment?->method === 'midtrans')<small>{{ $midtransLabels[$latestPayment->transaction_status] ?? 'Status transaksi diperbarui' }}</small>@endif</div>
+                        <div><span>Terbayar</span><strong>Rp {{ number_format($paidAmount, 0, ',', '.') }}</strong></div>
+                        <div><span>Sisa</span><strong>Rp {{ number_format($remainingAmount, 0, ',', '.') }}</strong></div>
+                    </div>
                     @forelse($booking->events as $event)
                         <div class="history-booking-event">
                             <div class="history-event-head"><strong>{{ $event->name }}</strong><span>{{ $event->event_date?->format('d M Y') }}</span></div>
@@ -44,16 +73,11 @@
                             @else
                                 <p class="history-muted">Belum ada vendor yang disetujui untuk acara ini.</p>
                             @endif
-                            @if($event->status === 'completed' && $event->reviews->isEmpty())
-                                <a class="wo-btn wo-btn-dark wo-btn-sm history-event-review" href="{{ route('user.reviews.index', ['event' => $event->id]) }}">Beri Ulasan untuk Acara <i class="bi bi-star"></i></a>
-                            @elseif($event->reviews->isNotEmpty())
-                                <span class="wo-badge wo-badge-green history-event-review">Acara sudah diulas</span>
-                            @endif
                         </div>
                     @empty
                         <p class="history-muted">Booking ini belum memiliki rincian acara.</p>
                     @endforelse
-                    <div class="history-card-bottom"><div><span>Total booking</span><strong>Rp {{ number_format((float) $booking->total_price, 0, ',', '.') }}</strong></div><div class="history-actions"><a class="wo-btn wo-btn-outline wo-btn-sm" href="{{ route('user.history.show', $booking) }}">Lihat Detail <i class="bi bi-arrow-right"></i></a></div></div>
+                    <div class="history-card-bottom"><div><span>Total booking</span><strong>Rp {{ number_format((float) $booking->total_price, 0, ',', '.') }}</strong></div><div class="history-actions"><a class="wo-btn wo-btn-outline wo-btn-sm" href="{{ route('payment.index', $booking->id) }}">Invoice &amp; Pembayaran <i class="bi bi-receipt"></i></a><a class="wo-btn wo-btn-outline wo-btn-sm" href="{{ route('user.history.show', $booking) }}">Lihat Detail <i class="bi bi-arrow-right"></i></a></div></div>
                 </article>
             @endforeach
         </div>

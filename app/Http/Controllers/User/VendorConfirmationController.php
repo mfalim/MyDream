@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Data\User\VendorConfirmationData;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
@@ -13,16 +12,26 @@ class VendorConfirmationController extends Controller
     {
         $client = Client::where('users_id', Auth::id())->first();
 
-        $bookings = $client
+        $approvedBookings = $client
             ? $client->bookings()
+                ->where('status', 'approved')
                 ->with([
+                    'events' => fn ($query) => $query->orderBy('id'),
                     'events.package',
                     'events.schedules.vendor.category',
                     'events.schedules.vendor.photos',
                 ])
-                ->latest('id')
+                ->oldest('id')
                 ->get()
             : collect();
+
+        $firstBooking = $approvedBookings->first(function ($booking) {
+            $firstEvent = $booking->events->sortBy('id')->first();
+
+            return ! $firstEvent || $firstEvent->status !== 'completed';
+        });
+
+        $bookings = $firstBooking ? collect([$firstBooking]) : collect();
 
         return view('user.vendor-confirmation.index', compact('bookings'));
     }

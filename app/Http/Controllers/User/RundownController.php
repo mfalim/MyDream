@@ -31,10 +31,14 @@ class RundownController extends Controller
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = Carbon::create($year, $month, $daysInMonth)->endOfMonth();
+        $eligibleBookingIds = $this->eligibleBookingIds($client);
 
         $events = Event::with(['booking.client', 'schedules.vendor', 'eventMembers.member'])
-            ->whereHas('booking', function ($query) use ($client) {
-                $query->where('client_id', $client->id);
+            ->whereHas('booking', function ($query) use ($client, $eligibleBookingIds) {
+                $query
+                    ->where('client_id', $client->id)
+                    ->where('status', 'approved')
+                    ->whereIn('id', $eligibleBookingIds);
             })
             ->whereBetween('event_date', [$startDate, $endDate])
             ->orderBy('event_date')
@@ -113,8 +117,11 @@ class RundownController extends Controller
         $selectedDate = $request->get('selected', $peakDate['date'] ?? date('Y-m-d'));
 
         $selectedEvents = Event::with(['booking.client', 'schedules.vendor', 'eventMembers.member'])
-            ->whereHas('booking', function ($query) use ($client) {
-                $query->where('client_id', $client->id);
+            ->whereHas('booking', function ($query) use ($client, $eligibleBookingIds) {
+                $query
+                    ->where('client_id', $client->id)
+                    ->where('status', 'approved')
+                    ->whereIn('id', $eligibleBookingIds);
             })
             ->whereDate('event_date', $selectedDate)
             ->get();
@@ -193,6 +200,20 @@ class RundownController extends Controller
         ]);
     }
 
+    private function eligibleBookingIds(Client $client)
+    {
+        return $client->bookings()
+            ->where('status', 'approved')
+            ->with(['events' => fn ($query) => $query->orderBy('id')])
+            ->get()
+            ->filter(function ($booking) {
+                $firstEvent = $booking->events->first();
+
+                return ! $firstEvent || $firstEvent->status !== 'completed';
+            })
+            ->pluck('id');
+    }
+
     public function show($date)
     {
         $client = Client::where('users_id', auth()->id())->first();
@@ -210,7 +231,10 @@ class RundownController extends Controller
             'package',
         ])
             ->whereDate('event_date', $date)
-            ->whereHas('booking', fn ($query) => $query->where('client_id', $client->id))
+            ->whereHas('booking', fn ($query) => $query
+                ->where('client_id', $client->id)
+                ->where('status', 'approved')
+                ->whereIn('id', $this->eligibleBookingIds($client)))
             ->orderBy('start_time')
             ->get();
 
@@ -289,7 +313,52 @@ class RundownController extends Controller
                 ->with('error', 'Lengkapi data mempelai terlebih dahulu');
         }
 
-        return view('user.rundown.create');
+        $bookings = Booking::query()
+            ->where('client_id', $client->id)
+            ->where('status', 'approved')
+            ->with([
+                'client',
+                'vendors.category',
+                'events.schedules.member',
+                'events.schedules.vendor.category',
+            ])
+            ->orderByDesc('created_at')
+            ->get();
+
+        $bookingVendorData = $bookings->mapWithKeys(function (Booking $booking): array {
+            $scheduleCollection = $booking->events
+                ->flatMap(fn ($event) => $event->schedules)
+                ->filter(fn ($schedule) => $schedule->vendor_id && $schedule->vendor);
+
+            $vendors = $booking->vendors
+                ->concat($scheduleCollection->pluck('vendor'))
+                ->filter()
+                ->unique('id')
+                ->values()
+                ->map(fn ($vendor) => [
+                    'id' => $vendor->id,
+                    'label' => $vendor->name . ($vendor->category?->name ? ' - ' . $vendor->category->name : ''),
+                ]);
+
+            $membersByVendor = $scheduleCollection
+                ->filter(fn ($schedule) => $schedule->member_id && $schedule->member)
+                ->groupBy('vendor_id')
+                ->map(fn ($schedules) => $schedules
+                    ->unique('member_id')
+                    ->map(fn ($schedule) => [
+                        'id' => $schedule->member->id,
+                        'label' => $schedule->member->name . ($schedule->member->call_sign ? ' (' . $schedule->member->call_sign . ')' : ''),
+                    ])
+                    ->values()
+                );
+
+            return [(string) $booking->id => [
+                'vendors' => $vendors->values(),
+                'membersByVendor' => $membersByVendor,
+            ]];
+        });
+
+        return view('user.rundown.create', compact('bookings', 'bookingVendorData'));
     }
 
     public function store(Request $request)
@@ -333,6 +402,38 @@ class RundownController extends Controller
             abort(403, 'Booking tidak dapat diakses.');
         }
 
+        $allowedVendorIds = $booking->load([
+            'vendors',
+            'events.schedules',
+        ])->vendors
+            ->pluck('id')
+            ->merge($booking->events->flatMap(fn ($event) => $event->schedules->pluck('vendor_id')))
+            ->filter()
+            ->unique()
+            ->map(fn ($id) => (int) $id);
+
+        foreach ($validated['vendors'] ?? [] as $vendor) {
+            abort_unless(
+                $allowedVendorIds->contains((int) $vendor['vendor_id']),
+                422,
+                'Vendor tidak tersedia pada booking yang dipilih.'
+            );
+        }
+
+        $allowedMemberIds = $booking->events
+            ->flatMap(fn ($event) => $event->schedules->pluck('member_id'))
+            ->filter()
+            ->unique()
+            ->map(fn ($id) => (int) $id);
+
+        foreach ($validated['members'] ?? [] as $member) {
+            abort_unless(
+                $allowedMemberIds->contains((int) $member['member_id']),
+                422,
+                'Member PIC tidak tersedia pada jadwal vendor booking yang dipilih.'
+            );
+        }
+
         $event = DB::transaction(function () use ($validated, $booking) {
             $event = Event::create([
                 'booking_id' => $booking->id,
@@ -364,6 +465,10 @@ class RundownController extends Controller
                     'role' => $member['role'],
                     'notes' => $member['notes'] ?? null,
                     'status' => 'approved',
+                    'attendance_status' => 'full_day',
+                    'actual_hours' => 0,
+                    'allowance' => 0,
+                    'payment_status' => 'pending',
                 ]);
             }
 

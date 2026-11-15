@@ -6,6 +6,9 @@
     </div>
     <div class="mt-4 space-y-1.5">
         <x-site.badge variant="gold">{{ $article->category }}</x-site.badge>
+        @if ($article->rating)
+            <span class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600" aria-label="{{ $article->rating }} dari 5 bintang">★ {{ $article->rating }}/5</span>
+        @endif
         <h3 class="font-display text-lg font-semibold leading-snug transition-colors group-hover:text-maroon">{{ $article->title }}</h3>
         <p class="line-clamp-2 text-sm text-ink/60">{{ $article->summary }}</p>
         <p class="text-xs font-medium text-maroon">Baca selengkapnya &rarr;</p>

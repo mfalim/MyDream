@@ -82,7 +82,7 @@ class PaymentController extends Controller
                 ->where('type', $validated['scheme'])
                 ->where('amount', $amount)
                 ->where('status', 'initiated')
-                ->whereIn('transaction_status', ['created', 'pending'])
+                ->whereIn('transaction_status', ['created', 'pending', 'capture', 'challenge'])
                 ->whereNotNull('snap_token')
                 ->latest('id')
                 ->first();
@@ -102,6 +102,7 @@ class PaymentController extends Controller
                 'midtrans_order_id' => $orderId,
                 'transaction_status' => 'creating',
             ]);
+            $payment->recordLifecycleEvent('midtrans', null, null, 'Transaksi Midtrans dibuat.');
 
             try {
                 $response = Http::withBasicAuth($serverKey, '')
@@ -124,7 +125,10 @@ class PaymentController extends Controller
                     'booking_id' => $lockedBooking->id,
                     'order_id' => $orderId,
                 ]);
+                $previousStatus = $payment->status;
+                $previousTransactionStatus = $payment->transaction_status;
                 $payment->update(['status' => 'rejected', 'transaction_status' => 'request_failed']);
+                $payment->recordLifecycleEvent('midtrans', $previousStatus, $previousTransactionStatus, 'Midtrans gagal membuat transaksi.');
 
                 return ['error' => 'Tidak dapat terhubung ke Midtrans. Silakan coba lagi.'];
             }
@@ -136,15 +140,21 @@ class PaymentController extends Controller
                     'order_id' => $orderId,
                     'http_status' => $response->status(),
                 ]);
+                $previousStatus = $payment->status;
+                $previousTransactionStatus = $payment->transaction_status;
                 $payment->update(['status' => 'rejected', 'transaction_status' => 'request_failed']);
+                $payment->recordLifecycleEvent('midtrans', $previousStatus, $previousTransactionStatus, 'Midtrans menolak pembuatan transaksi.');
 
                 return ['error' => 'Midtrans belum dapat membuat transaksi. Periksa konfigurasi key dan coba lagi.'];
             }
 
+            $previousStatus = $payment->status;
+            $previousTransactionStatus = $payment->transaction_status;
             $payment->update([
                 'snap_token' => $token,
                 'transaction_status' => 'created',
             ]);
+            $payment->recordLifecycleEvent('midtrans', $previousStatus, $previousTransactionStatus, 'Token pembayaran Midtrans berhasil dibuat.');
 
             return ['token' => $token];
         });
@@ -198,6 +208,8 @@ class PaymentController extends Controller
 
         DB::transaction(function () use ($payment, $data) {
             $lockedPayment = Payment::whereKey($payment->id)->lockForUpdate()->firstOrFail();
+            $previousStatus = $lockedPayment->status;
+            $previousTransactionStatus = $lockedPayment->transaction_status;
             $status = $data['transaction_status'];
             $fraudStatus = $data['fraud_status'] ?? null;
 
@@ -223,6 +235,33 @@ class PaymentController extends Controller
             } else {
                 $lockedPayment->update(['transaction_status' => $status]);
             }
+
+            $message = match ($status) {
+                'settlement' => 'Pembayaran berhasil dikonfirmasi Midtrans.',
+                'capture' => ($fraudStatus === 'accept' ? 'Pembayaran diterima Midtrans.' : 'Pembayaran sedang diproses Midtrans.'),
+                'pending' => 'Transaksi menunggu pembayaran di Midtrans.',
+                'challenge' => 'Transaksi sedang diperiksa Midtrans.',
+                'expire' => 'Transaksi kedaluwarsa.',
+                'cancel' => 'Transaksi dibatalkan.',
+                'deny' => 'Transaksi ditolak Midtrans.',
+                'refund' => 'Transaksi dikembalikan oleh Midtrans.',
+                'partial_refund' => 'Sebagian pembayaran dikembalikan oleh Midtrans.',
+                default => 'Status transaksi diperbarui oleh Midtrans.',
+            };
+            $eventKey = hash('sha256', implode('|', [
+                $data['order_id'],
+                $data['status_code'],
+                (string) $data['gross_amount'],
+                $status,
+                $fraudStatus ?? '',
+            ]));
+            $lockedPayment->recordLifecycleEvent(
+                'midtrans_notification',
+                $previousStatus,
+                $previousTransactionStatus,
+                $message,
+                $eventKey,
+            );
 
             $lockedPayment->booking->syncPaymentStatus();
         });

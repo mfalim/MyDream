@@ -38,6 +38,8 @@ Route::post('/midtrans/notification', [SitePaymentController::class, 'notificati
     ->name('midtrans.notification');
 
 Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->name('api.auth.google');
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('api.auth.google.redirect');
+Route::get('/auth/google/poll', [GoogleAuthController::class, 'pollAuthResult'])->name('api.auth.google.poll');
 
 Route::get('/home', [HomeController::class, 'index'])->name('api.home');
 Route::get('/about', [AboutController::class, 'show'])->name('api.about');
@@ -126,6 +128,8 @@ Route::middleware(['auth:sanctum', EnsureUserRole::class . ':member'])->prefix('
     Route::get('/dashboard', [MemberAccountController::class, 'dashboard'])->name('dashboard');
     Route::put('/profile', [MemberAccountController::class, 'updateProfile'])->name('profile.update');
     Route::patch('/schedules/{id}/status', [MemberAccountController::class, 'updateScheduleStatus'])->name('schedule.status');
+    Route::post('/schedules/{id}/assign', [MemberAccountController::class, 'assignScheduleMember'])->name('schedule.assign');
+    Route::post('/events/{eventId}/members/{memberId}/attendance', [MemberAccountController::class, 'updateTeamAttendance'])->name('team.attendance');
 });
 
 Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me'])->name('api.me');

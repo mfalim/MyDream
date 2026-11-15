@@ -119,9 +119,9 @@
                 <label for="booking_id">Pilih Booking / Client <span style="color: red;">*</span></label>
                 <select name="booking_id" id="booking_id" required>
                     <option value="">-- Pilih Booking --</option>
-                    @foreach(\App\Models\Booking::with('client')->where('status', 'approved')->get() as $booking)
+                    @foreach($bookings as $booking)
                         <option value="{{ $booking->id }}">
-                            {{ $booking->client->groom_name }} & {{ $booking->client->bride_name }} - {{ $booking->venue_name }}
+                            {{ $booking->client?->groom_name }} & {{ $booking->client?->bride_name }} - {{ $booking->venue_name }}
                         </option>
                     @endforeach
                 </select>
@@ -181,11 +181,8 @@
                 <div class="repeater-item vendor-item">
                     <div class="form-group">
                         <label>Pilih Vendor</label>
-                        <select name="vendors[0][vendor_id]" required>
+                        <select name="vendors[0][vendor_id]" class="vendor-select" onchange="syncMemberOptions()" required>
                             <option value="">-- Pilih Vendor --</option>
-                            @foreach(\App\Models\Vendor::with('category')->get() as $vendor)
-                                <option value="{{ $vendor->id }}">{{ $vendor->name }} - {{ $vendor->category->name ?? '' }}</option>
-                            @endforeach
                         </select>
                     </div>
 
@@ -230,11 +227,8 @@
                 <div class="repeater-item member-item">
                     <div class="form-group">
                         <label>Pilih Member</label>
-                        <select name="members[0][member_id]" required>
+                        <select name="members[0][member_id]" class="member-select" required>
                             <option value="">-- Pilih Member --</option>
-                            @foreach(\App\Models\Member::all() as $member)
-                                <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
-                            @endforeach
                         </select>
                     </div>
 
@@ -268,6 +262,72 @@
 <script>
 let vendorIndex = 1;
 let memberIndex = 1;
+const bookingVendorData = @json($bookingVendorData);
+
+function populateSelect(select, options, placeholder) {
+    const currentValue = select.value;
+    select.innerHTML = '';
+
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = placeholder;
+    select.appendChild(placeholderOption);
+
+    options.forEach((item) => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.label;
+        select.appendChild(option);
+    });
+
+    if (options.some((item) => String(item.id) === String(currentValue))) {
+        select.value = currentValue;
+    }
+}
+
+function getSelectedBookingData() {
+    const bookingId = document.getElementById('booking_id').value;
+    return bookingVendorData[bookingId] || { vendors: [], membersByVendor: {} };
+}
+
+function refreshVendorOptions() {
+    const bookingData = getSelectedBookingData();
+
+    document.querySelectorAll('.vendor-select').forEach((select) => {
+        populateSelect(select, bookingData.vendors || [], '-- Pilih Vendor --');
+    });
+
+    syncMemberOptions();
+}
+
+function syncMemberOptions() {
+    const bookingData = getSelectedBookingData();
+    const selectedVendorIds = Array.from(document.querySelectorAll('.vendor-select'))
+        .map((select) => select.value)
+        .filter(Boolean);
+
+    const members = [];
+    selectedVendorIds.forEach((vendorId) => {
+        (bookingData.membersByVendor?.[vendorId] || []).forEach((member) => {
+            if (!members.some((item) => String(item.id) === String(member.id))) {
+                members.push(member);
+            }
+        });
+    });
+
+    document.querySelectorAll('.member-select').forEach((select) => {
+        populateSelect(select, members, '-- Pilih PIC Vendor --');
+    });
+}
+
+document.getElementById('booking_id').addEventListener('change', () => {
+    document.querySelectorAll('.vendor-select').forEach((select) => {
+        select.value = '';
+    });
+    refreshVendorOptions();
+});
+
+refreshVendorOptions();
 
 function addVendor() {
     const container = document.getElementById('vendors-container');
@@ -279,11 +339,8 @@ function addVendor() {
             
             <div class="form-group">
                 <label>Pilih Vendor</label>
-                <select name="vendors[${vendorIndex}][vendor_id]" required>
+                <select name="vendors[${vendorIndex}][vendor_id]" class="vendor-select" onchange="syncMemberOptions()" required>
                     <option value="">-- Pilih Vendor --</option>
-                    @foreach(\App\Models\Vendor::with('category')->get() as $vendor)
-                        <option value="{{ $vendor->id }}">{{ $vendor->name }} - {{ $vendor->category->name ?? '' }}</option>
-                    @endforeach
                 </select>
             </div>
 
@@ -315,6 +372,7 @@ function addVendor() {
         </div>
     `;
     container.insertAdjacentHTML('beforeend', template);
+    refreshVendorOptions();
     vendorIndex++;
 }
 
@@ -328,11 +386,8 @@ function addMember() {
             
             <div class="form-group">
                 <label>Pilih Member</label>
-                <select name="members[${memberIndex}][member_id]" required>
+                <select name="members[${memberIndex}][member_id]" class="member-select" required>
                     <option value="">-- Pilih Member --</option>
-                    @foreach(\App\Models\Member::all() as $member)
-                        <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
-                    @endforeach
                 </select>
             </div>
 
@@ -348,6 +403,7 @@ function addMember() {
         </div>
     `;
     container.insertAdjacentHTML('beforeend', template);
+    syncMemberOptions();
     memberIndex++;
 }
 </script>

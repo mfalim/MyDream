@@ -18,6 +18,21 @@ class Vendor extends Model
         'description',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $vendor) {
+            if (empty($vendor->slug)) {
+                $baseSlug = \Illuminate\Support\Str::slug($vendor->name);
+                $slug = $baseSlug;
+                $counter = 1;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $counter++;
+                }
+                $vendor->slug = $slug;
+            }
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

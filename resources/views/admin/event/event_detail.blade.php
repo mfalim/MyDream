@@ -46,6 +46,16 @@
                     </div>
                 </div>
                 <div>
+                    @if ($event->status !== 'completed' && $event->status !== 'cancelled')
+                        <form action="{{ route('admin.events.complete', $event->id) }}" method="POST"
+                            class="d-inline-block">
+                            @csrf
+                            <button type="submit" class="btn btn-success"
+                                title="Validasi final acara setelah checklist selesai">
+                                <i class="bi bi-check-circle"></i> Mark as Complete
+                            </button>
+                        </form>
+                    @endif
                     <a href="{{ route('admin.events.edit', $event->id) }}" class="btn btn-dark">
                         <i class="bi bi-pencil"></i> Edit Detail Acara
                     </a>

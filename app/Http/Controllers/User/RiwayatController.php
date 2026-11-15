@@ -22,10 +22,10 @@ class RiwayatController extends Controller
         $client = Client::where('users_id', auth()->id())->firstOrFail();
         $query = $this->approvedBookings($client)->with([
             'package',
+            'payments' => fn ($q) => $q->orderByDesc('created_at')->orderByDesc('id'),
             'events' => fn ($q) => $q->orderBy('event_date'),
             'events.schedules' => fn ($q) => $q->whereNotNull('vendor_id')->where('status', 'approved'),
             'events.schedules.vendor.category',
-            'events.reviews',
         ]);
 
         if ($request->filled('search')) {
@@ -63,10 +63,11 @@ class RiwayatController extends Controller
         $booking = $this->approvedBookings($client)
             ->with([
                 'package',
+                'payments' => fn ($q) => $q->orderByDesc('created_at')->orderByDesc('id'),
                 'events' => fn ($q) => $q->orderBy('event_date'),
                 'events.schedules' => fn ($q) => $q->whereNotNull('vendor_id')->where('status', 'approved'),
                 'events.schedules.vendor.category',
-                'events.reviews',
+                'payments.events',
             ])
             ->findOrFail($booking);
 

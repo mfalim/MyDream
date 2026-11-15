@@ -3,196 +3,296 @@
 @section('title', 'Tambah Event Baru')
 @section('page-title', 'Form Tambah Event')
 
+@push('styles')
+    @vite('resources/css/admin/events.css')
+@endpush
+
 @section('content')
-    <div class="container-fluid px-4 py-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="fw-bold mb-1">Tambah Event Baru</h2>
-                        <p class="text-muted mb-0">Tambahkan event seperti Akad Nikah, Resepsi, dll ke booking</p>
+<div class="container-fluid px-4 py-4">
+    <div class="wo-event-page">
+        <div class="wo-page-header">
+            <div>
+                <div class="wo-breadcrumb">
+                    <a href="{{ route('admin.events.index') }}">Event Day</a>
+                    <span>/</span>
+                    <span>Tambah Event Baru</span>
+                </div>
+                <h2>Tambah Event Baru</h2>
+                <p>Inisialisasi jadwal acara pernikahan client, tim organizer, serta distribusi PIC vendor</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.events.index') }}" class="wo-btn-outline">Batal</a>
+                <button type="submit" form="eventForm" class="wo-btn-primary">
+                    <i class="bi bi-check2-circle"></i> Simpan Event
+                </button>
+            </div>
+        </div>
+
+        <form id="eventForm" method="POST" action="{{ route('admin.events.store') }}" enctype="multipart/form-data">
+            @csrf
+
+            <!-- Section 1: Pilih Booking -->
+            <div class="wo-section-card">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h5>1. Pilih Booking Client</h5>
+                            <small>Pilih booking client yang sudah berstatus Approved</small>
+                        </div>
                     </div>
-                    <div>
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
-                        <button type="submit" form="eventForm" class="btn btn-dark">Simpan</button>
-                    </div>
+                    <span class="wo-badge-required">Wajib</span>
                 </div>
 
-                <form id="eventForm" method="POST" action="{{ route('admin.events.store') }}"
-                    enctype="multipart/form-data">
-                    @csrf
+                <div class="wo-section-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="wo-label">Pilih Booking <span class="req">*</span></label>
+                            <select class="wo-select" name="booking_id" id="bookingSelect" required>
+                                <option value="">-- Pilih Booking Client --</option>
+                                @foreach ($bookings as $booking)
+                                    <option value="{{ $booking->id }}"
+                                        {{ (string) request('booking_id') === (string) $booking->id ? 'selected' : '' }}
+                                        data-client="{{ $booking->client->groom_name ?? 'N/A' }} & {{ $booking->client->bride_name ?? 'N/A' }}"
+                                        data-venue="{{ $booking->venue_name }}"
+                                        data-package="{{ $booking->package->name ?? 'Custom Vendor' }}"
+                                        data-package-id="{{ $booking->package_id ?? '' }}"
+                                        data-guest="{{ $booking->guest_count ?? '' }}">
+                                        #{{ $booking->id }} — {{ $booking->client->groom_name ?? 'N/A' }} & {{ $booking->client->bride_name ?? 'N/A' }} ({{ $booking->venue_name }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <!-- Section 1: Pilih Booking -->
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-calendar-check"></i>
+                        <div id="bookingInfo" class="col-12" style="display: none;">
+                            <div class="wo-booking-summary">
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Pasangan Mempelai</small>
+                                        <span id="bookingClient" class="fw-bold" style="color:#173b32;">-</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Lokasi Venue</small>
+                                        <span id="bookingVenue" class="fw-bold" style="color:#173b32;">-</span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small class="text-muted d-block">Paket Booking</small>
+                                        <span id="bookingPackage" class="fw-bold" style="color:#8a6a3b;">-</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h5 class="fw-bold mb-0">Pilih Booking</h5>
-                                    <small class="text-muted">Pilih booking client yang sudah approved</small>
-                                </div>
-                                <span class="badge bg-danger ms-auto">WAJIB</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Pilih Booking <span
-                                            class="text-danger">*</span></label>
-                                    <select class="form-select" name="booking_id" id="bookingSelect" required>
-                                        <option value="">Pilih Booking</option>
-                                        @foreach ($bookings as $booking)
-                                            <option value="{{ $booking->id }}"
-                                                data-client="{{ $booking->client->groom_name }} & {{ $booking->client->bride_name }}"
-                                                data-venue="{{ $booking->venue_name }}"
-                                                data-package="{{ $booking->package->name ?? 'N/A' }}">
-                                                {{ $booking->client->groom_name }} & {{ $booking->client->bride_name }} -
-                                                {{ $booking->venue_name }}
+            <!-- Section 2: Detail Event -->
+            <div class="wo-section-card" id="eventDetailSection" style="display: none;">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-heart-fill"></i>
+                        </div>
+                        <div>
+                            <h5>2. Detail Acara</h5>
+                            <small>Informasi pelaksanaan acara seperti Akad Nikah, Resepsi, Lamaran, dll</small>
+                        </div>
+                    </div>
+                    <span class="wo-badge-required">Wajib</span>
+                </div>
+
+                <div class="wo-section-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="wo-label">Nama Event <span class="req">*</span></label>
+                            <input type="text" class="wo-control" name="event_name" placeholder="Contoh: Akad Nikah & Resepsi" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Foto Cover Event</label>
+                            <input type="file" class="wo-control" name="event_photo" accept="image/*">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Tipe Event</label>
+                            <select class="wo-select" name="event_type">
+                                <option value="">-- Pilih Tipe Event --</option>
+                                <option value="akad_nikah">Akad Nikah</option>
+                                <option value="resepsi">Resepsi</option>
+                                <option value="lamaran">Lamaran</option>
+                                <option value="siraman">Siraman</option>
+                                <option value="midodareni">Midodareni</option>
+                                <option value="pemberkatan">Pemberkatan</option>
+                                <option value="tea_ceremony">Tea Ceremony</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Tanggal Acara <span class="req">*</span></label>
+                            <input type="date" class="wo-control" name="event_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Jumlah Tamu Undangan</label>
+                            <input type="number" class="wo-control" name="guest_count" id="guestCountInput" placeholder="Contoh: 300">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="wo-label">Status Event</label>
+                            <select class="wo-select" name="event_status">
+                                <option value="draft">Draft</option>
+                                <option value="upcoming" selected>Upcoming</option>
+                                <option value="ongoing">Ongoing</option>
+                                <option value="completed">Completed</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="wo-label">Catatan Event</label>
+                            <textarea class="wo-control" name="event_notes" rows="2" placeholder="Catatan khusus untuk pelaksanaan event ini..."></textarea>
+                            <small class="text-muted d-block mt-1">Waktu mulai & selesai event akan otomatis disinkronkan dari jadwal vendor.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Team Members -->
+            <div class="wo-section-card" id="teamSection" style="display: none;">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <div>
+                            <h5>3. Tim Organizer</h5>
+                            <small>Gunakan role <strong>Lead Coordinator</strong> / <strong>Coordinator</strong> untuk Penanggung Jawab Utama Event</small>
+                        </div>
+                    </div>
+                    <button type="button" class="wo-btn-add" id="addTeamMemberBtn">
+                        <i class="bi bi-plus-lg"></i> Tambah Anggota Tim
+                    </button>
+                </div>
+
+                <div class="wo-section-body">
+                    <datalist id="teamRoleOptions">
+                        <option value="Lead Coordinator"></option>
+                        <option value="Coordinator"></option>
+                        <option value="Team Member"></option>
+                        <option value="Crew"></option>
+                    </datalist>
+
+                    <div class="team-list" id="teamList">
+                        <div class="wo-item-row team-item">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-6">
+                                    <label class="wo-label">Pilih Member</label>
+                                    <select class="wo-select team-member-select" name="team_member_id[]">
+                                        <option value="">-- Pilih Member --</option>
+                                        @foreach ($members as $member)
+                                            <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
+                                                {{ $member->name }} ({{ $member->call_sign ?: '-' }}) — {{ $member->position ?? 'Member' }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-
-                                <div id="bookingInfo" class="col-12" style="display: none;">
-                                    <div class="alert alert-info">
-                                        <h6 class="fw-bold mb-2">Info Booking:</h6>
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">Client:</small>
-                                                <span id="bookingClient" class="fw-semibold">-</span>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">Venue:</small>
-                                                <span id="bookingVenue" class="fw-semibold">-</span>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <small class="text-muted d-block">Package:</small>
-                                                <span id="bookingPackage" class="fw-semibold">-</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="col-md-5">
+                                    <label class="wo-label">Role di Event</label>
+                                    <input type="text" list="teamRoleOptions" class="wo-control team-member-role" name="team_member_role[]" placeholder="Contoh: Lead Coordinator, Coordinator, Crew">
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="wo-btn-remove remove-team-btn" title="Hapus">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Section 2: Detail Event -->
-                    <div class="card border-0 shadow-sm mb-4" id="eventDetailSection" style="display: none;">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-danger text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-heart-fill"></i>
-                                </div>
-                                <div>
-                                    <h5 class="fw-bold mb-0">Detail Event</h5>
-                                    <small class="text-muted">Informasi tentang event (Akad, Resepsi, dll)</small>
-                                </div>
-                                <span class="badge bg-danger ms-auto">WAJIB</span>
-                            </div>
+            <!-- Section 4: Vendor & Paket -->
+            <div class="wo-section-card" id="vendorSection" style="display: none;">
+                <div class="wo-section-head">
+                    <div class="wo-section-title">
+                        <div class="wo-section-icon">
+                            <i class="bi bi-shop"></i>
+                        </div>
+                        <div>
+                            <h5>4. Jadwal Vendor & Penanggung Jawab (PIC)</h5>
+                            <small>Pilih paket vendor atau vendor kustom beserta member yang bertanggung jawab</small>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Nama Event <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="event_name"
-                                        placeholder="Contoh: Akad Nikah" required>
-                                    <small class="text-muted">Contoh: Akad Nikah, Resepsi, Lamaran, Siraman</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Foto Event</label>
-                                    <input type="file" class="form-control" name="event_photo" accept="image/*">
-                                    <small class="text-muted">Upload foto event (optional)</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tipe Event</label>
-                                    <select class="form-select" name="event_type">
-                                        <option value="">Pilih Tipe</option>
-                                        <option value="akad_nikah">Akad Nikah</option>
-                                        <option value="resepsi">Resepsi</option>
-                                        <option value="lamaran">Lamaran</option>
-                                        <option value="siraman">Siraman</option>
-                                        <option value="midodareni">Midodareni</option>
-                                        <option value="pemberkatan">Pemberkatan</option>
-                                        <option value="tea_ceremony">Tea Ceremony</option>
-                                        <option value="lainnya">Lainnya</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tanggal <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="event_date" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Jumlah Tamu Undangan</label>
-                                    <input type="number" class="form-control" name="guest_count"
-                                        placeholder="Contoh: 300">
-                                    <small class="text-muted">Jumlah tamu yang diundang</small>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Status</label>
-                                    <select class="form-select" name="event_status">
-                                        <option value="draft">Draft</option>
-                                        <option value="upcoming" selected>Upcoming</option>
-                                        <option value="ongoing">Ongoing</option>
-                                        <option value="completed">Completed</option>
-                                        <option value="cancelled">Cancelled</option>
-                                    </select>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Catatan Event</label>
-                                    <textarea class="form-control" name="event_notes" rows="2" placeholder="Catatan khusus untuk event ini"></textarea>
-                                    <small class="text-muted">Waktu event akan otomatis sesuai jadwal vendor (dari paling
-                                        awal sampai paling akhir)</small>
-                                </div>
-                            </div>
+                <div class="wo-section-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-12">
+                            <label class="wo-label">Pilih Paket Wedding</label>
+                            <select class="wo-select" name="package_id" id="packageSelect">
+                                <option value="">Tidak Menggunakan Paket (Pilih Vendor Kustom)</option>
+                                @foreach ($packages as $package)
+                                    <option value="{{ $package->id }}"
+                                        data-vendors="{{ json_encode($package->vendors->map(function ($v) { return ['id' => $v->id, 'name' => $v->name, 'category' => $v->category->name ?? 'N/A']; })) }}">
+                                        {{ $package->name }} ({{ $package->vendors->count() }} vendor)
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Section 3: Team Members -->
-                    <div class="card border-0 shadow-sm mb-4" id="teamSection" style="display: none;">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-people-fill"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-0">Tim Organizer</h5>
-                                    <small class="text-muted">Assign anggota tim yang bertanggung jawab</small>
-                                </div>
-                            </div>
+                    <div id="packageVendorsDisplay" class="mb-3" style="display: none;">
+                        <label class="wo-label mb-2">Daftar Vendor dalam Paket & Penugasan PIC:</label>
+                        <div id="packageVendorsList"></div>
+                    </div>
 
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div>
-                                    <label class="form-label fw-semibold mb-0">Anggota Tim</label>
-                                    <small class="text-muted d-block">Lead Director, Coordinator, dll</small>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline-warning" id="addTeamMemberBtn">+
-                                    Tambah Tim</button>
+                    <div id="customVendorSection" style="display: block;">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <label class="wo-label mb-0">Daftar Vendor Kustom</label>
+                                <small class="text-muted">Tambahkan vendor dan tentukan member penanggung jawabnya</small>
                             </div>
+                            <button type="button" class="wo-btn-add" id="addVendorBtn">
+                                <i class="bi bi-plus-lg"></i> Tambah Vendor
+                            </button>
+                        </div>
 
-                            <div class="team-list" id="teamList">
-                                <div class="row g-3 mb-3 team-item">
-                                    <div class="col-md-5">
-                                        <label class="form-label fw-semibold">Pilih Member</label>
-                                        <select class="form-select team-member-select" name="team_member_id[]">
-                                            <option value="">Pilih Member</option>
-                                            @foreach ($members as $member)
-                                                <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
-                                                    {{ $member->name }} ({{ $member->call_sign }})
-                                                </option>
+                        <div class="vendor-list" id="vendorList">
+                            <div class="wo-item-row vendor-item">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-3">
+                                        <label class="wo-label">Pilih Vendor</label>
+                                        <select class="wo-select" name="vendor_id[]">
+                                            <option value="">-- Pilih Vendor --</option>
+                                            @foreach ($vendors as $vendor)
+                                                <option value="{{ $vendor->id }}">{{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-md-5">
-                                        <label class="form-label fw-semibold">Role</label>
-                                        <input type="text" class="form-control team-member-role" name="team_member_role[]"
-                                            placeholder="Contoh: Lead Director, Coordinator">
+                                    <div class="col-md-3">
+                                        <label class="wo-label">Penanggung Jawab (PIC)</label>
+                                        <select class="wo-select" name="vendor_member_id[]">
+                                            <option value="">Tidak ditugaskan</option>
+                                            @foreach ($members as $member)
+                                                <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign ?: '-' }})</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                    <div class="col-md-2 d-flex align-items-end">
-                                        <button type="button" class="btn btn-outline-danger w-100 remove-team-btn">
+                                    <div class="col-md-2">
+                                        <label class="wo-label">Waktu Mulai</label>
+                                        <input type="time" class="wo-control" name="vendor_start_time[]" value="09:00">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="wo-label">Waktu Selesai</label>
+                                        <input type="time" class="wo-control" name="vendor_end_time[]" value="17:00">
+                                    </div>
+                                    <div class="col-md-1">
+                                        <label class="wo-label">Status</label>
+                                        <select class="wo-select" name="vendor_status[]">
+                                            <option value="pending">Pending</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button type="button" class="wo-btn-remove remove-vendor-btn" title="Hapus">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -200,281 +300,229 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Section 4: Vendor & Paket -->
-                    <div class="card border-0 shadow-sm mb-4" id="vendorSection" style="display: none;">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                    style="width: 40px; height: 40px;">
-                                    <i class="bi bi-shop"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-0">Vendor & Paket</h5>
-                                    <small class="text-muted">Pilih paket tambahan atau vendor custom</small>
-                                </div>
-                            </div>
-
-                            <div class="row g-3 mb-4">
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Pilih Paket Tambahan</label>
-                                    <select class="form-select" name="package_id" id="packageSelect">
-                                        <option value="">Tidak Menggunakan Paket (Pilih Vendor Custom)</option>
-                                        @foreach ($packages as $package)
-                                            <option value="{{ $package->id }}"
-                                                data-vendors="{{ json_encode($package->vendors->map(function ($v) { return ['id' => $v->id, 'name' => $v->name, 'category' => $v->category->name ?? 'N/A']; })) }}">
-                                                {{ $package->name }} ({{ $package->vendors->count() }} vendor)
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <small class="text-muted">Package tambahan untuk event ini</small>
-                                </div>
-                            </div>
-
-                            <div id="packageVendorsDisplay" class="mb-4" style="display: none;">
-                                <h6 class="fw-bold mb-3">Vendor dalam paket:</h6>
-                                <div id="packageVendorsList" class="border rounded p-3 bg-light"></div>
-                            </div>
-
-                            <div id="customVendorSection" style="display: block;">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div>
-                                        <label class="form-label fw-semibold mb-0">Vendor Kustom</label>
-                                        <small class="text-muted d-block">Pilih vendor custom</small>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="addVendorBtn">+
-                                        Tambah Vendor</button>
-                                </div>
-
-                                <div class="vendor-list" id="vendorList">
-                                    <div class="row g-3 mb-3 vendor-item">
-                                        <div class="col-md-4">
-                                            <label class="form-label fw-semibold">Pilih Vendor</label>
-                                            <select class="form-select" name="vendor_id[]">
-                                                <option value="">Pilih Vendor</option>
-                                                @foreach ($vendors as $vendor)
-                                                    <option value="{{ $vendor->id }}">{{ $vendor->name }} - {{ $vendor->category ? $vendor->category->name : 'N/A' }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label fw-semibold">Tanggung Jawab Member</label>
-                                            <select class="form-select" name="vendor_member_id[]">
-                                                <option value="">Tidak ditugaskan</option>
-                                                @foreach ($members as $member)
-                                                    <option value="{{ $member->id }}">{{ $member->name }} ({{ $member->call_sign }})</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label fw-semibold">Waktu Mulai</label>
-                                            <input type="time" class="form-control" name="vendor_start_time[]">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <label class="form-label fw-semibold">Waktu Selesai</label>
-                                            <input type="time" class="form-control" name="vendor_end_time[]">
-                                        </div>
-                                        <div class="col-md-1">
-                                            <label class="form-label fw-semibold">Status</label>
-                                            <select class="form-select" name="vendor_status[]">
-                                                <option value="pending">Pending</option>
-                                                <option value="approved">Approved</option>
-                                                <option value="rejected">Rejected</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-1 d-flex align-items-end">
-                                            <button type="button" class="btn btn-outline-danger w-100 remove-vendor-btn">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2 mb-4">
-                        <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary px-4">Cancel</a>
-                        <button type="submit" class="btn btn-dark px-5">
-                            <i class="bi bi-check-circle me-2"></i> Simpan Event
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
-        </div>
+
+            <div class="d-flex justify-content-end gap-2 mb-4">
+                <a href="{{ route('admin.events.index') }}" class="wo-btn-outline">Batal</a>
+                <button type="submit" class="wo-btn-primary">
+                    <i class="bi bi-check2-circle"></i> Simpan Event
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const bookingSelect = document.getElementById('bookingSelect');
-            const bookingInfo = document.getElementById('bookingInfo');
-            const eventDetailSection = document.getElementById('eventDetailSection');
-            const teamSection = document.getElementById('teamSection');
-            const vendorSection = document.getElementById('vendorSection');
-            const packageSelect = document.getElementById('packageSelect');
-            const customVendorSection = document.getElementById('customVendorSection');
-            const packageVendorsDisplay = document.getElementById('packageVendorsDisplay');
-            const packageVendorsList = document.getElementById('packageVendorsList');
-            const addVendorBtn = document.getElementById('addVendorBtn');
-            const vendorList = document.getElementById('vendorList');
-            const addTeamMemberBtn = document.getElementById('addTeamMemberBtn');
-            const teamList = document.getElementById('teamList');
+@php
+    $availableMembersJson = $members->map(function ($m) {
+        return [
+            'id' => $m->id,
+            'label' => $m->name . ' (' . ($m->call_sign ?: '-') . ')',
+        ];
+    })->values();
+@endphp
 
-            bookingSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const bookingSelect = document.getElementById('bookingSelect');
+    const bookingInfo = document.getElementById('bookingInfo');
+    const eventDetailSection = document.getElementById('eventDetailSection');
+    const teamSection = document.getElementById('teamSection');
+    const vendorSection = document.getElementById('vendorSection');
+    const packageSelect = document.getElementById('packageSelect');
+    const customVendorSection = document.getElementById('customVendorSection');
+    const packageVendorsDisplay = document.getElementById('packageVendorsDisplay');
+    const packageVendorsList = document.getElementById('packageVendorsList');
+    const addVendorBtn = document.getElementById('addVendorBtn');
+    const vendorList = document.getElementById('vendorList');
+    const addTeamMemberBtn = document.getElementById('addTeamMemberBtn');
+    const teamList = document.getElementById('teamList');
+    const guestCountInput = document.getElementById('guestCountInput');
 
-                if (this.value) {
-                    document.getElementById('bookingClient').textContent = selectedOption.getAttribute(
-                        'data-client');
-                    document.getElementById('bookingVenue').textContent = selectedOption.getAttribute(
-                        'data-venue');
-                    document.getElementById('bookingPackage').textContent = selectedOption.getAttribute(
-                        'data-package');
-                    bookingInfo.style.display = 'block';
-                    eventDetailSection.style.display = 'block';
-                    teamSection.style.display = 'block';
-                    vendorSection.style.display = 'block';
-                } else {
-                    bookingInfo.style.display = 'none';
-                    eventDetailSection.style.display = 'none';
-                    teamSection.style.display = 'none';
-                    vendorSection.style.display = 'none';
-                }
+    const availableMembers = @json($availableMembersJson);
+
+    function renderPackageVendors() {
+        const selectedOption = packageSelect.options[packageSelect.selectedIndex];
+
+        if (packageSelect.value && selectedOption) {
+            customVendorSection.style.display = 'none';
+            packageVendorsDisplay.style.display = 'block';
+
+            const vendors = JSON.parse(selectedOption.getAttribute('data-vendors') || '[]');
+            let memberOptionsHTML = '<option value="">Tidak ditugaskan</option>';
+            availableMembers.forEach(m => {
+                memberOptionsHTML += `<option value="${m.id}">${m.label}</option>`;
             });
 
-            packageSelect.addEventListener('change', function() {
-                const selectedOption = this.options[this.selectedIndex];
+            let vendorHTML = '';
 
-                if (this.value) {
-                    customVendorSection.style.display = 'none';
-                    packageVendorsDisplay.style.display = 'block';
-
-                    const vendors = JSON.parse(selectedOption.getAttribute('data-vendors') || '[]');
-                    let vendorHTML = '';
-
-                    if (vendors.length > 0) {
-                        vendors.forEach((vendor, index) => {
-                            vendorHTML += `
-                        <div class="row g-3 mb-3 p-3 border-bottom">
-                            <div class="col-md-5">
-                                <label class="form-label fw-semibold">Vendor</label>
-                                <input type="text" class="form-control bg-white" value="${vendor.name} - ${vendor.category}" readonly>
-                                <input type="hidden" name="package_vendor_id[]" value="${vendor.id}">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Waktu Mulai</label>
-                                <input type="time" class="form-control" name="package_vendor_start_time[]">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label fw-semibold">Waktu Selesai</label>
-                                <input type="time" class="form-control" name="package_vendor_end_time[]">
-                            </div>
-                            <div class="col-md-1 d-flex align-items-center justify-content-center">
-                                <i class="bi bi-check-circle-fill text-success" style="font-size: 1.5rem;"></i>
+            if (vendors.length > 0) {
+                vendors.forEach(vendor => {
+                    vendorHTML += `
+                        <div class="wo-item-row">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="wo-label">Vendor Paket</label>
+                                    <input type="text" class="wo-control bg-light" value="${vendor.name} - ${vendor.category}" readonly>
+                                    <input type="hidden" name="package_vendor_id[]" value="${vendor.id}">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="wo-label">Penanggung Jawab (PIC)</label>
+                                    <select class="wo-select" name="package_vendor_member_id[]">
+                                        ${memberOptionsHTML}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Waktu Mulai</label>
+                                    <input type="time" class="wo-control" name="package_vendor_start_time[]" value="09:00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Waktu Selesai</label>
+                                    <input type="time" class="wo-control" name="package_vendor_end_time[]" value="17:00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="wo-label">Status</label>
+                                    <select class="wo-select" name="package_vendor_status[]">
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     `;
-                        });
-                    } else {
-                        vendorHTML = '<div class="text-muted">Tidak ada vendor dalam paket ini.</div>';
-                    }
+                });
+            } else {
+                vendorHTML = '<div class="text-muted small">Tidak ada vendor dalam paket ini.</div>';
+            }
 
-                    packageVendorsList.innerHTML = vendorHTML;
-                } else {
-                    customVendorSection.style.display = 'block';
-                    packageVendorsDisplay.style.display = 'none';
+            packageVendorsList.innerHTML = vendorHTML;
+        } else {
+            customVendorSection.style.display = 'block';
+            packageVendorsDisplay.style.display = 'none';
+        }
+    }
+
+    bookingSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+
+        if (this.value) {
+            document.getElementById('bookingClient').textContent = selectedOption.getAttribute('data-client');
+            document.getElementById('bookingVenue').textContent = selectedOption.getAttribute('data-venue');
+            document.getElementById('bookingPackage').textContent = selectedOption.getAttribute('data-package');
+
+            const guestVal = selectedOption.getAttribute('data-guest');
+            if (guestCountInput && !guestCountInput.value && guestVal) {
+                guestCountInput.value = guestVal;
+            }
+
+            const pkgId = selectedOption.getAttribute('data-package-id');
+            if (pkgId && packageSelect) {
+                packageSelect.value = pkgId;
+                renderPackageVendors();
+            }
+
+            bookingInfo.style.display = 'block';
+            eventDetailSection.style.display = 'block';
+            teamSection.style.display = 'block';
+            vendorSection.style.display = 'block';
+        } else {
+            bookingInfo.style.display = 'none';
+            eventDetailSection.style.display = 'none';
+            teamSection.style.display = 'none';
+            vendorSection.style.display = 'none';
+        }
+    });
+
+    packageSelect.addEventListener('change', renderPackageVendors);
+
+    if (bookingSelect.value) {
+        bookingSelect.dispatchEvent(new Event('change'));
+    }
+
+    addVendorBtn.addEventListener('click', function() {
+        const firstVendorItem = vendorList.querySelector('.vendor-item');
+        const newVendorItem = firstVendorItem.cloneNode(true);
+
+        newVendorItem.querySelectorAll('select').forEach(select => {
+            if (select.name === 'vendor_status[]') {
+                select.value = 'pending';
+            } else {
+                select.value = '';
+            }
+        });
+        newVendorItem.querySelectorAll('input').forEach(input => {
+            if (input.name === 'vendor_start_time[]') input.value = '09:00';
+            else if (input.name === 'vendor_end_time[]') input.value = '17:00';
+            else input.value = '';
+        });
+
+        vendorList.appendChild(newVendorItem);
+        attachRemoveEvent(newVendorItem.querySelector('.remove-vendor-btn'));
+    });
+
+    function attachRemoveEvent(btn) {
+        btn.addEventListener('click', function() {
+            const vendorItems = vendorList.querySelectorAll('.vendor-item');
+            if (vendorItems.length > 1) {
+                this.closest('.vendor-item').remove();
+            }
+        });
+    }
+
+    document.querySelectorAll('.remove-vendor-btn').forEach(btn => attachRemoveEvent(btn));
+
+    addTeamMemberBtn.addEventListener('click', function() {
+        const firstTeamItem = teamList.querySelector('.team-item');
+        const newTeamItem = firstTeamItem.cloneNode(true);
+
+        newTeamItem.querySelectorAll('select').forEach(select => select.value = '');
+        newTeamItem.querySelectorAll('input').forEach(input => {
+            input.value = '';
+            input.dataset.autofilled = 'false';
+        });
+
+        teamList.appendChild(newTeamItem);
+        attachRemoveTeamEvent(newTeamItem.querySelector('.remove-team-btn'));
+        attachTeamMemberSelectionHandlers(newTeamItem);
+    });
+
+    function attachRemoveTeamEvent(btn) {
+        btn.addEventListener('click', function() {
+            const teamItems = teamList.querySelectorAll('.team-item');
+            if (teamItems.length > 1) {
+                this.closest('.team-item').remove();
+            }
+        });
+    }
+
+    document.querySelectorAll('.remove-team-btn').forEach(btn => attachRemoveTeamEvent(btn));
+
+    function attachTeamMemberSelectionHandlers(root) {
+        const selects = root.querySelectorAll('.team-member-select');
+        selects.forEach(select => {
+            const item = select.closest('.team-item');
+            const roleInput = item.querySelector('.team-member-role');
+
+            select.addEventListener('change', function() {
+                const selectedOption = this.selectedOptions[0];
+                const fallbackRole = selectedOption?.dataset?.defaultRole || 'Team Member';
+
+                if (!roleInput.value.trim() || roleInput.dataset.autofilled === 'true') {
+                    roleInput.value = fallbackRole;
+                    roleInput.dataset.autofilled = 'true';
                 }
             });
 
-            addVendorBtn.addEventListener('click', function() {
-                const firstVendorItem = vendorList.querySelector('.vendor-item');
-                const newVendorItem = firstVendorItem.cloneNode(true);
-
-                const selects = newVendorItem.querySelectorAll('select');
-                selects.forEach(select => select.value = '');
-
-                const inputs = newVendorItem.querySelectorAll('input');
-                inputs.forEach(input => input.value = '');
-
-                vendorList.appendChild(newVendorItem);
-                attachRemoveEvent(newVendorItem.querySelector('.remove-vendor-btn'));
+            roleInput.addEventListener('input', function() {
+                if (this.value.trim() !== '') {
+                    this.dataset.autofilled = 'false';
+                }
             });
-
-            function attachRemoveEvent(btn) {
-                btn.addEventListener('click', function() {
-                    const vendorItems = vendorList.querySelectorAll('.vendor-item');
-                    if (vendorItems.length > 1) {
-                        this.closest('.vendor-item').remove();
-                    }
-                });
-            }
-
-            document.querySelectorAll('.remove-vendor-btn').forEach(btn => {
-                attachRemoveEvent(btn);
-            });
-
-            addTeamMemberBtn.addEventListener('click', function() {
-                const firstTeamItem = teamList.querySelector('.team-item');
-                const newTeamItem = firstTeamItem.cloneNode(true);
-
-                const selects = newTeamItem.querySelectorAll('select');
-                selects.forEach(select => select.value = '');
-
-                const inputs = newTeamItem.querySelectorAll('input');
-                inputs.forEach(input => {
-                    input.value = '';
-                    input.dataset.autofilled = 'false';
-                });
-
-                teamList.appendChild(newTeamItem);
-                attachRemoveTeamEvent(newTeamItem.querySelector('.remove-team-btn'));
-                attachTeamMemberSelectionHandlers(newTeamItem);
-            });
-
-            function attachRemoveTeamEvent(btn) {
-                btn.addEventListener('click', function() {
-                    const teamItems = teamList.querySelectorAll('.team-item');
-                    if (teamItems.length > 1) {
-                        this.closest('.team-item').remove();
-                    }
-                });
-            }
-
-            document.querySelectorAll('.remove-team-btn').forEach(btn => {
-                attachRemoveTeamEvent(btn);
-            });
-
-            function attachTeamMemberSelectionHandlers(root) {
-                const selects = root.querySelectorAll('.team-member-select');
-                selects.forEach(select => {
-                    const item = select.closest('.team-item');
-                    const roleInput = item.querySelector('.team-member-role');
-                    const defaultRole = select.selectedOptions[0]?.dataset?.defaultRole || 'Team Member';
-
-                    if (!roleInput.value.trim()) {
-                        roleInput.value = defaultRole;
-                        roleInput.dataset.autofilled = 'true';
-                    }
-
-                    select.addEventListener('change', function() {
-                        const selectedOption = this.selectedOptions[0];
-                        const fallbackRole = selectedOption?.dataset?.defaultRole || 'Team Member';
-
-                        if (!roleInput.value.trim() || roleInput.dataset.autofilled === 'true') {
-                            roleInput.value = fallbackRole;
-                            roleInput.dataset.autofilled = 'true';
-                        }
-                    });
-
-                    roleInput.addEventListener('input', function() {
-                        if (this.value.trim() !== '') {
-                            this.dataset.autofilled = 'false';
-                        }
-                    });
-                });
-            }
-
-            attachTeamMemberSelectionHandlers(document);
         });
-    </script>
+    }
+
+    attachTeamMemberSelectionHandlers(document);
+});
+</script>
 @endsection

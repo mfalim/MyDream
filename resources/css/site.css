@@ -21,6 +21,13 @@
   --color-maroon-light: #F4E4E6;
   --color-emerald: #1F4D3D;
   --color-gold: #B08D57;
+
+  --animate-fade-up: fade-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(26px); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
 @layer base {
@@ -33,4 +40,58 @@
   h1, h2, h3, h4 {
     font-family: var(--font-display);
   }
+}
+
+/* ---------- Animasi beranda ---------- */
+@layer components {
+  /* Slideshow hero: 4 foto bergantian tiap 6 detik dengan zoom pelan. */
+  .hero-slide {
+    opacity: 0;
+    animation: hero-slide 24s infinite both;
+  }
+  @keyframes hero-slide {
+    0% { opacity: 0; transform: scale(1.04); }
+    4% { opacity: 1; }
+    25% { opacity: 1; }
+    30% { opacity: 0; transform: scale(1.12); }
+    100% { opacity: 0; transform: scale(1.12); }
+  }
+
+  /* Pita teks berjalan. */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 45s linear infinite;
+  }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+
+  /* Muncul saat di-scroll (diaktifkan lewat JS; tanpa JS semua tetap terlihat). */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.8s ease var(--d, 0s),
+      transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0s);
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Titik "scroll" di hero. */
+  .scroll-dot {
+    animation: scroll-dot 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-dot {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    60% { transform: translateY(10px); opacity: 0.2; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide, .marquee-track, .scroll-dot { animation: none; }
+  .hero-slide:first-child { opacity: 1; }
+  .js [data-reveal] { opacity: 1; transform: none; transition: none; }
 }

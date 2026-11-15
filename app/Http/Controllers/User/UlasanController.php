@@ -4,11 +4,12 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReviewRequest;
+use App\Models\Article;
 use App\Models\Client;
 use App\Models\Event;
-use App\Models\Review;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UlasanController extends Controller
 {
@@ -21,7 +22,7 @@ class UlasanController extends Controller
             ->whereHas('booking', fn ($query) => $query
                 ->where('client_id', $client->id)
                 ->where('status', 'approved'))
-            ->with('reviews')
+            ->with('booking')
             ->orderByDesc('event_date')
             ->get();
 
@@ -33,15 +34,19 @@ class UlasanController extends Controller
             $selectedEvent = $events->first();
         }
 
-        $alreadyReviewed = $selectedEvent && $selectedEvent->reviews->isNotEmpty();
+        $alreadyPublished = $selectedEvent
+            ? Article::where('event_id', $selectedEvent->id)->exists()
+            : false;
 
-        $reviews = Review::with('event')
+        $stories = Article::query()
+            ->with('event')
             ->where('client_id', $client->id)
-            ->latest()
+            ->whereNotNull('event_id')
+            ->orderByDesc('created_at')
             ->paginate(8)
             ->withQueryString();
 
-        return view('user.ulasan.index', compact('events', 'selectedEvent', 'alreadyReviewed', 'reviews'));
+        return view('user.ulasan.index', compact('events', 'selectedEvent', 'alreadyPublished', 'stories'));
     }
 
     public function store(StoreReviewRequest $request)
@@ -50,6 +55,7 @@ class UlasanController extends Controller
         $data = $request->validated();
 
         $event = Event::query()
+            ->with('booking')
             ->whereKey($data['event_id'])
             ->where('status', 'completed')
             ->whereHas('booking', fn ($query) => $query
@@ -61,26 +67,44 @@ class UlasanController extends Controller
             return back()->withInput()->withErrors(['event_id' => 'Acara selesai tidak tersedia untuk diulas.']);
         }
 
-        if (Review::where('event_id', $event->id)->exists()) {
-            return back()->withInput()->withErrors(['event_id' => 'Acara ini sudah pernah diulas.']);
+        if (Article::where('event_id', $event->id)->exists()) {
+            return back()->withInput()->withErrors(['event_id' => 'Acara ini sudah memiliki ulasan.']);
         }
 
+        $photoPath = $request->file('photo')?->store('articles', 'public');
+        $comment = trim((string) ($data['comment'] ?? ''));
+        $content = $comment !== ''
+            ? $comment
+            : 'Acara ini mendapatkan rating ' . $data['rating'] . ' dari 5 bintang.';
+
         try {
-            Review::create([
-                'event_id'   => $event->id,
-                'client_id'  => $client->id,
-                'rating'     => $data['rating'],
-                'comment'    => $data['comment'] ?? null,
+            Article::create([
+                'title' => $event->name,
+                'category' => 'Ulasan Client',
+                'excerpt' => $data['excerpt'] ?? null,
+                'content' => $content,
+                'photo' => $photoPath,
+                'author' => 'Client MyDream',
+                'published_at' => today(),
+                'package_id' => $event->package_id ?: $event->booking->package_id,
+                'is_published' => true,
+                'event_id' => $event->id,
+                'client_id' => $client->id,
+                'rating' => $data['rating'],
             ]);
         } catch (QueryException $exception) {
-            if (! in_array($exception->getCode(), ['23000', '23505'], true)) {
-                throw $exception;
+            if ($photoPath) {
+                Storage::disk('public')->delete($photoPath);
             }
 
-            return back()->withInput()->withErrors(['event_id' => 'Acara ini sudah pernah diulas.']);
+            if (in_array($exception->getCode(), ['23000', '23505'], true)) {
+                return back()->withInput()->withErrors(['event_id' => 'Acara ini sudah memiliki ulasan.']);
+            }
+
+            throw $exception;
         }
 
         return redirect()->route('user.reviews.index', ['event' => $event->id])
-            ->with('success', 'Ulasan Anda berhasil dikirim. Terima kasih!');
+            ->with('success', 'Ulasan acara berhasil dipublikasikan di Blog.');
     }
 }

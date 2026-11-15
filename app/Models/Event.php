@@ -27,6 +27,11 @@ class Event extends Model
         'end_time' => 'datetime:H:i',
     ];
 
+    public function getTitleAttribute(): string
+    {
+        return $this->name ?? 'Acara Pernikahan';
+    }
+
     public static function normalizeStatus(?string $status): ?string
     {
         if ($status === null) {
@@ -58,6 +63,26 @@ class Event extends Model
         return $updated;
     }
 
+    public function canBeCompleted(): bool
+    {
+        if ($this->status === 'cancelled' || $this->status === 'draft') {
+            return false;
+        }
+
+        if (! $this->event_date) {
+            return false;
+        }
+
+        $eventEndDateTime = Carbon::parse($this->event_date)
+            ->setTimeFromTimeString($this->end_time ? $this->end_time->format('H:i:s') : '23:59:59');
+
+        if (now()->lt($eventEndDateTime)) {
+            return false;
+        }
+
+        return ! $this->schedules()->where('status', 'pending')->exists();
+    }
+
     public function resolveAutomaticStatus(?Carbon $now = null): ?string
     {
         $now ??= now();
@@ -72,6 +97,10 @@ class Event extends Model
             return 'draft';
         }
 
+        if ($currentStatus === 'completed') {
+            return 'completed';
+        }
+
         if (! $this->event_date) {
             return $currentStatus;
         }
@@ -79,24 +108,25 @@ class Event extends Model
         $startDateTime = Carbon::parse($this->event_date)->setTimeFromTimeString($this->start_time ? $this->start_time->format('H:i:s') : '00:00:00');
         $endDateTime = Carbon::parse($this->event_date)->setTimeFromTimeString($this->end_time ? $this->end_time->format('H:i:s') : '23:59:59');
 
-        if ($currentStatus === 'upcoming') {
-            return $now->greaterThanOrEqualTo($startDateTime) ? 'ongoing' : 'upcoming';
+        if ($now->lt($startDateTime)) {
+            return 'upcoming';
         }
 
-        if ($currentStatus === 'ongoing') {
-            return $now->greaterThan($endDateTime) ? 'completed' : 'ongoing';
+        if ($now->lt($endDateTime)) {
+            return 'ongoing';
         }
 
-        if ($currentStatus === 'completed') {
-            return 'completed';
-        }
-
-        return $currentStatus;
+        return 'ongoing';
     }
 
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public function publicEvent()
+    {
+        return $this->hasOne(PublicEvent::class, 'event_id');
     }
 
     public function package()
@@ -121,9 +151,9 @@ class Event extends Model
         return $this->hasMany(Schedule::class);
     }
 
-    public function reviews()
+    public function articles()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Article::class);
     }
     public function getEffectiveStartTimeAttribute(): ?string
     {
@@ -167,5 +197,31 @@ class Event extends Model
         }
 
         return $start ? date('H:i', strtotime($start)) . ' WIB' : date('H:i', strtotime($end)) . ' WIB';
+    }
+
+    /**
+     * Seluruh vendor yang terlibat di acara ini (dari jadwal/rundown, paket acara, atau paket booking).
+     */
+    public function getAllVendorsAttribute()
+    {
+        $vendors = collect();
+
+        if ($this->relationLoaded('schedules')) {
+            $vendors = $vendors->merge($this->schedules->pluck('vendor')->filter());
+        } else {
+            $vendors = $vendors->merge($this->schedules()->with('vendor.category')->get()->pluck('vendor')->filter());
+        }
+
+        if ($this->relationLoaded('package') && $this->package) {
+            $vendors = $vendors->merge($this->package->vendors ?? []);
+        } elseif ($this->package_id) {
+            $vendors = $vendors->merge($this->package()->with('vendors.category')->first()?->vendors ?? []);
+        }
+
+        if ($this->relationLoaded('booking') && $this->booking?->package) {
+            $vendors = $vendors->merge($this->booking->package->vendors ?? []);
+        }
+
+        return $vendors->unique('id')->values();
     }
 }

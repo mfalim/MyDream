@@ -37,39 +37,44 @@
         @endif
     </section>
 
-    @if(!$event || !$booking)
-        <section class="wo-card dh-empty-state">
-            <span class="dh-empty-icon"><i class="bi bi-calendar2-heart"></i></span>
-            <h2>Belum ada acara pada booking Anda</h2>
-            <p>{{ $bookingCount ? 'Booking Anda tercatat, tetapi belum memiliki acara.' : 'Booking yang Anda buat akan tampil di dashboard ini.' }}</p>
-            <a href="{{ route('user.explore-vendor') }}" class="wo-btn wo-btn-dark">Jelajahi Vendor <i class="bi bi-arrow-right"></i></a>
-        </section>
-    @else
-        <section class="dh-stat-grid">
-            <article class="wo-card dh-stat-card">
-                <span class="wo-badge wo-badge-green">Kesiapan Vendor</span>
-                <h2 class="dh-card-title">{{ $vendorReadiness['percent'] }}% terkonfirmasi</h2>
-                <p class="dh-card-sub">{{ $vendorReadiness['confirmed'] }} dari {{ $vendorReadiness['total'] }} vendor pada acara ini sudah disetujui.</p>
-                <progress class="dh-progress" max="100" value="{{ $vendorReadiness['percent'] }}" aria-label="Kesiapan vendor {{ $vendorReadiness['percent'] }} persen"></progress>
-                <div class="dh-stat-foot"><span>{{ $vendorReadiness['waiting'] }} menunggu</span><span>{{ $vendorReadiness['review'] }} ditolak</span></div>
-                <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Kelola vendor <i class="bi bi-arrow-right"></i></a>
-            </article>
-
+    <section class="dh-stat-grid">
             <article class="wo-card dh-stat-card">
                 <span class="wo-badge wo-badge-gold">Ringkasan Booking</span>
-                <h2 class="dh-card-title">Anggaran booking</h2>
-                <p class="dh-budget-amount">{{ $booking->total_price !== null ? 'Rp ' . number_format((float) $booking->total_price, 0, ',', '.') : 'Belum ditentukan' }}</p>
-                <div class="dh-stat-foot"><span>Status</span><strong class="dh-status dh-status-{{ $booking->status }}">{{ ucfirst($booking->status) }}</strong></div>
-                <div class="dh-stat-foot"><span>Jumlah tamu</span><strong>{{ number_format((int) $booking->guest_count, 0, ',', '.') }} orang</strong></div>
+                <h2 class="dh-card-title">Status Booking: {{ match($bookingSummary?->status) {
+                    'approved' => 'Disetujui',
+                    'pending' => 'Menunggu Persetujuan',
+                    'rejected' => 'Ditolak',
+                    default => 'Belum tersedia',
+                } }}</h2>
+                <p class="dh-budget-amount">{{ $bookingSummary?->total_price !== null ? 'Rp ' . number_format((float) $bookingSummary->total_price, 0, ',', '.') : 'Belum ditentukan' }}</p>
+                <div class="dh-stat-foot"><span>Status sistem</span><strong class="dh-status dh-status-{{ $bookingSummary?->status ?? 'unavailable' }}">{{ ucfirst($bookingSummary?->status ?? 'Belum tersedia') }}</strong></div>
+                <div class="dh-stat-foot"><span>Jumlah tamu</span><strong>{{ number_format((int) ($bookingSummary?->guest_count ?? 0), 0, ',', '.') }} orang</strong></div>
                 <a href="{{ route('user.history.index') }}" class="wo-link">Buka Riwayat Pembelian <i class="bi bi-arrow-right"></i></a>
             </article>
 
             <article class="wo-card dh-stat-card">
+                <span class="wo-badge wo-badge-green">Kesiapan Vendor</span>
+                @if($bookingSummary?->status === 'approved')
+                    <h2 class="dh-card-title">{{ $vendorReadiness['percent'] }}% terkonfirmasi</h2>
+                    <p class="dh-card-sub">{{ $vendorReadiness['confirmed'] }} dari {{ $vendorReadiness['total'] }} vendor pada acara ini sudah disetujui.</p>
+                    <progress class="dh-progress" max="100" value="{{ $vendorReadiness['percent'] }}" aria-label="Kesiapan vendor {{ $vendorReadiness['percent'] }} persen"></progress>
+                    <div class="dh-stat-foot"><span>{{ $vendorReadiness['waiting'] }} menunggu</span><span>{{ $vendorReadiness['review'] }} ditolak</span></div>
+                @else
+                    <p class="dh-card-sub">Data vendor akan tampil setelah booking disetujui.</p>
+                @endif
+                <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Kelola vendor <i class="bi bi-arrow-right"></i></a>
+            </article>
+
+            <article class="wo-card dh-stat-card">
                 <span class="wo-badge wo-badge-neutral">Informasi Acara</span>
-                <h2 class="dh-card-title">{{ $event->name }}</h2>
-                <p class="dh-card-sub">{{ $event->event_date?->format('d/m/Y') }} · {{ ucfirst($event->status) }}</p>
-                <div class="dh-event-summary"><i class="bi bi-geo-alt"></i><span>{{ $booking->venue_name }}<small>{{ $booking->venue_city }}, {{ $booking->venue_province }}</small></span></div>
-                <div class="dh-event-summary"><i class="bi bi-calendar-event"></i><span>{{ $bookingEvents->count() }} acara dalam booking</span></div>
+                @if($bookingSummary?->status === 'approved')
+                    <h2 class="dh-card-title">{{ $event?->name ?? 'Belum ada acara' }}</h2>
+                    <p class="dh-card-sub">{{ $event?->event_date?->format('d/m/Y') ?? 'Tanggal belum ditentukan' }} · {{ ucfirst($event?->status ?? 'Belum tersedia') }}</p>
+                    <div class="dh-event-summary"><i class="bi bi-geo-alt"></i><span>{{ $booking?->venue_name ?? 'Lokasi belum ditentukan' }}<small>{{ $booking?->venue_city ?? '-' }}, {{ $booking?->venue_province ?? '-' }}</small></span></div>
+                    <div class="dh-event-summary"><i class="bi bi-calendar-event"></i><span>{{ $bookingEvents->count() }} acara dalam booking</span></div>
+                @else
+                    <p class="dh-card-sub">Informasi acara akan tampil setelah booking disetujui.</p>
+                @endif
                 <a href="{{ route('user.rundown') }}" class="wo-link">Lihat Rundown <i class="bi bi-arrow-right"></i></a>
             </article>
         </section>
@@ -82,7 +87,9 @@
                         <a href="{{ route('user.rundown') }}" class="wo-link">Semua acara <i class="bi bi-arrow-right"></i></a>
                     </div>
 
-                    @if($upcomingEvents->isEmpty())
+                    @if($bookingSummary?->status !== 'approved')
+                        <div class="dh-inline-empty"><i class="bi bi-hourglass-split"></i><p>Jadwal akan tampil setelah booking disetujui.</p></div>
+                    @elseif($upcomingEvents->isEmpty())
                         <div class="dh-inline-empty"><i class="bi bi-calendar-check"></i><p>Tidak ada acara mendatang pada booking aktif Anda.</p></div>
                     @else
                         <div class="dh-event-list">
@@ -109,7 +116,9 @@
                         <span class="wo-badge wo-badge-neutral">{{ $vendorCount }} vendor</span>
                     </div>
 
-                    @if($vendorSchedules->isEmpty())
+                    @if($bookingSummary?->status !== 'approved')
+                        <div class="dh-inline-empty"><i class="bi bi-hourglass-split"></i><p>Penanggung jawab akan tampil setelah booking disetujui.</p></div>
+                    @elseif($vendorSchedules->isEmpty())
                         <div class="dh-inline-empty"><i class="bi bi-shop"></i><p>Belum ada vendor yang tercatat pada acara ini.</p></div>
                     @else
                         <div class="dh-vendor-list">
@@ -146,6 +155,5 @@
                 </article>
             </aside>
         </div>
-    @endif
 </main>
 @endsection

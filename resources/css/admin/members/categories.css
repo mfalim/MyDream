@@ -1,0 +1,250 @@
+/* ==========================================================================
+   KATEGORI MEMBER (DIVISI, POSISI, SPESIALISASI)
+   MyDream Wedding Organizer - Botanical Emerald Theme
+   File: resources/css/admin/members/categories.css
+   ========================================================================== */
+
+.member-category-page {
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+/* Header Halaman */
+.member-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.member-category-header .eyebrow {
+    color: #55756d;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.member-category-header h2 {
+    color: #173f39;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin: 0 0 4px;
+    line-height: 1.2;
+}
+.member-category-header p {
+    color: #556b62;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Kartu Ringkasan (Stats Grid) */
+.category-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 22px;
+}
+.category-stat-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.category-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(22, 48, 42, 0.06);
+}
+.category-stat-info small {
+    display: block;
+    color: #5a7067;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+.category-stat-info strong {
+    font-size: 24px;
+    font-weight: 700;
+    color: #173f39;
+    line-height: 1;
+}
+.category-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+/* Filter Card */
+.category-filter-card {
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    margin-bottom: 22px;
+}
+
+/* Table Card */
+.category-table-card {
+    background: #ffffff;
+    border: 1px solid #e4ebe8;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    overflow: hidden;
+}
+.member-category-table {
+    width: 100%;
+    margin-bottom: 0;
+}
+.member-category-table thead th {
+    background: #f7faf9;
+    color: #4b6259;
+    border-bottom: 1px solid #e4ebe8;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 14px 18px;
+}
+.member-category-table tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f0f4f2;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #2b3b35;
+}
+.member-category-table tbody tr:hover {
+    background: #fafcfb;
+}
+.member-category-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges Jenis Kategori */
+.category-badge-division {
+    background: #edf5f2;
+    color: #073d36;
+    border: 1px solid #c2dbd0;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.category-badge-position {
+    background: #fdf6ec;
+    color: #92530c;
+    border: 1px solid #fae1c3;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.category-badge-specialization {
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Action Buttons */
+.btn-category-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    border: 1px solid #d4dfda;
+    background: #ffffff;
+    color: #3b5249;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+}
+.btn-category-action:hover {
+    background: #073d36;
+    color: #ffffff;
+    border-color: #073d36;
+}
+.btn-category-action.delete:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+}
+
+/* Theme Button Emerald */
+.btn-emerald {
+    background: #073d36;
+    color: #ffffff;
+    border: 1px solid #073d36;
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.btn-emerald:hover {
+    background: #052c27;
+    color: #dfc28b;
+}
+
+/* Modal Form Styles */
+.modal-header-emerald {
+    background: #f7faf9;
+    border-bottom: 1px solid #e4ebe8;
+    padding: 18px 24px;
+}
+.modal-header-emerald .modal-title {
+    color: #073d36;
+    font-weight: 700;
+    font-size: 17px;
+}
+
+/* Responsif */
+@media (max-width: 991px) {
+    .category-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 575px) {
+    .category-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .member-category-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+

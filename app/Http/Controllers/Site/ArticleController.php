@@ -15,7 +15,7 @@ class ArticleController extends Controller
         $category = $categories->contains($request->query('category')) ? $request->query('category') : null;
 
         return view('site.article.index', [
-            'articles' => Article::published()->when($category, fn ($q) => $q->where('category', $category))->latestFirst()->get(),
+            'articles' => Article::published()->with('event')->when($category, fn ($q) => $q->where('category', $category))->latestFirst()->get(),
             'categories' => $categories,
             'activeCategory' => $category,
         ]);
@@ -23,7 +23,7 @@ class ArticleController extends Controller
 
     public function show(string $slug): View
     {
-        $article = Article::published()->with('package')->where('slug', $slug)->firstOrFail();
+        $article = Article::published()->with(['package', 'event'])->where('slug', $slug)->firstOrFail();
 
         return view('site.article.show', [
             'article' => $article,
