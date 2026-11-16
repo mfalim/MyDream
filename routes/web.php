@@ -8,15 +8,17 @@ use App\Http\Controllers\Member\DashboardController as MemberDashboardController
 use App\Http\Controllers\Member\ProfileController as MemberProfileController;
 use App\Http\Middleware\EnsureUserRole;
 
-Route::get('/login', function () {
-    return view('login.login');
-})->name('login');
+    // Dashboard
+    Route::get('/dashboard', function () {
+        return view('vendor.dashboard');
+    })->name('dashboard');
 
 Route::post('/login', [GoogleAuthController::class, 'loginWithCredentials'])->name('login.attempt');
 Route::post('/register', [GoogleAuthController::class, 'registerWithCredentials'])->name('register.attempt');
 
-Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
+    // Tracking tugas
+    Route::get('/tracking', [VendorPortalController::class, 'tracking'])
+        ->name('tracking');
 
 Route::post('/logout', function () {
     Auth::logout();
