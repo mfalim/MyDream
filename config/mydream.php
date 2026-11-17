@@ -15,8 +15,8 @@ return [
 
     // Rekening tujuan transfer. Diisi lewat .env, tidak ditulis permanen di kode/view.
     'bank' => [
-        'name' => env('MYDREAM_BANK_NAME'),
-        'number' => env('MYDREAM_BANK_NUMBER'),
-        'holder' => env('MYDREAM_BANK_HOLDER'),
+        'name' => env('MYDREAM_BANK_NAME', 'BCA'),
+        'number' => env('MYDREAM_BANK_NUMBER', '1234567890'),
+        'holder' => env('MYDREAM_BANK_HOLDER', 'MyDream Wedding Organizer'),
     ],
 ];

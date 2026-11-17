@@ -21,6 +21,23 @@ class Vendor extends Model
         'description',
     ];
 
+    protected $appends = [
+        'photo',
+    ];
+
+    public function getPhotoAttribute(): ?string
+    {
+        $photos = $this->relationLoaded('photos') ? $this->photos : $this->photos()->get();
+        $cover = $photos->firstWhere('is_cover', true) ?? $photos->first();
+        if (! $cover || ! $cover->photo) {
+            return null;
+        }
+
+        return str_starts_with($cover->photo, 'http')
+            ? $cover->photo
+            : asset('storage/' . ltrim($cover->photo, '/'));
+    }
+
     public function getFormattedBankAccountAttribute(): ?string
     {
         if (! $this->bank_name && ! $this->bank_account_number) {

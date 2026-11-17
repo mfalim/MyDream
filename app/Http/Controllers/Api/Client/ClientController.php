@@ -118,7 +118,22 @@ class ClientController extends Controller
             return $payment;
         });
 
-        return response()->json(['data' => $payment, 'booking' => $booking->fresh()], 201);
+        return response()->json([
+            'data' => [
+                'payment' => $payment,
+                'booking' => $booking->fresh(),
+                'id' => $payment->id,
+                'booking_id' => $payment->booking_id,
+                'type' => $payment->type,
+                'amount' => $payment->amount,
+                'method' => $payment->method,
+                'bank_info' => $payment->bank_info,
+                'status' => $payment->status,
+                'proof_path' => $payment->proof_path,
+                'created_at' => $payment->created_at,
+            ],
+            'booking' => $booking->fresh(),
+        ], 201);
     }
 
     public function events(Request $request)
@@ -201,10 +216,18 @@ class ClientController extends Controller
 
     public function createBooking(Request $request)
     {
-        $client = Client::where('users_id', $request->user()->id)->firstOrFail();
+        $client = Client::where('users_id', $request->user()->id)->first();
+        if (! $client) {
+            $client = Client::create([
+                'users_id' => $request->user()->id,
+                'groom_name' => $request->input('groom_name', $request->user()->name),
+                'bride_name' => $request->input('bride_name', 'Pasangan'),
+                'email' => $request->user()->email,
+            ]);
+        }
         $data = $request->validate([
             'package_id' => ['nullable', 'exists:packages,id'],
-            'vendor_ids' => ['required_without:package_id', 'array', 'min:3'],
+            'vendor_ids' => ['required_without:package_id', 'array', 'min:1'],
             'vendor_ids.*' => ['integer', 'distinct', 'exists:vendors,id'],
             'venue_name' => ['required', 'string', 'max:255'],
             'venue_address' => ['required', 'string', 'max:1000'],
@@ -212,7 +235,7 @@ class ClientController extends Controller
             'venue_province' => ['required', 'string', 'max:100'],
             'venue_maps' => ['nullable', 'string', 'max:1000'],
             'guest_count' => ['required', 'integer', 'min:1', 'max:10000'],
-            'event_date' => ['required', 'date', 'after:today'],
+            'event_date' => ['required', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
         if (isset($data['package_id'])) {

@@ -152,9 +152,33 @@
                     </form>
                 </div>
             @elseif ($activeTab === 'bookings')
-                <div>
-                    <input type="text" id="bookingSearchInput" class="form-control form-control-sm"
-                           placeholder="Cari mempelai / invoice / venue..." style="min-width: 240px;">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+                    <div class="finance-pill-group" id="bookingStatusFilterGroup">
+                        <button type="button" class="finance-pill active" data-filter="all">
+                            <span>Semua</span>
+                            <span class="badge rounded-pill text-bg-light">{{ $bookings->count() }}</span>
+                        </button>
+                        <button type="button" class="finance-pill" data-filter="paid">
+                            <span>Lunas</span>
+                            <span class="badge rounded-pill text-bg-light">{{ $bookings->where('payment_status', 'paid')->count() }}</span>
+                        </button>
+                        <button type="button" class="finance-pill" data-filter="dp_paid">
+                            <span>DP</span>
+                            <span class="badge rounded-pill text-bg-light">{{ $bookings->where('payment_status', 'dp_paid')->count() }}</span>
+                        </button>
+                        <button type="button" class="finance-pill" data-filter="unpaid">
+                            <span>Belum Bayar</span>
+                            <span class="badge rounded-pill text-bg-light">{{ $bookings->whereIn('payment_status', ['unpaid', 'awaiting_verification'])->count() }}</span>
+                        </button>
+                    </div>
+                    <div class="ledger-search-box">
+                        <i class="bi bi-search text-muted"></i>
+                        <input type="text" id="bookingSearchInput" class="form-control form-control-sm border-0"
+                               placeholder="Cari mempelai / invoice / venue...">
+                        <button type="button" class="btn-clear-search d-none" id="bookingClearSearchBtn" title="Reset pencarian">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </button>
+                    </div>
                 </div>
             @endif
         </div>
@@ -360,113 +384,6 @@
                                     </button>
                                 </td>
                             </tr>
-
-                            {{-- MODAL PENCAIRAN DANA VENDOR --}}
-                            <div class="modal fade" id="vendorPayoutModal{{ $schedule->id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                                        <form action="{{ route('admin.payments.vendor-payout', $schedule) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            <input type="hidden" name="redirect_vendor_status" value="{{ $vendorStatusFilter }}">
-                                            <input type="hidden" name="redirect_booking_id" value="{{ $bookingFilter }}">
-
-                                            <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
-                                                <div>
-                                                    <h5 class="modal-title fw-bold mb-0">Pencairan &amp; Bukti Transfer Vendor</h5>
-                                                    <small class="opacity-75">{{ $vendor?->name ?? $schedule->activity }} — {{ $event?->name }}</small>
-                                                </div>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            <div class="modal-body p-4">
-                                                @if (! in_array($clientPayStatus, ['dp_paid', 'paid']))
-                                                    <div class="alert alert-warning small mb-3">
-                                                        <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                                                        <strong>Perhatian:</strong> Booking #{{ $booking?->id }} masih berstatus <strong>{{ $clientPayLabel }}</strong>.
-                                                    </div>
-                                                @endif
-
-                                                <div class="p-3 rounded-3 border bg-light mb-3">
-                                                    <div class="small fw-bold text-uppercase text-muted mb-2">
-                                                        <i class="bi bi-bank me-1"></i> Rekening Bank Tujuan Vendor
-                                                    </div>
-                                                    <div class="row g-2">
-                                                        <div class="col-4">
-                                                            <input type="text" name="bank_name" class="form-control form-control-sm"
-                                                                   value="{{ $vendor?->bank_name }}" placeholder="Bank (BCA/BRI)">
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <input type="text" name="bank_account_number" class="form-control form-control-sm"
-                                                                   value="{{ $vendor?->bank_account_number }}" placeholder="No. Rekening">
-                                                        </div>
-                                                        <div class="col-4">
-                                                            <input type="text" name="bank_account_holder" class="form-control form-control-sm"
-                                                                   value="{{ $vendor?->bank_account_holder }}" placeholder="Atas Nama">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase mb-1">Harga Nett Mitra Vendor (Rp)</label>
-                                                    <input type="number" step="1" min="0" name="agreed_fee"
-                                                           id="agreedFeeInput{{ $schedule->id }}"
-                                                           class="form-control num-tabular"
-                                                           value="{{ (int) $effectiveFee }}" required>
-                                                    <div class="fee-preset-group">
-                                                        <button type="button" class="fee-preset-btn"
-                                                                onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) round($catalogFee * 0.85) }}">
-                                                            Mitra -15% ({{ $rupiah($catalogFee * 0.85) }})
-                                                        </button>
-                                                        <button type="button" class="fee-preset-btn"
-                                                                onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) round($catalogFee * 0.90) }}">
-                                                            Mitra -10% ({{ $rupiah($catalogFee * 0.90) }})
-                                                        </button>
-                                                        <button type="button" class="fee-preset-btn"
-                                                                onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) $catalogFee }}">
-                                                            Katalog ({{ $rupiah($catalogFee) }})
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase">Skema Pencairan</label>
-                                                    <select name="payout_scheme" class="form-select vendor-scheme-select" data-target="#customAmountWrap{{ $schedule->id }}">
-                                                        <option value="dp_50" {{ $vPayStatus === 'dp_paid' ? 'selected' : '' }}>Cairkan DP 50%</option>
-                                                        <option value="paid_full" {{ $vPayStatus === 'paid' ? 'selected' : '' }}>Pelunasan Penuh 100%</option>
-                                                        <option value="custom">Input Nominal Manual (Custom)</option>
-                                                        <option value="unpaid" {{ $vPayStatus === 'unpaid' ? 'selected' : '' }}>Reset Belum Dicairkan (Rp 0)</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="mb-3" id="customAmountWrap{{ $schedule->id }}" style="display: none;">
-                                                    <label class="form-label fw-bold small text-uppercase">Nominal Dicairkan (Rp)</label>
-                                                    <input type="number" step="1" min="0" name="paid_amount"
-                                                           class="form-control num-tabular"
-                                                           value="{{ (int) $paidVendor }}">
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label fw-bold small text-uppercase">Upload Struk Bukti Transfer (JPG/PNG/PDF)</label>
-                                                    <input type="file" name="payout_proof" accept=".jpg,.jpeg,.png,.pdf" class="form-control form-control-sm">
-                                                </div>
-
-                                                <div class="mb-0">
-                                                    <label class="form-label fw-bold small text-uppercase">Catatan Transfer</label>
-                                                    <textarea name="payment_notes" rows="2" class="form-control form-control-sm"
-                                                              placeholder="Contoh: Transfer BCA 50% DP">{{ $schedule->payment_notes }}</textarea>
-                                                </div>
-                                            </div>
-
-                                            <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
-                                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn-fin-primary">
-                                                    <i class="bi bi-check2-circle"></i> Simpan Pencairan
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         @empty
                             <tr>
                                 <td colspan="7" class="text-center py-5 text-muted">Tidak ada data pencairan vendor.</td>
@@ -475,6 +392,131 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- MODAL PENCAIRAN DANA VENDOR (HOISTED OUTSIDE TABLE FOR VALID HTML) --}}
+            @foreach ($vendorSchedules as $schedule)
+                @php
+                    $event = $schedule->event;
+                    $booking = $event?->booking;
+                    $vendor = $schedule->vendor;
+                    $catalogFee = (float) ($schedule->price ?? $vendor?->price ?? $schedule->effective_fee);
+                    $effectiveFee = $schedule->effective_fee;
+                    $paidVendor = (float) ($schedule->paid_amount ?? 0);
+                    $vPayStatus = $schedule->payment_status ?: 'unpaid';
+                    $clientPayStatus = $booking?->payment_status ?: 'unpaid';
+                    $clientPayLabel = match ($clientPayStatus) {
+                        'paid' => 'Klien Lunas',
+                        'dp_paid' => 'Klien Sudah DP',
+                        'awaiting_verification' => 'Cek Bukti Klien',
+                        default => 'Klien Belum Bayar',
+                    };
+                @endphp
+                <div class="modal fade" id="vendorPayoutModal{{ $schedule->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                            <form action="{{ route('admin.payments.vendor-payout', $schedule) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="hidden" name="redirect_vendor_status" value="{{ $vendorStatusFilter }}">
+                                <input type="hidden" name="redirect_booking_id" value="{{ $bookingFilter }}">
+
+                                <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                                    <div>
+                                        <h5 class="modal-title fw-bold mb-0">Pencairan &amp; Bukti Transfer Vendor</h5>
+                                        <small class="opacity-75">{{ $vendor?->name ?? $schedule->activity }} — {{ $event?->name }}</small>
+                                    </div>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body p-4">
+                                    @if (! in_array($clientPayStatus, ['dp_paid', 'paid']))
+                                        <div class="alert alert-warning small mb-3">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                            <strong>Perhatian:</strong> Booking #{{ $booking?->id }} masih berstatus <strong>{{ $clientPayLabel }}</strong>.
+                                        </div>
+                                    @endif
+
+                                    <div class="p-3 rounded-3 border bg-light mb-3">
+                                        <div class="small fw-bold text-uppercase text-muted mb-2">
+                                            <i class="bi bi-bank me-1"></i> Rekening Bank Tujuan Vendor
+                                        </div>
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <input type="text" name="bank_name" class="form-control form-control-sm"
+                                                       value="{{ $vendor?->bank_name }}" placeholder="Bank (BCA/BRI)">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="text" name="bank_account_number" class="form-control form-control-sm"
+                                                       value="{{ $vendor?->bank_account_number }}" placeholder="No. Rekening">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="text" name="bank_account_holder" class="form-control form-control-sm"
+                                                       value="{{ $vendor?->bank_account_holder }}" placeholder="Atas Nama">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-uppercase mb-1">Harga Nett Mitra Vendor (Rp)</label>
+                                        <input type="number" step="1" min="0" name="agreed_fee"
+                                               id="agreedFeeInput{{ $schedule->id }}"
+                                               class="form-control num-tabular"
+                                               value="{{ (int) $effectiveFee }}" required>
+                                        <div class="fee-preset-group">
+                                            <button type="button" class="fee-preset-btn"
+                                                    onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) round($catalogFee * 0.85) }}">
+                                                Mitra -15% ({{ $rupiah($catalogFee * 0.85) }})
+                                            </button>
+                                            <button type="button" class="fee-preset-btn"
+                                                    onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) round($catalogFee * 0.90) }}">
+                                                Mitra -10% ({{ $rupiah($catalogFee * 0.90) }})
+                                            </button>
+                                            <button type="button" class="fee-preset-btn"
+                                                    onclick="document.getElementById('agreedFeeInput{{ $schedule->id }}').value = {{ (int) $catalogFee }}">
+                                                Katalog ({{ $rupiah($catalogFee) }})
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-uppercase">Skema Pencairan</label>
+                                        <select name="payout_scheme" class="form-select vendor-scheme-select" data-target="#customAmountWrap{{ $schedule->id }}">
+                                            <option value="dp_50" {{ $vPayStatus === 'dp_paid' ? 'selected' : '' }}>Cairkan DP 50%</option>
+                                            <option value="paid_full" {{ $vPayStatus === 'paid' ? 'selected' : '' }}>Pelunasan Penuh 100%</option>
+                                            <option value="custom">Input Nominal Manual (Custom)</option>
+                                            <option value="unpaid" {{ $vPayStatus === 'unpaid' ? 'selected' : '' }}>Reset Belum Dicairkan (Rp 0)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3" id="customAmountWrap{{ $schedule->id }}" style="display: none;">
+                                        <label class="form-label fw-bold small text-uppercase">Nominal Dicairkan (Rp)</label>
+                                        <input type="number" step="1" min="0" name="paid_amount"
+                                               class="form-control num-tabular"
+                                               value="{{ (int) $paidVendor }}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small text-uppercase">Upload Struk Bukti Transfer (JPG/PNG/PDF)</label>
+                                        <input type="file" name="payout_proof" accept=".jpg,.jpeg,.png,.pdf" class="form-control form-control-sm">
+                                    </div>
+
+                                    <div class="mb-0">
+                                        <label class="form-label fw-bold small text-uppercase">Catatan Transfer</label>
+                                        <textarea name="payment_notes" rows="2" class="form-control form-control-sm"
+                                                  placeholder="Contoh: Transfer BCA 50% DP">{{ $schedule->payment_notes }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
+                                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn-fin-primary">
+                                        <i class="bi bi-check2-circle"></i> Simpan Pencairan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         @endif
 
         {{-- ==================================================================
@@ -507,141 +549,218 @@
                                     'awaiting_verification' => 'Menunggu Verifikasi',
                                     default => 'Belum Bayar',
                                 };
-                                $searchKey = strtolower(($booking->client->groom_name ?? '') . ' ' . ($booking->client->bride_name ?? '') . ' ' . ($booking->invoice_number ?? '') . ' ' . ($booking->venue_name ?? ''));
+                                $searchKey = strtolower(
+                                    ($booking->id) . ' ' .
+                                    ($booking->client?->groom_name ?? '') . ' ' .
+                                    ($booking->client?->bride_name ?? '') . ' ' .
+                                    ($booking->invoice_number ?? '') . ' ' .
+                                    ($booking->package?->name ?? '') . ' ' .
+                                    ($booking->venue_name ?? '') . ' ' .
+                                    ($booking->venue_city ?? '')
+                                );
+                                $marginPct = $totalPrice > 0 ? round(($row['projected_margin'] / $totalPrice) * 100, 1) : 0;
                             @endphp
-                            <tr data-search="{{ $searchKey }}">
+                            <tr class="booking-ledger-row" data-search="{{ $searchKey }}" data-status="{{ $payStatus }}">
                                 <td>
-                                    <div class="fw-bold">#{{ $booking->id }} · {{ $booking->client->groom_name ?? 'N/A' }} &amp; {{ $booking->client->bride_name ?? 'N/A' }}</div>
-                                    <div class="small text-muted">
-                                        {{ $booking->invoice_number ?? 'Invoice Belum Terbit' }}
-                                        · {{ $booking->package->name ?? 'Custom Vendor' }} ({{ $booking->venue_city }})
+                                    <div class="d-flex align-items-center gap-2 mb-1">
+                                        <span class="ledger-id-badge">#{{ $booking->id }}</span>
+                                        <span class="ledger-invoice-badge" title="Nomor Invoice">
+                                            <i class="bi bi-receipt"></i> {{ $booking->invoice_number ?? 'Belum Terbit' }}
+                                        </span>
+                                    </div>
+                                    <div class="ledger-couple-names">
+                                        {{ $booking->client?->groom_name ?? 'N/A' }} <span class="ledger-amp">&amp;</span> {{ $booking->client?->bride_name ?? 'N/A' }}
+                                    </div>
+                                    <div class="ledger-meta-row">
+                                        <span class="ledger-package-tag">
+                                            <i class="bi bi-stars"></i> {{ $booking->package?->name ?? 'Custom Vendor' }}
+                                        </span>
+                                        <span class="ledger-venue-tag" title="{{ $booking->venue_name ?? '-' }}">
+                                            <i class="bi bi-geo-alt"></i> {{ $booking->venue_city ?: ($booking->venue_name ?: 'Venue TBD') }}
+                                        </span>
                                     </div>
                                 </td>
-                                <td style="min-width: 210px;">
+                                <td>
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="fin-badge {{ $payStatus }}">{{ $payStatusLabel }}</span>
-                                        <span class="num-tabular small">{{ $rupiah($paidAmount) }} / {{ $rupiah($totalPrice) }}</span>
+                                        <span class="num-tabular fw-bold text-dark">{{ $rupiah($paidAmount) }}</span>
                                     </div>
-                                    <div class="fin-progress">
-                                        <div class="fin-progress-bar {{ $pct < 100 ? 'gold' : '' }}" style="width: {{ $pct }}%"></div>
+                                    <div class="fin-progress" title="Progres Pelunasan {{ $pct }}%">
+                                        <div class="fin-progress-bar {{ $pct >= 100 ? 'bg-success' : 'gold' }}" style="width: {{ $pct }}%"></div>
                                     </div>
-                                    @if ($remaining > 0)
-                                        <div class="small text-danger num-tabular mt-1">Piutang: {{ $rupiah($remaining) }}</div>
-                                    @endif
+                                    <div class="d-flex justify-content-between align-items-center mt-1 pt-1" style="font-size: 11.5px;">
+                                        <span class="text-muted">Total: <span class="num-tabular fw-semibold">{{ $rupiah($totalPrice) }}</span></span>
+                                        @if ($remaining > 0)
+                                            <span class="text-danger fw-bold num-tabular" title="Sisa Piutang Klien">
+                                                <i class="bi bi-clock-history"></i> Sisa: {{ $rupiah($remaining) }}
+                                            </span>
+                                        @else
+                                            <span class="text-success fw-bold">
+                                                <i class="bi bi-check-circle-fill"></i> Lunas 100%
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td>
-                                    <div class="small num-tabular">
-                                        Vendor ({{ $row['vendor_count'] }}): <strong class="text-dark">{{ $rupiah($row['vendor_paid']) }}</strong> / {{ $rupiah($row['vendor_total']) }}
-                                    </div>
-                                    <div class="small num-tabular mt-1">
-                                        Kru ({{ $row['crew_count'] }}): <strong class="text-dark">{{ $rupiah($row['crew_paid']) }}</strong> / {{ $rupiah($row['crew_total']) }}
+                                    <div class="ledger-outflow-card">
+                                        <div class="ledger-outflow-item">
+                                            <div class="ledger-outflow-header">
+                                                <span><i class="bi bi-shop text-primary me-1"></i> Mitra Vendor ({{ $row['vendor_count'] }})</span>
+                                                <span class="num-tabular {{ $row['vendor_remaining'] > 0 ? 'text-amber' : 'text-success' }}">
+                                                    {{ $rupiah($row['vendor_paid']) }} / {{ $rupiah($row['vendor_total']) }}
+                                                </span>
+                                            </div>
+                                            @if ($row['vendor_total'] > 0)
+                                                @php
+                                                    $vPct = min(100, round(($row['vendor_paid'] / $row['vendor_total']) * 100));
+                                                @endphp
+                                                <div class="fin-progress mini">
+                                                    <div class="fin-progress-bar bg-info" style="width: {{ $vPct }}%"></div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="ledger-outflow-item mt-2">
+                                            <div class="ledger-outflow-header">
+                                                <span><i class="bi bi-people text-secondary me-1"></i> Tim Kru ({{ $row['crew_count'] }})</span>
+                                                <span class="num-tabular {{ $row['crew_remaining'] > 0 ? 'text-muted' : 'text-success' }}">
+                                                    {{ $rupiah($row['crew_paid']) }} / {{ $rupiah($row['crew_total']) }}
+                                                </span>
+                                            </div>
+                                            @if ($row['crew_total'] > 0)
+                                                @php
+                                                    $cPct = min(100, round(($row['crew_paid'] / $row['crew_total']) * 100));
+                                                @endphp
+                                                <div class="fin-progress mini">
+                                                    <div class="fin-progress-bar bg-secondary" style="width: {{ $cPct }}%"></div>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="num-tabular {{ $row['cash_balance_now'] >= 0 ? 'text-dark' : 'text-danger' }}">
-                                        Kas: {{ $rupiah($row['cash_balance_now']) }}
+                                    <div class="ledger-cash-chip {{ $row['cash_balance_now'] >= 0 ? 'positive' : 'negative' }}">
+                                        <div class="ledger-chip-label">Kas Bersih Realtime</div>
+                                        <div class="ledger-chip-val num-tabular">
+                                            {{ $row['cash_balance_now'] >= 0 ? '+' : '' }}{{ $rupiah($row['cash_balance_now']) }}
+                                        </div>
                                     </div>
-                                    <div class="small num-tabular {{ $row['projected_margin'] >= 0 ? 'text-success' : 'text-danger' }}">
-                                        Est. Margin: {{ $rupiah($row['projected_margin']) }}
+                                    <div class="ledger-margin-row mt-1">
+                                        <span class="text-muted small">Est. Margin:</span>
+                                        <span class="num-tabular fw-bold {{ $row['projected_margin'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                            {{ $row['projected_margin'] >= 0 ? '+' : '' }}{{ $rupiah($row['projected_margin']) }}
+                                            <span class="opacity-75">({{ $marginPct }}%)</span>
+                                        </span>
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-inline-flex gap-1">
+                                    <div class="d-inline-flex align-items-center gap-1">
                                         <button type="button" class="btn-fin-outline"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#bookingHistoryModal{{ $booking->id }}"
-                                                title="Lihat Bukti Transfer Klien">
-                                            <i class="bi bi-images"></i>
+                                                title="Lihat Riwayat & Bukti Transfer Klien ({{ $booking->payments->count() }})">
+                                            <i class="bi bi-images text-primary"></i>
                                             <span>Bukti ({{ $booking->payments->count() }})</span>
                                         </button>
                                         <a href="{{ route('admin.payments.invoice', $booking) }}"
-                                           class="btn-fin-outline" title="Cetak Invoice & Kwitansi">
-                                            <i class="bi bi-printer"></i>
+                                           class="btn-fin-outline" title="Cetak Invoice & Kwitansi Resmi">
+                                            <i class="bi bi-printer text-dark"></i>
                                             <span>Invoice</span>
                                         </a>
                                         <a href="{{ route('admin.payments.index', ['tab' => 'vendor_payouts', 'booking_id' => $booking->id]) }}"
                                            class="btn-fin-outline" title="Kelola Pencairan Vendor Booking Ini">
-                                            <i class="bi bi-shop"></i>
+                                            <i class="bi bi-wallet2 text-success"></i>
                                         </a>
                                     </div>
                                 </td>
                             </tr>
-
-                            {{-- MODAL RIWAYAT & BUKTI TRANSFER PER BOOKING --}}
-                            <div class="modal fade" id="bookingHistoryModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-centered">
-                                    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                                        <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
-                                            <div>
-                                                <h5 class="modal-title fw-bold mb-0">Riwayat &amp; Bukti Transfer Klien — Booking #{{ $booking->id }}</h5>
-                                                <small class="opacity-75">{{ $booking->client->groom_name ?? '' }} &amp; {{ $booking->client->bride_name ?? '' }} · Kontrak: {{ $rupiah($totalPrice) }}</small>
-                                            </div>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            @if ($booking->payments->isEmpty())
-                                                <div class="text-center py-4 text-muted">
-                                                    <i class="bi bi-receipt fs-2 d-block mb-2"></i>
-                                                    Belum ada catatan pembayaran atau bukti transfer pada booking ini.
-                                                </div>
-                                            @else
-                                                <div class="table-responsive">
-                                                    <table class="finance-table border">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Tanggal</th>
-                                                                <th>Tahapan</th>
-                                                                <th>Nominal</th>
-                                                                <th>Metode / Rekening</th>
-                                                                <th>Status</th>
-                                                                <th class="text-end">Bukti Struk</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach ($booking->payments as $p)
-                                                                @php
-                                                                    $tName = ['dp' => 'DP', 'full' => 'Lunas', 'remaining' => 'Pelunasan'][$p->type] ?? strtoupper($p->type);
-                                                                @endphp
-                                                                <tr>
-                                                                    <td>{{ $p->created_at?->format('d/m/Y H:i') }}</td>
-                                                                    <td class="fw-bold">{{ $tName }}</td>
-                                                                    <td class="num-tabular">{{ $rupiah($p->amount) }}</td>
-                                                                    <td class="small">{{ $p->bank_info ?: '-' }}</td>
-                                                                    <td><span class="fin-badge {{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
-                                                                    <td class="text-end">
-                                                                        @if ($p->proof_url)
-                                                                            <button type="button" class="btn-fin-outline"
-                                                                                    onclick="openProofPreview('{{ $p->proof_url }}', 'Bukti Transfer #{{ $booking->id }} — {{ $tName }} ({{ $rupiah($p->amount) }})')">
-                                                                                <i class="bi bi-file-earmark-image"></i> Lihat Struk
-                                                                            </button>
-                                                                        @else
-                                                                            <span class="text-muted small">Tanpa file</span>
-                                                                        @endif
-                                                                    </td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div class="modal-footer bg-light">
-                                            <a href="{{ route('admin.payments.invoice', $booking) }}" class="btn-fin-primary">
-                                                <i class="bi bi-printer"></i> Buka Invoice &amp; Kwitansi Resmi
-                                            </a>
-                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">Belum ada data booking klien.</td>
                             </tr>
                         @endforelse
+                        <tr id="bookingNoMatchRow" style="display: none;">
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-3 d-block mb-2 text-muted opacity-50"></i>
+                                Tidak ada booking yang cocok dengan kata kunci atau filter status ini.
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
+
+            {{-- MODAL RIWAYAT & BUKTI TRANSFER PER BOOKING (HOISTED OUTSIDE TABLE FOR VALID HTML) --}}
+            @foreach ($projectLedgers as $row)
+                @php
+                    $booking = $row['booking'];
+                    $totalPrice = $row['contract_total'];
+                @endphp
+                <div class="modal fade" id="bookingHistoryModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                            <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                                <div>
+                                    <h5 class="modal-title fw-bold mb-0">Riwayat &amp; Bukti Transfer Klien — Booking #{{ $booking->id }}</h5>
+                                    <small class="opacity-75">{{ $booking->client?->groom_name ?? '' }} &amp; {{ $booking->client?->bride_name ?? '' }} · Kontrak: {{ $rupiah($totalPrice) }}</small>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                @if ($booking->payments->isEmpty())
+                                    <div class="text-center py-4 text-muted">
+                                        <i class="bi bi-receipt fs-2 d-block mb-2 text-muted opacity-50"></i>
+                                        Belum ada catatan pembayaran atau bukti transfer pada booking ini.
+                                    </div>
+                                @else
+                                    <div class="table-responsive">
+                                        <table class="finance-table border">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tanggal</th>
+                                                    <th>Tahapan</th>
+                                                    <th>Nominal</th>
+                                                    <th>Metode / Rekening</th>
+                                                    <th>Status</th>
+                                                    <th class="text-end">Bukti Struk</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($booking->payments as $p)
+                                                    @php
+                                                        $tName = ['dp' => 'DP', 'full' => 'Lunas', 'remaining' => 'Pelunasan'][$p->type] ?? strtoupper($p->type);
+                                                    @endphp
+                                                    <tr>
+                                                        <td>{{ $p->created_at?->format('d/m/Y H:i') }}</td>
+                                                        <td class="fw-bold">{{ $tName }}</td>
+                                                        <td class="num-tabular">{{ $rupiah($p->amount) }}</td>
+                                                        <td class="small">{{ $p->bank_info ?: '-' }}</td>
+                                                        <td><span class="fin-badge {{ $p->status }}">{{ ucfirst($p->status) }}</span></td>
+                                                        <td class="text-end">
+                                                            @if ($p->proof_url)
+                                                                <button type="button" class="btn-fin-outline"
+                                                                        onclick="openProofPreview('{{ $p->proof_url }}', 'Bukti Transfer #{{ $booking->id }} — {{ $tName }} ({{ $rupiah($p->amount) }})')">
+                                                                    <i class="bi bi-file-earmark-image"></i> Lihat Struk
+                                                                </button>
+                                                            @else
+                                                                <span class="text-muted small">Tanpa file</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
+                                <a href="{{ route('admin.payments.invoice', $booking) }}" class="btn-fin-primary">
+                                    <i class="bi bi-printer"></i> Buka Invoice &amp; Kwitansi Resmi
+                                </a>
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         @endif
     </div>
 </div>
@@ -810,17 +929,72 @@ document.addEventListener('DOMContentLoaded', function () {
     bookingSelect?.addEventListener('change', syncManualAmount);
     typeSelect?.addEventListener('change', syncManualAmount);
 
-    const searchInput = document.getElementById('bookingSearchInput');
-    if (searchInput) {
-        const rows = document.querySelectorAll('#bookingFinanceTable tbody tr[data-search]');
-        searchInput.addEventListener('input', function () {
-            const q = this.value.toLowerCase().trim();
-            rows.forEach(function (row) {
-                const match = row.getAttribute('data-search').includes(q);
-                row.style.display = match ? '' : 'none';
-            });
+    // Real-time Client Search & Filter Pills in Tab 3 (Buku Kas & Invoice Booking)
+    const bookingSearchInput = document.getElementById('bookingSearchInput');
+    const bookingClearBtn = document.getElementById('bookingClearSearchBtn');
+    const filterButtons = document.querySelectorAll('#bookingStatusFilterGroup button[data-filter]');
+    const bookingRows = document.querySelectorAll('#bookingFinanceTable tbody tr.booking-ledger-row');
+    const noMatchRow = document.getElementById('bookingNoMatchRow');
+
+    let currentFilter = 'all';
+
+    function applyBookingFilter() {
+        const query = (bookingSearchInput ? bookingSearchInput.value : '').toLowerCase().trim();
+        if (bookingClearBtn) {
+            bookingClearBtn.classList.toggle('d-none', query.length === 0);
+        }
+
+        let visibleCount = 0;
+        bookingRows.forEach(function (row) {
+            const rowSearch = (row.getAttribute('data-search') || '').toLowerCase();
+            const rowStatus = row.getAttribute('data-status') || '';
+
+            const matchSearch = query === '' || rowSearch.includes(query);
+            let matchStatus = false;
+
+            if (currentFilter === 'all') {
+                matchStatus = true;
+            } else if (currentFilter === 'paid') {
+                matchStatus = rowStatus === 'paid';
+            } else if (currentFilter === 'dp_paid') {
+                matchStatus = rowStatus === 'dp_paid';
+            } else if (currentFilter === 'unpaid') {
+                matchStatus = rowStatus === 'unpaid' || rowStatus === 'awaiting_verification';
+            }
+
+            if (matchSearch && matchStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        if (noMatchRow) {
+            noMatchRow.style.display = (visibleCount === 0 && bookingRows.length > 0) ? '' : 'none';
+        }
+    }
+
+    if (bookingSearchInput) {
+        bookingSearchInput.addEventListener('input', applyBookingFilter);
+    }
+
+    if (bookingClearBtn) {
+        bookingClearBtn.addEventListener('click', function () {
+            bookingSearchInput.value = '';
+            applyBookingFilter();
+            bookingSearchInput.focus();
         });
     }
+
+    filterButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.getAttribute('data-filter') || 'all';
+            applyBookingFilter();
+        });
+    });
 });
 </script>
 @endpush

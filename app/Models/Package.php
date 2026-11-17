@@ -25,6 +25,11 @@ class Package extends Model
         'is_featured' => 'boolean',
     ];
 
+    protected $appends = [
+        'price',
+        'cover_photo',
+    ];
+
     protected static function booted(): void
     {
         static::creating(function (self $package) {

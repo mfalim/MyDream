@@ -22,7 +22,14 @@ class PackageController extends Controller
 
     public function show(string $slug)
     {
-        $package = Package::with(['vendors.category', 'vendors.photos'])->where('slug', $slug)->firstOrFail();
+        $package = Package::with(['vendors.category', 'vendors.photos'])
+            ->where(function ($query) use ($slug) {
+                $query->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $query->orWhere('id', (int) $slug);
+                }
+            })
+            ->firstOrFail();
 
         return response()->json(['data' => $package]);
     }

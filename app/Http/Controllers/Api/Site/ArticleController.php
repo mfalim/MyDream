@@ -20,6 +20,15 @@ class ArticleController extends Controller
 
     public function show(string $slug)
     {
-        return response()->json(['data' => Article::published()->where('slug', $slug)->firstOrFail()]);
+        $article = Article::published()
+            ->where(function ($query) use ($slug) {
+                $query->where('slug', $slug);
+                if (is_numeric($slug)) {
+                    $query->orWhere('id', (int) $slug);
+                }
+            })
+            ->firstOrFail();
+
+        return response()->json(['data' => $article]);
     }
 }

@@ -17,6 +17,21 @@ class VendorPhoto extends Model
         'is_cover' => 'boolean',
     ];
 
+    protected $appends = [
+        'url',
+    ];
+
+    public function getUrlAttribute(): ?string
+    {
+        if (! $this->photo) {
+            return null;
+        }
+
+        return str_starts_with($this->photo, 'http')
+            ? $this->photo
+            : asset('storage/' . ltrim($this->photo, '/'));
+    }
+
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
