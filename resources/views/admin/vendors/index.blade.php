@@ -102,6 +102,11 @@
                             <div class="vendor-card-body">
 
                                 <h4>{{ $vendor->name }}</h4>
+                                @if ($vendor->user)
+                                    <span class="badge text-bg-success mb-2">Akun login tertaut</span>
+                                @else
+                                    <span class="badge text-bg-secondary mb-2">Akun vendor belum ditautkan</span>
+                                @endif
 
                                 <div class="vendor-location">
                                     📍 {{ $vendor->address }}

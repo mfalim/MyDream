@@ -6,6 +6,6 @@
 
     <div class="admin-status">
         <i class="bi bi-circle-fill"></i>
-        {{ auth()->user()->name ?? 'Vendor' }}
+        {{ auth()->user()->vendor?->name ?? auth()->user()->name ?? 'Vendor' }}
     </div>
 </header>

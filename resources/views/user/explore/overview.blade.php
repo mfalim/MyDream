@@ -225,11 +225,11 @@
                     <div class="highlight-card">
 
                         <span>
-                            HARGA
+                            STATUS
                         </span>
 
                         <strong>
-                            Rp {{ number_format($vendor->price, 0, ',', '.') }}
+                            Vendor Rekanan WO
                         </strong>
 
                     </div>
@@ -268,12 +268,10 @@
 
                     <div class="section-heading">
                         <div>
-                            <span class="section-kicker">
-                                DETAIL HARGA
-                            </span>
+                            <span class="section-kicker">PAKET TERSEDIA</span>
 
                             <h2>
-                                Daftar Harga {{ $vendor->name }}
+                                Paket {{ $vendor->name }}
                             </h2>
                         </div>
 
@@ -321,26 +319,14 @@
                         </p>
 
                         <article class="package-card">
-                            <span class="package-label">
-                                HARGA VENDOR
-                            </span>
+                            <span class="package-label">VENDOR CUSTOM</span>
 
                             <h3>
                                 {{ $vendor->name }}
                             </h3>
 
-                            <div class="package-price">
-                                <div>
-                                    <span>Harga Layanan</span>
-
-                                    <strong>
-                                        Rp {{ number_format($vendor->price, 0, ',', '.') }}
-                                    </strong>
-                                </div>
-                            </div>
-
                             <p>
-                                Harga layanan dapat dikonfirmasi lebih lanjut dengan tim WO PROJECT.
+                                Total biaya reservasi akan ditampilkan setelah vendor pilihan Anda masuk ke keranjang.
                             </p>
 
                             <form action="{{ route('user.cart.add-vendor', $vendor->id) }}" method="POST">
@@ -401,21 +387,14 @@
 
                 <div class="booking-card">
 
-                    <span class="booking-label">
-                        ESTIMASI BIAYA
-                    </span>
+                    <span class="booking-label">PESAN VENDOR</span>
 
                     <h3>
                         {{ $vendor->name }}
                     </h3>
 
-                    <div class="booking-price">
-                        Rp {{ number_format($vendor->price, 0, ',', '.') }}
-                    </div>
-
                     <p>
-                        Harga mulai dan dapat berubah berdasarkan
-                        kebutuhan paket.
+                        Tambahkan vendor ke keranjang untuk melihat total reservasi.
                     </p>
 
 

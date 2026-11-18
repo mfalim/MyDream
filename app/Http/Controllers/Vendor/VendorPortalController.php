@@ -10,11 +10,80 @@ use Carbon\Carbon;
 class VendorPortalController extends Controller
 {
     /**
+     * Dashboard vendor berbasis jadwal yang ditugaskan ke akun aktif.
+     */
+    public function dashboard(Request $request)
+    {
+        $vendor = $request->user()->vendor()->firstOrFail();
+        $today = now()->toDateString();
+        $startOfMonth = now()->startOfMonth()->toDateString();
+        $endOfMonth = now()->endOfMonth()->toDateString();
+
+        $vendorSchedules = DB::table('schedules')
+            ->where('vendor_id', $vendor->id);
+
+        $totalTugas = (clone $vendorSchedules)->count();
+        $disetujui = (clone $vendorSchedules)->where('status', 'approved')->count();
+        $menunggu = (clone $vendorSchedules)->where('status', 'pending')->count();
+        $ditolak = (clone $vendorSchedules)->where('status', 'rejected')->count();
+
+        $acaraHariIni = DB::table('events')
+            ->whereDate('event_date', $today)
+            ->whereExists(function ($query) use ($vendor) {
+                $query->selectRaw('1')
+                    ->from('schedules')
+                    ->whereColumn('schedules.event_id', 'events.id')
+                    ->where('schedules.vendor_id', $vendor->id);
+            })
+            ->count();
+
+        $acaraBulanIni = DB::table('events')
+            ->whereBetween('event_date', [$startOfMonth, $endOfMonth])
+            ->whereExists(function ($query) use ($vendor) {
+                $query->selectRaw('1')
+                    ->from('schedules')
+                    ->whereColumn('schedules.event_id', 'events.id')
+                    ->where('schedules.vendor_id', $vendor->id);
+            })
+            ->count();
+
+        $jadwalMendatang = DB::table('schedules')
+            ->join('events', 'schedules.event_id', '=', 'events.id')
+            ->where('schedules.vendor_id', $vendor->id)
+            ->whereDate('events.event_date', '>=', $today)
+            ->orderBy('events.event_date')
+            ->orderBy('schedules.start_time')
+            ->limit(8)
+            ->get([
+                'schedules.activity',
+                'schedules.location',
+                'schedules.start_time',
+                'schedules.end_time',
+                'schedules.status',
+                'events.name as event_name',
+                'events.event_date',
+            ]);
+
+        return view('vendor.dashboard', compact(
+            'vendor',
+            'acaraHariIni',
+            'acaraBulanIni',
+            'totalTugas',
+            'disetujui',
+            'menunggu',
+            'ditolak',
+            'jadwalMendatang'
+        ));
+    }
+
+    /**
      * HALAMAN KALENDER
      * Mengambil data acara dari tabel events.
      */
     public function kalender(Request $request)
     {
+        $vendor = $request->user()->vendor()->firstOrFail();
+
         $bulan = (int) $request->query('bulan', now()->month);
         $tahun = (int) $request->query('tahun', now()->year);
 
@@ -51,6 +120,12 @@ class VendorPortalController extends Controller
                 $tanggalAwal->toDateString(),
                 $tanggalAkhir->toDateString()
             ])
+            ->whereExists(function ($query) use ($vendor) {
+                $query->selectRaw('1')
+                    ->from('schedules')
+                    ->whereColumn('schedules.event_id', 'events.id')
+                    ->where('schedules.vendor_id', $vendor->id);
+            })
             ->orderBy('event_date')
             ->orderBy('start_time')
             ->get()
@@ -61,27 +136,13 @@ class VendorPortalController extends Controller
 
         $grid = $this->generateCalendarGrid($tahun, $bulan);
 
-        $tanggalTerpilih = $request->query(
-            'tanggal',
-            now()->format('Y-m-d')
-        );
-
-        $tanggalObj = Carbon::parse($tanggalTerpilih);
-
-        $detailAcara = DB::table('events')
-            ->whereDate('event_date', $tanggalObj->toDateString())
-            ->orderBy('start_time')
-            ->get();
-
         return view('vendor.kalender', compact(
+            'vendor',
             'bulan',
             'tahun',
             'namaBulan',
             'events',
-            'grid',
-            'tanggalTerpilih',
-            'tanggalObj',
-            'detailAcara'
+            'grid'
         ));
     }
 
@@ -89,10 +150,13 @@ class VendorPortalController extends Controller
      * HALAMAN TRACKING TUGAS
      * Mengambil data dari tabel schedules.
      */
-    public function tracking()
+    public function tracking(Request $request)
     {
+        $vendor = $request->user()->vendor()->firstOrFail();
+
         $schedules = DB::table('schedules')
             ->leftJoin('events', 'schedules.event_id', '=', 'events.id')
+            ->where('schedules.vendor_id', $vendor->id)
             ->select(
                 'schedules.*',
                 'events.name as event_name',
@@ -104,17 +168,16 @@ class VendorPortalController extends Controller
 
         $totalTugas = $schedules->count();
 
-        $selesai = $schedules->where('status', 'selesai')->count();
-
-        $berjalan = $schedules->where('status', 'berjalan')->count();
-
-        $menunggu = $totalTugas - $selesai - $berjalan;
+        $disetujui = $schedules->where('status', 'approved')->count();
+        $ditolak = $schedules->where('status', 'rejected')->count();
+        $menunggu = $schedules->where('status', 'pending')->count();
 
         return view('vendor.tracking', compact(
+            'vendor',
             'schedules',
             'totalTugas',
-            'selesai',
-            'berjalan',
+            'disetujui',
+            'ditolak',
             'menunggu'
         ));
     }

@@ -69,7 +69,7 @@
                         <div class="history-booking-event">
                             <div class="history-event-head"><strong>{{ $event->name }}</strong><span>{{ $event->event_date?->format('d M Y') }}</span></div>
                             @if($event->schedules->isNotEmpty())
-                                <ul class="history-vendor-list">@foreach($event->schedules as $schedule)@if($schedule->vendor)<li><span>{{ $schedule->vendor->name }}</span><strong>Rp {{ number_format((float) $schedule->price, 0, ',', '.') }}</strong></li>@endif @endforeach</ul>
+                                <ul class="history-vendor-list">@foreach($event->schedules as $schedule)@if($schedule->vendor)<li><span>{{ $schedule->vendor->name }}</span>@if($isPaid)<strong>Rp {{ number_format((float) $schedule->price, 0, ',', '.') }}</strong>@endif</li>@endif @endforeach</ul>
                             @else
                                 <p class="history-muted">Belum ada vendor yang disetujui untuk acara ini.</p>
                             @endif

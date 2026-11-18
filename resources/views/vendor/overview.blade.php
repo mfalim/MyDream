@@ -158,19 +158,6 @@
     <div class="info-row">
 
         <span class="info-label">
-            NILAI KONTRAK
-        </span>
-
-        <strong>
-            Lotus Atelier Rp 45.000.000
-        </strong>
-
-    </div>
-
-
-    <div class="info-row">
-
-        <span class="info-label">
             SHOW DIRECTOR
         </span>
 

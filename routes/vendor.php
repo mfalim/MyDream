@@ -9,7 +9,7 @@ Route::prefix('vendor')
     ->name('vendor.')
     ->middleware(['auth', EnsureUserRole::class . ':vendor'])
     ->group(function () {
-        Route::view('/dashboard', 'vendor.dashboard')->name('dashboard');
+        Route::get('/dashboard', [VendorPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/kalender', [VendorPortalController::class, 'kalender'])->name('kalender');
         Route::get('/tracking', [VendorPortalController::class, 'tracking'])->name('tracking');
 

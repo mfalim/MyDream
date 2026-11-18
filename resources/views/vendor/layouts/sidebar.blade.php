@@ -19,7 +19,7 @@
                     <span>Vendor Partner</span>
                     <i class="bi bi-patch-check-fill text-gold" title="Akses Vendor Terverifikasi"></i>
                 </div>
-                <div class="client-name">{{ auth()->user()->name }}</div>
+                <div class="client-name">{{ auth()->user()->vendor?->name ?? auth()->user()->name }}</div>
             </div>
         </div>
     @endauth

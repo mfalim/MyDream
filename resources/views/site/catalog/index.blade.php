@@ -66,21 +66,23 @@
                     </select>
                 </div>
 
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Rentang harga</p>
-                    <div class="mt-2 space-y-2 text-sm text-ink/70">
-                        <label class="flex items-center gap-2">
-                            <input type="radio" name="price" value="" @checked(! $filters['price']) class="accent-maroon">
-                            Semua Harga
-                        </label>
-                        @foreach ($priceBrackets as $key => $label)
+                @if ($filters['type'] !== 'vendor')
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Rentang harga paket</p>
+                        <div class="mt-2 space-y-2 text-sm text-ink/70">
                             <label class="flex items-center gap-2">
-                                <input type="radio" name="price" value="{{ $key }}" @checked($filters['price'] === $key) class="accent-maroon">
-                                {{ $label }}
+                                <input type="radio" name="price" value="" @checked(! $filters['price']) class="accent-maroon">
+                                Semua Paket
                             </label>
-                        @endforeach
+                            @foreach ($priceBrackets as $key => $label)
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="price" value="{{ $key }}" @checked($filters['price'] === $key) class="accent-maroon">
+                                    {{ $label }}
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
 
                 <x-site.button type="submit" class="w-full">Terapkan Filter</x-site.button>
             </form>

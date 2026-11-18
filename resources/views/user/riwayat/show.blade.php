@@ -50,7 +50,7 @@
                 <div class="history-booking-event history-detail-event">
                     <div class="history-event-head"><div><strong>{{ $event->name }}</strong><span>{{ $event->event_date?->format('d F Y') }}</span></div><span class="wo-badge {{ $event->status === 'completed' ? 'wo-badge-green' : 'wo-badge-neutral' }}">{{ $event->status === 'completed' ? 'Selesai' : ucfirst($event->status) }}</span></div>
                     @forelse($event->schedules as $schedule)
-                        @if($schedule->vendor)<div class="history-detail-vendor"><div><strong>{{ $schedule->vendor->name }}</strong><span>{{ $schedule->vendor->category?->name ?? 'Vendor' }}</span></div><strong>Rp {{ number_format((float) $schedule->price, 0, ',', '.') }}</strong></div>@endif
+                        @if($schedule->vendor)<div class="history-detail-vendor"><div><strong>{{ $schedule->vendor->name }}</strong><span>{{ $schedule->vendor->category?->name ?? 'Vendor' }}</span></div>@if($isPaid)<strong>Rp {{ number_format((float) $schedule->price, 0, ',', '.') }}</strong>@endif</div>@endif
                     @empty
                         <p class="history-muted">Belum ada vendor yang disetujui pada acara ini.</p>
                     @endforelse

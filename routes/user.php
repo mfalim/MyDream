@@ -81,6 +81,9 @@ Route::prefix('user')
         Route::get('/checkout', [CheckoutController::class, 'index'])
             ->name('checkout');
 
+        Route::post('/checkout/quote', [CheckoutController::class, 'quote'])
+            ->name('checkout.quote');
+
         Route::post('/checkout', [CheckoutController::class, 'store'])
             ->name('checkout.store');
 

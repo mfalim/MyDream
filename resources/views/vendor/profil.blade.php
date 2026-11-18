@@ -30,26 +30,22 @@
 
             <h2>{{ $vendor->name }}</h2>
 
-            <p>
-                Kategori:
-                {{ $vendor->category->name ?? '-' }}
-            </p>
-
-            <p>
-                Nomor Telepon:
-                {{ $vendor->phone ?? '-' }}
-            </p>
-
-            <p>
-                Alamat:
-                {{ $vendor->address ?? '-' }}
-            </p>
+            <p>Kategori: {{ $vendor->category?->name ?? '-' }}</p>
+            <p>Nomor telepon: {{ $vendor->phone ?: '-' }}</p>
+            <p>Alamat: {{ $vendor->address ?: '-' }}</p>
+            <p>Kota: {{ $vendor->city ?: '-' }}</p>
+            <p>Instagram: {{ $vendor->instagram ?: '-' }}</p>
 
             <h3>Deskripsi Vendor</h3>
 
             <p>
                 {{ $vendor->description ?? 'Belum ada deskripsi.' }}
             </p>
+
+            <h3>Informasi Rekening</h3>
+            <p>Bank: {{ $vendor->bank_name ?: '-' }}</p>
+            <p>Nomor rekening: {{ $vendor->bank_account_number ?: '-' }}</p>
+            <p>Atas nama: {{ $vendor->bank_account_holder ?: '-' }}</p>
 
             <h3>Galeri Foto Vendor</h3>
 

@@ -88,7 +88,7 @@ body {
 
 .brand-label {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.2px;
     text-transform: uppercase;
@@ -104,14 +104,14 @@ body {
 
 .vendor-sidebar .vendor-name {
     margin: 0 5px 5px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 700;
 }
 
 .vendor-sidebar .vendor-id {
     margin: 0 5px 25px;
     color: #89948e;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 /* Navigasi */
@@ -132,7 +132,7 @@ body {
     border-radius: 7px;
     color: #56645e;
     text-decoration: none;
-    font-size: 11px;
+    font-size: 14px;
     font-weight: 500;
     transition: background 0.2s ease, color 0.2s ease;
 }
@@ -152,7 +152,7 @@ body {
     width: 17px;
     min-width: 17px;
     text-align: center;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 /* Bagian bawah sidebar */
@@ -167,7 +167,7 @@ body {
 
 .duty-label {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.5px;
 }
@@ -210,12 +210,12 @@ body {
     background: #edf3ec;
     border-radius: 7px;
     color: #294b43;
-    font-size: 14px;
+    font-size: 17px;
 }
 
 .vendor-logo-text {
     color: #183f37;
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 800;
     line-height: 1.3;
 }
@@ -224,14 +224,14 @@ body {
     padding-left: 15px;
     border-left: 1px solid #e4e9e3;
     color: #526b59;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .partner-label {
     display: block;
     margin-bottom: 3px;
     color: #89948e;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .vendor-user {
@@ -246,7 +246,7 @@ body {
     gap: 3px;
     text-align: right;
     color: #294b43;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .vendor-user-avatar {
@@ -268,7 +268,7 @@ body {
 .eyebrow {
     display: inline-block;
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.3px;
 }
@@ -285,7 +285,7 @@ body {
 .panel h2 {
     margin: 5px 0 12px;
     color: #183f37;
-    font-size: 16px;
+    font-size: 19px;
 }
 
 .panel h3 {
@@ -294,7 +294,7 @@ body {
 
 .panel p {
     color: #7d8982;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.6;
 }
 
@@ -309,7 +309,7 @@ body {
 .panel-description {
     margin: 0 0 15px;
     color: #7d8982;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.6;
 }
 
@@ -319,7 +319,7 @@ body {
     border-radius: 20px;
     background: #fff0d9;
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     white-space: nowrap;
 }
@@ -331,7 +331,7 @@ body {
     min-height: 34px;
     padding: 9px 12px;
     border-radius: 7px;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -377,7 +377,7 @@ body {
 .page-header h1 {
     margin: 7px 0 8px;
     color: #294b43;
-    font-size: 24px;
+    font-size: 27px;
     line-height: 1.25;
 }
 
@@ -385,7 +385,7 @@ body {
     max-width: 650px;
     margin: 0;
     color: #819087;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.6;
 }
 
@@ -431,7 +431,7 @@ body {
 .stat-card > span {
     display: block;
     color: #94783e;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
     line-height: 1.4;
@@ -444,7 +444,7 @@ body {
     margin: 0;
     color: #183f37;
     font-family: Georgia, serif;
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 700;
     line-height: 1.25;
     overflow-wrap: break-word;
@@ -465,19 +465,19 @@ body {
 
 .stat-info strong {
     color: #294b43;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.4;
 }
 
 .stat-info span {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
 }
 
 .stat-card > small {
     color: #7d8982;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.4;
 }
 
@@ -510,12 +510,12 @@ body {
 .mini-stats strong {
     color: #294b43;
     font-family: Georgia, serif;
-    font-size: 14px;
+    font-size: 17px;
 }
 
 .mini-stats small {
     color: #7d8982;
-    font-size: 7px;
+    font-size: 10px;
     text-align: center;
 }
 
@@ -527,13 +527,13 @@ body {
     background: #f0f5ef;
     border-radius: 7px;
     color: #718078;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.5;
 }
 
 .stat-card > strong {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 /* =====================================================
@@ -556,7 +556,7 @@ body {
 .dashboard-grid .panel-header h2 {
     margin: 5px 0 0;
     font-family: Georgia, serif;
-    font-size: 16px;
+    font-size: 19px;
     line-height: 1.4;
 }
 
@@ -585,7 +585,7 @@ body {
     border-radius: 50%;
     background: #173f37;
     color: #ffffff;
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 700;
 }
 
@@ -598,13 +598,13 @@ body {
 
 .director-card small {
     color: #7d8982;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
 }
 
 .director-card strong {
     color: #294b43;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.4;
 }
 
@@ -668,13 +668,13 @@ body {
 
 .timeline-item strong {
     color: #52645b;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .timeline-item p {
     margin: 0;
     color: #294b43;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 600;
     line-height: 1.5;
 }
@@ -682,7 +682,7 @@ body {
 .timeline-item span {
     align-self: flex-end;
     color: #547466;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
 }
 
@@ -708,18 +708,18 @@ body {
 
 .vendor-item strong {
     color: #294b43;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.4;
 }
 
 .vendor-item small {
     color: #819087;
-    font-size: 8px;
+    font-size: 11px;
 }
 
 .vendor-item span {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.4;
 }
 
@@ -738,7 +738,7 @@ body {
 
 .pipeline-panel .panel-header h2 {
     margin-top: 5px;
-    font-size: 15px;
+    font-size: 18px;
 }
 
 .filter-pills {
@@ -754,7 +754,7 @@ body {
     border-radius: 20px;
     background: #edf2ec;
     color: #68776e;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 600;
     white-space: nowrap;
 }
@@ -781,7 +781,7 @@ body {
     padding: 12px 10px;
     background: #edf3ed;
     color: #68776e;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
     text-align: left;
     line-height: 1.4;
@@ -791,7 +791,7 @@ body {
     padding: 13px 10px;
     border-bottom: 1px solid #edf0eb;
     color: #52645b;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.5;
     vertical-align: middle;
 }
@@ -799,14 +799,14 @@ body {
 .vendor-table td strong {
     display: block;
     color: #294b43;
-    font-size: 9px;
+    font-size: 12px;
 }
 
 .vendor-table td small {
     display: block;
     margin-top: 4px;
     color: #89948e;
-    font-size: 8px;
+    font-size: 11px;
 }
 
 .vendor-table tbody tr:last-child td {
@@ -822,7 +822,7 @@ body {
     display: inline-block;
     padding: 6px 9px;
     border-radius: 20px;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
 }
 
@@ -842,7 +842,7 @@ body {
     border-radius: 6px;
     background: #edf2ec;
     color: #294b43;
-    font-size: 8px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -866,7 +866,7 @@ body {
 
 .calendar-header span {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.3px;
 }
@@ -874,13 +874,13 @@ body {
 .calendar-header h1 {
     margin: 7px 0;
     color: #294b43;
-    font-size: 24px;
+    font-size: 27px;
 }
 
 .calendar-header p {
     margin: 0;
     color: #819087;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .calendar-filter {
@@ -896,7 +896,7 @@ body {
     border-radius: 7px;
     background: #ffffff;
     color: #526b59;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .calendar-filter button {
@@ -905,7 +905,7 @@ body {
     border-radius: 7px;
     background: #173f37;
     color: #ffffff;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -931,7 +931,7 @@ body {
     padding: 13px 8px;
     background: #edf3ed;
     color: #526b59;
-    font-size: 10px;
+    font-size: 13px;
     text-align: center;
     border-right: 1px solid #e4ebe3;
 }
@@ -966,7 +966,7 @@ body {
     justify-content: center;
     border-radius: 50%;
     color: #294b43;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
 }
@@ -989,7 +989,7 @@ body {
     border-radius: 5px;
     background: #edf3ec;
     color: #526b59;
-    font-size: 9px;
+    font-size: 12px;
     line-height: 1.4;
     text-decoration: none;
 }
@@ -1009,17 +1009,17 @@ body {
 .event-detail h2 {
     margin: 0 0 10px;
     color: #294b43;
-    font-size: 17px;
+    font-size: 20px;
 }
 
 .event-detail h3 {
     color: #294b43;
-    font-size: 13px;
+    font-size: 16px;
 }
 
 .event-detail p {
     color: #718078;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.6;
 }
 
@@ -1038,7 +1038,7 @@ body {
 
 .tracking-page > div:first-child span {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.3px;
 }
@@ -1046,13 +1046,13 @@ body {
 .tracking-page > div:first-child h1 {
     margin: 7px 0;
     color: #294b43;
-    font-size: 24px;
+    font-size: 27px;
 }
 
 .tracking-page > div:first-child p {
     margin: 0;
     color: #819087;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 /* Ringkasan tugas */
@@ -1073,13 +1073,13 @@ body {
     margin: 0 0 7px;
     color: #294b43;
     font-family: Georgia, serif;
-    font-size: 23px;
+    font-size: 26px;
 }
 
 .tracking-page > div:nth-child(2) .panel p {
     margin: 0;
     color: #819087;
-    font-size: 10px;
+    font-size: 13px;
 }
 
 /* Card tabel tracking */
@@ -1094,7 +1094,7 @@ body {
 .tracking-page > div:nth-child(3) h2 {
     margin: 0 0 17px;
     color: #294b43;
-    font-size: 17px;
+    font-size: 20px;
 }
 
 .tracking-page > div:nth-child(3) > div {
@@ -1115,7 +1115,7 @@ body {
 .tracking-page table th {
     padding: 12px !important;
     color: #526b59;
-    font-size: 9px;
+    font-size: 12px;
     text-align: left;
     border-bottom: 1px solid #e5ebe4;
 }
@@ -1123,7 +1123,7 @@ body {
 .tracking-page table td {
     padding: 12px !important;
     color: #68776e;
-    font-size: 10px;
+    font-size: 13px;
     line-height: 1.5;
     border-bottom: 1px solid #edf0eb;
 }
@@ -1155,7 +1155,7 @@ body {
 
 .profile-page > div:first-child span {
     color: #94783e;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.3px;
 }
@@ -1163,13 +1163,13 @@ body {
 .profile-page > div:first-child h1 {
     margin: 7px 0;
     color: #294b43;
-    font-size: 24px;
+    font-size: 27px;
 }
 
 .profile-page > div:first-child p {
     margin: 0;
     color: #819087;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .profile-page > div:first-child a {
@@ -1178,7 +1178,7 @@ body {
     border-radius: 7px;
     background: #173f37 !important;
     color: #ffffff;
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
 }
@@ -1193,7 +1193,7 @@ body {
     margin-bottom: 18px;
     border: 1px solid #cfe5d3;
     border-radius: 7px;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 /* Card informasi vendor */
@@ -1210,19 +1210,19 @@ body {
     margin: 0 0 15px;
     color: #294b43;
     font-family: Georgia, serif;
-    font-size: 21px;
+    font-size: 24px;
 }
 
 .profile-page .panel h3 {
     margin: 22px 0 10px;
     color: #294b43;
-    font-size: 14px;
+    font-size: 17px;
 }
 
 .profile-page .panel p {
     margin: 0 0 10px;
     color: #68776e;
-    font-size: 11px;
+    font-size: 14px;
     line-height: 1.7;
 }
 

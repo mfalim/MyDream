@@ -111,20 +111,6 @@
                 </div>
 
 
-                {{-- HARGA --}}
-                <div class="vendor-item-price">
-
-                    <span>
-                        HARGA RESMI PENAWARAN
-                    </span>
-
-                    <strong>
-                        Rp {{ number_format($layanan->harga, 0, ',', '.') }}
-                    </strong>
-
-                </div>
-
-
                 {{-- INFORMASI TEKNIS --}}
                 <div class="vendor-detail-grid">
 

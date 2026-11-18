@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Vendor extends Model
 {
     protected $fillable = [
+        'user_id',
         'name',
         'slug',
         'category_id',
         'price',
+        'guest_capacity',
         'phone',
         'bank_name',
         'bank_account_number',
@@ -53,6 +55,23 @@ class Vendor extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function isCatering(): bool
+    {
+        return (bool) $this->category?->isCatering();
+    }
+
+    public function priceForGuests(?int $guestCount): float
+    {
+        $price = (float) $this->price;
+        $capacity = (int) $this->guest_capacity;
+
+        if (! $this->isCatering() || ! $guestCount || $capacity < 1) {
+            return $price;
+        }
+
+        return round($price * $guestCount / $capacity, 2);
     }
 
     public function photos()

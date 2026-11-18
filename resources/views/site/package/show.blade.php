@@ -68,12 +68,11 @@
                     @if ($package->vendors->isNotEmpty())
                         <ul class="mt-4 divide-y divide-black/5 rounded-2xl bg-white ring-1 ring-black/5">
                             @foreach ($package->vendors as $vendor)
-                                <li class="flex items-center justify-between gap-4 p-4">
+                                <li class="flex items-center gap-4 p-4">
                                     <div class="min-w-0">
                                         <p class="text-xs font-medium uppercase tracking-wide text-emerald">{{ $vendor->category?->name ?? 'Vendor' }}</p>
                                         <a href="{{ route('vendor.show', $vendor->slug) }}" class="font-display text-base font-semibold hover:text-maroon">{{ $vendor->name }}</a>
                                     </div>
-                                    <span class="shrink-0 text-sm font-medium text-ink/70">{{ \App\Support\Format::rupiah($vendor->price) }}</span>
                                 </li>
                             @endforeach
                         </ul>

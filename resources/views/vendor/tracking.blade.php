@@ -8,7 +8,7 @@
 
     <div style="margin-bottom:25px;">
         <span>VENDOR WORKSPACE</span>
-        <h1>Tracking Tugas</h1>
+        <h1>Tracking Tugas — {{ $vendor->name }}</h1>
         <p>Pantau kegiatan dan perkembangan tugas vendor.</p>
     </div>
 
@@ -25,18 +25,18 @@
         </div>
 
         <div class="panel">
-            <h3>{{ $selesai }}</h3>
-            <p>Selesai</p>
-        </div>
-
-        <div class="panel">
-            <h3>{{ $berjalan }}</h3>
-            <p>Sedang Berjalan</p>
+            <h3>{{ $disetujui }}</h3>
+            <p>Disetujui</p>
         </div>
 
         <div class="panel">
             <h3>{{ $menunggu }}</h3>
-            <p>Menunggu</p>
+            <p>Menunggu persetujuan</p>
+        </div>
+
+        <div class="panel">
+            <h3>{{ $ditolak }}</h3>
+            <p>Ditolak</p>
         </div>
 
     </div>
@@ -90,7 +90,12 @@
                             </td>
 
                             <td style="padding:12px;">
-                                {{ $schedule->status ?? 'Belum ditentukan' }}
+                                {{ match ($schedule->status) {
+                                    'approved' => 'Disetujui',
+                                    'pending' => 'Menunggu',
+                                    'rejected' => 'Ditolak',
+                                    default => 'Belum ditentukan',
+                                } }}
                             </td>
 
                             <td style="padding:12px;">

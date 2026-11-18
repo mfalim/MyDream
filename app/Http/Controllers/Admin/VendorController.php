@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class VendorController extends Controller
 {
@@ -16,7 +19,7 @@ class VendorController extends Controller
         $search = trim((string) $request->input('q'));
         $categoryId = $request->input('category_id');
 
-        $vendors = Vendor::with(['category', 'photos'])
+        $vendors = Vendor::with(['category', 'photos', 'user'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -43,7 +46,7 @@ class VendorController extends Controller
 
     public function show(Vendor $vendor)
     {
-        $vendor->load(['category', 'photos']);
+        $vendor->load(['category', 'photos', 'user']);
 
         return view('admin.vendors.show', compact('vendor'));
     }
@@ -51,13 +54,63 @@ class VendorController extends Controller
     public function create()
     {
         $categories = Category::orderBy('name')->get();
+        $availableVendorUsers = User::query()
+            ->where('role', 'vendor')
+            ->whereDoesntHave('vendor')
+            ->orderBy('name')
+            ->get();
 
-        return view('admin.vendors.create', compact('categories'));
+        return view('admin.vendors.create', compact('categories', 'availableVendorUsers'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $request->merge([
+            'username' => $request->filled('username')
+                ? Str::lower(trim((string) $request->input('username')))
+                : null,
+            'email' => $request->filled('email')
+                ? Str::lower(trim((string) $request->input('email')))
+                : null,
+        ]);
+        $category = Category::find($request->input('category_id'));
+
+        $existingAccount = $request->filled('user_id')
+            ? User::query()
+                ->where('role', 'vendor')
+                ->whereDoesntHave('vendor')
+                ->find($request->input('user_id'))
+            : null;
+
+        $data = $request->validate([
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where('role', 'vendor'),
+                Rule::unique('vendors', 'user_id'),
+            ],
+            'username' => [
+                Rule::requiredIf(! $existingAccount || ! $existingAccount->username),
+                'nullable',
+                'string',
+                'min:3',
+                'max:80',
+                'alpha_dash',
+                Rule::unique('users', 'username')->ignore($existingAccount?->id),
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($existingAccount?->id),
+            ],
+            'password' => [
+                Rule::requiredIf(! $existingAccount || ! $existingAccount->password),
+                'nullable',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
             'name' => [
                 'required',
                 'string',
@@ -67,6 +120,13 @@ class VendorController extends Controller
             ],
             'category_id' => 'required|integer|exists:categories,id',
             'price' => 'required|numeric|min:0|max:999999999',
+            'guest_capacity' => [
+                Rule::requiredIf($category?->isCatering()),
+                'nullable',
+                'integer',
+                'min:1',
+                'max:1000000',
+            ],
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'bank_name' => 'nullable|string|max:80',
             'bank_account_number' => 'nullable|string|max:60',
@@ -88,6 +148,10 @@ class VendorController extends Controller
             'price.required' => 'Harga harus diisi',
             'price.min' => 'Harga tidak boleh negatif',
             'price.max' => 'Harga terlalu besar',
+            'guest_capacity.required' => 'Kapasitas tamu wajib diisi untuk vendor catering.',
+            'guest_capacity.integer' => 'Kapasitas tamu harus berupa angka bulat.',
+            'guest_capacity.min' => 'Kapasitas tamu minimal 1 orang.',
+            'guest_capacity.max' => 'Kapasitas tamu maksimal 1.000.000 orang.',
             'phone.required' => 'Nomor telepon harus diisi',
             'phone.regex' => 'Nomor telepon harus berupa angka 10-15 digit',
             'phone.max' => 'Nomor telepon maksimal 15 digit',
@@ -100,7 +164,7 @@ class VendorController extends Controller
             'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
-        $slug = Str::slug($request->name);
+        $slug = Str::slug($data['name']);
 
         $originalSlug = $slug;
         $count = 1;
@@ -109,20 +173,59 @@ class VendorController extends Controller
             $slug = $originalSlug . '-' . $count++;
         }
 
-        $vendor = Vendor::create([
-            'name' => $request->name,
-            'slug' => $slug,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'phone' => $request->phone,
-            'bank_name' => $request->bank_name,
-            'bank_account_number' => $request->bank_account_number,
-            'bank_account_holder' => $request->bank_account_holder,
-            'address' => $request->address,
-            'description' => $request->description,
-            'city' => $request->city,
-            'instagram' => $request->instagram,
-        ]);
+        $vendor = DB::transaction(function () use ($data, $slug, $existingAccount, $category) {
+            if ($existingAccount) {
+                $user = User::query()
+                    ->where('role', 'vendor')
+                    ->whereDoesntHave('vendor')
+                    ->lockForUpdate()
+                    ->findOrFail($existingAccount->id);
+
+                if (filled($data['username'] ?? null)) {
+                    $user->username = $data['username'];
+                }
+
+                if (filled($data['email'] ?? null)) {
+                    $user->email = $data['email'];
+                }
+
+                if (filled($data['password'] ?? null)) {
+                    $user->password = $data['password'];
+                }
+
+                if (blank($user->name)) {
+                    $user->name = $data['name'];
+                }
+
+                $user->save();
+            } else {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'username' => $data['username'],
+                    'email' => $data['email'] ?? null,
+                    'password' => $data['password'],
+                    'role' => 'vendor',
+                    'status' => 'approved',
+                ]);
+            }
+
+            return Vendor::create([
+                'user_id' => $user->id,
+                'name' => $data['name'],
+                'slug' => $slug,
+                'category_id' => $data['category_id'],
+                'price' => $data['price'],
+                'guest_capacity' => $category?->isCatering() ? ($data['guest_capacity'] ?? null) : null,
+                'phone' => $data['phone'],
+                'bank_name' => $data['bank_name'] ?? null,
+                'bank_account_number' => $data['bank_account_number'] ?? null,
+                'bank_account_holder' => $data['bank_account_holder'] ?? null,
+                'address' => $data['address'],
+                'description' => $data['description'] ?? null,
+                'city' => $data['city'] ?? null,
+                'instagram' => $data['instagram'] ?? null,
+            ]);
+        });
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $photo) {
@@ -143,19 +246,74 @@ class VendorController extends Controller
 
     public function edit(Vendor $vendor)
     {
-        $vendor->load('photos');
+        $vendor->load(['photos', 'user']);
 
         $categories = Category::orderBy('name')->get();
+        $availableVendorUsers = $vendor->user
+            ? collect()
+            : User::query()
+                ->where('role', 'vendor')
+                ->whereDoesntHave('vendor')
+                ->orderBy('name')
+                ->get();
 
         return view(
             'admin.vendors.edit',
-            compact('vendor', 'categories')
+            compact('vendor', 'categories', 'availableVendorUsers')
         );
     }
 
     public function update(Request $request, Vendor $vendor)
     {
-        $request->validate([
+        $vendor->loadMissing('user');
+
+        $request->merge([
+            'username' => $request->filled('username')
+                ? Str::lower(trim((string) $request->input('username')))
+                : null,
+            'email' => $request->filled('email')
+                ? Str::lower(trim((string) $request->input('email')))
+                : null,
+        ]);
+        $category = Category::find($request->input('category_id'));
+
+        $selectedAccount = ! $vendor->user && $request->filled('user_id')
+            ? User::query()
+                ->where('role', 'vendor')
+                ->whereDoesntHave('vendor')
+                ->find($request->input('user_id'))
+            : null;
+        $account = $vendor->user ?? $selectedAccount;
+
+        $data = $request->validate([
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where('role', 'vendor'),
+                Rule::unique('vendors', 'user_id')->ignore($vendor->id),
+            ],
+            'username' => [
+                Rule::requiredIf(! $account || ! $account->username),
+                'nullable',
+                'string',
+                'min:3',
+                'max:80',
+                'alpha_dash',
+                Rule::unique('users', 'username')->ignore($account?->id),
+            ],
+            'email' => [
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($account?->id),
+            ],
+            'password' => [
+                Rule::requiredIf(! $account || ! $account->password),
+                'nullable',
+                'string',
+                'min:8',
+                'confirmed',
+            ],
             'name' => [
                 'required',
                 'string',
@@ -165,6 +323,13 @@ class VendorController extends Controller
             ],
             'category_id' => 'required|integer|exists:categories,id',
             'price' => 'required|numeric|min:0|max:999999999',
+            'guest_capacity' => [
+                Rule::requiredIf($category?->isCatering()),
+                'nullable',
+                'integer',
+                'min:1',
+                'max:1000000',
+            ],
             'phone' => 'required|string|regex:/^[0-9]{10,15}$/|max:15',
             'bank_name' => 'nullable|string|max:80',
             'bank_account_number' => 'nullable|string|max:60',
@@ -191,6 +356,10 @@ class VendorController extends Controller
             'price.required' => 'Harga harus diisi',
             'price.min' => 'Harga tidak boleh negatif',
             'price.max' => 'Harga terlalu besar',
+            'guest_capacity.required' => 'Kapasitas tamu wajib diisi untuk vendor catering.',
+            'guest_capacity.integer' => 'Kapasitas tamu harus berupa angka bulat.',
+            'guest_capacity.min' => 'Kapasitas tamu minimal 1 orang.',
+            'guest_capacity.max' => 'Kapasitas tamu maksimal 1.000.000 orang.',
             'phone.required' => 'Nomor telepon harus diisi',
             'phone.regex' => 'Nomor telepon harus berupa angka 10-15 digit',
             'phone.max' => 'Nomor telepon maksimal 15 digit',
@@ -203,7 +372,7 @@ class VendorController extends Controller
             'photos.*.max' => 'Ukuran gambar maksimal 2MB',
         ]);
 
-        $slug = Str::slug($request->name);
+        $slug = Str::slug($data['name']);
 
         $originalSlug = $slug;
         $count = 1;
@@ -216,20 +385,56 @@ class VendorController extends Controller
             $slug = $originalSlug . '-' . $count++;
         }
 
-        $vendor->update([
-            'name' => $request->name,
-            'slug' => $slug,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'phone' => $request->phone,
-            'bank_name' => $request->bank_name,
-            'bank_account_number' => $request->bank_account_number,
-            'bank_account_holder' => $request->bank_account_holder,
-            'address' => $request->address,
-            'description' => $request->description,
-            'city' => $request->city,
-            'instagram' => $request->instagram,
-        ]);
+        DB::transaction(function () use ($vendor, $data, $slug, $account, $selectedAccount, $category) {
+            $vendor->update([
+                'name' => $data['name'],
+                'slug' => $slug,
+                'category_id' => $data['category_id'],
+                'price' => $data['price'],
+                'guest_capacity' => $category?->isCatering() ? ($data['guest_capacity'] ?? null) : null,
+                'phone' => $data['phone'],
+                'bank_name' => $data['bank_name'] ?? null,
+                'bank_account_number' => $data['bank_account_number'] ?? null,
+                'bank_account_holder' => $data['bank_account_holder'] ?? null,
+                'address' => $data['address'],
+                'description' => $data['description'] ?? null,
+                'city' => $data['city'] ?? null,
+                'instagram' => $data['instagram'] ?? null,
+            ]);
+
+            $user = $account;
+
+            if (! $user) {
+                $user = User::create([
+                    'name' => $data['name'],
+                    'username' => $data['username'],
+                    'email' => $data['email'] ?? null,
+                    'password' => $data['password'],
+                    'role' => 'vendor',
+                    'status' => 'approved',
+                ]);
+            } else {
+                if (filled($data['username'] ?? null)) {
+                    $user->username = $data['username'];
+                }
+
+                if (filled($data['email'] ?? null)) {
+                    $user->email = $data['email'];
+                }
+
+                if (filled($data['password'] ?? null)) {
+                    $user->password = $data['password'];
+                }
+
+                $user->role = 'vendor';
+                $user->save();
+            }
+
+            if (! $vendor->user_id || $selectedAccount) {
+                $vendor->user()->associate($user);
+                $vendor->save();
+            }
+        });
 
         /*
         |--------------------------------------------------------------------------
@@ -315,13 +520,16 @@ class VendorController extends Controller
 
     public function destroy(Vendor $vendor)
     {
-        $vendor->load('photos');
+        $vendor->load(['photos', 'user']);
 
         foreach ($vendor->photos as $photo) {
             Storage::disk('public')->delete($photo->photo);
         }
 
-        $vendor->delete();
+        DB::transaction(function () use ($vendor) {
+            $vendor->user?->delete();
+            $vendor->delete();
+        });
 
         return redirect()
             ->route('admin.vendors.index')

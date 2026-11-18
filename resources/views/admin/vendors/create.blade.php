@@ -76,6 +76,22 @@
 
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Kapasitas Tamu Catering</label>
+                    <input
+                        type="number"
+                        name="guest_capacity"
+                        class="form-control"
+                        value="{{ old('guest_capacity') }}"
+                        min="1"
+                        max="1000000"
+                    >
+                    <small class="text-muted">
+                        Wajib diisi untuk kategori Catering/Katering. Harga dasar berlaku sampai jumlah tamu ini;
+                        kategori lain tidak menggunakan kapasitas ini.
+                    </small>
+                </div>
+
 
                 <div class="mb-3">
 
@@ -85,6 +101,86 @@
 
                     <input type="text" name="phone" class="form-control" value="{{ old('phone') }}" required>
 
+                </div>
+
+                <div class="mb-4 p-3 border rounded">
+                    <h5 class="mb-2">Akun Login Vendor</h5>
+                    <p class="text-muted mb-3">
+                        Buat akun baru atau tautkan akun vendor yang belum memiliki profil.
+                    </p>
+
+                    <div class="mb-3">
+                        <label for="vendor-account-user" class="form-label">Akun yang akan ditautkan</label>
+                        <select name="user_id" id="vendor-account-user" class="form-select">
+                            <option value="">Buat akun baru</option>
+                            @foreach ($availableVendorUsers as $availableUser)
+                                <option
+                                    value="{{ $availableUser->id }}"
+                                    data-username="{{ $availableUser->username }}"
+                                    data-email="{{ $availableUser->email }}"
+                                    data-has-password="{{ filled($availableUser->password) ? '1' : '0' }}"
+                                    @selected((string) old('user_id') === (string) $availableUser->id)
+                                >
+                                    {{ $availableUser->name }}
+                                    ({{ $availableUser->username ?: $availableUser->email ?: 'belum ada username' }})
+                                </option>
+                            @endforeach
+                        </select>
+                        @if ($availableVendorUsers->isEmpty())
+                            <small class="text-muted">Tidak ada akun vendor tanpa profil untuk ditautkan.</small>
+                        @endif
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="vendor-account-username" class="form-label">Username</label>
+                            <input
+                                type="text"
+                                name="username"
+                                id="vendor-account-username"
+                                class="form-control"
+                                value="{{ old('username') }}"
+                                minlength="3"
+                                maxlength="80"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vendor-account-email" class="form-label">Email (opsional)</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="vendor-account-email"
+                                class="form-control"
+                                value="{{ old('email') }}"
+                                maxlength="255"
+                                autocomplete="email"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vendor-account-password" class="form-label">Password awal</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="vendor-account-password"
+                                class="form-control"
+                                minlength="8"
+                                autocomplete="new-password"
+                            >
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vendor-account-password-confirmation" class="form-label">Konfirmasi password</label>
+                            <input
+                                type="password"
+                                name="password_confirmation"
+                                id="vendor-account-password-confirmation"
+                                class="form-control"
+                                minlength="8"
+                                autocomplete="new-password"
+                            >
+                        </div>
+                    </div>
+                    <small class="text-muted">Password minimal 8 karakter. Sampaikan kredensial kepada vendor melalui saluran yang aman.</small>
                 </div>
 
                 <div class="row">
@@ -168,3 +264,37 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        (() => {
+            const accountSelect = document.getElementById('vendor-account-user');
+            const usernameInput = document.getElementById('vendor-account-username');
+            const emailInput = document.getElementById('vendor-account-email');
+            const passwordInput = document.getElementById('vendor-account-password');
+            const confirmationInput = document.getElementById('vendor-account-password-confirmation');
+
+            const syncAccountFields = (clearNewAccountFields = false) => {
+                const selected = accountSelect.selectedOptions[0];
+                const isExistingAccount = accountSelect.value !== '';
+
+                if (isExistingAccount) {
+                    usernameInput.value = selected.dataset.username || '';
+                    emailInput.value = selected.dataset.email || '';
+                } else if (clearNewAccountFields) {
+                    usernameInput.value = '';
+                    emailInput.value = '';
+                }
+
+                passwordInput.value = '';
+                confirmationInput.value = '';
+                usernameInput.required = !isExistingAccount || !usernameInput.value;
+                passwordInput.required = !isExistingAccount || selected.dataset.hasPassword !== '1';
+                confirmationInput.required = passwordInput.required;
+            };
+
+            accountSelect.addEventListener('change', () => syncAccountFields(true));
+            syncAccountFields();
+        })();
+    </script>
+@endpush

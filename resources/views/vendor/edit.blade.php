@@ -44,7 +44,7 @@
 
                 <option value="">Pilih Kategori</option>
 
-                @foreach(\App\Models\Category::all() as $category)
+                @foreach($categories as $category)
                     <option value="{{ $category->id }}"
                         {{ old('category_id', $vendor->category_id) == $category->id ? 'selected' : '' }}>
                         {{ $category->name }}
@@ -67,6 +67,46 @@
             <textarea name="address"
                       rows="3"
                       style="display:block;width:100%;padding:10px;">{{ old('address', $vendor->address) }}</textarea>
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Kota</label>
+            <input type="text"
+                   name="city"
+                   value="{{ old('city', $vendor->city) }}"
+                   style="display:block;width:100%;padding:10px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Instagram</label>
+            <input type="text"
+                   name="instagram"
+                   value="{{ old('instagram', $vendor->instagram) }}"
+                   style="display:block;width:100%;padding:10px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Nama Bank</label>
+            <input type="text"
+                   name="bank_name"
+                   value="{{ old('bank_name', $vendor->bank_name) }}"
+                   style="display:block;width:100%;padding:10px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Nomor Rekening</label>
+            <input type="text"
+                   name="bank_account_number"
+                   value="{{ old('bank_account_number', $vendor->bank_account_number) }}"
+                   style="display:block;width:100%;padding:10px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Atas Nama Rekening</label>
+            <input type="text"
+                   name="bank_account_holder"
+                   value="{{ old('bank_account_holder', $vendor->bank_account_holder) }}"
+                   style="display:block;width:100%;padding:10px;">
         </div>
 
         <div style="margin-bottom:15px;">

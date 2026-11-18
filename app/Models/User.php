@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->hasOne(Client::class, 'users_id');
     }
 
+    public function vendor()
+    {
+        return $this->hasOne(Vendor::class);
+    }
+
     public function bookings()
     {
         return $this->hasManyThrough(Booking::class, Client::class, 'users_id', 'client_id');

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
@@ -33,7 +34,7 @@ class GoogleAuthController extends Controller
                 ->withInput($request->only('login') + ['auth_tab' => 'login']);
         }
 
-        $login = trim((string) $request->input('login'));
+        $login = Str::lower(trim((string) $request->input('login')));
         $password = (string) $request->input('password');
 
         $user = filter_var($login, FILTER_VALIDATE_EMAIL)
