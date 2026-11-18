@@ -14,13 +14,13 @@ html,
 body {
     margin: 0;
     padding: 0;
-    font-family: Georgia, serif;
-    color: #294b43;
-    background: #f5f9f5;
+    font-family: "Plus Jakarta Sans", sans-serif;
+    color: #16302a;
+    background: #f3f6f4;
 }
 
 body {
-    min-width: 1000px;
+    min-width: 0;
 }
 
 .vendor-layout {
@@ -1239,3 +1239,84 @@ body {
 /* =====================================================
    15. AKHIR CSS
 ===================================================== */
+
+/* Admin-aligned vendor theme */
+.eyebrow,
+.calendar-header > div > span,
+.tracking-page > div:first-child span,
+.profile-page > div:first-child span,
+.stat-card > span {
+    color: #b89758;
+}
+
+.page-header h1,
+.calendar-header h1,
+.tracking-page > div:first-child h1,
+.profile-page > div:first-child h1 {
+    color: #073d36;
+    font-family: "Playfair Display", Georgia, serif;
+}
+
+.panel,
+.stat-card,
+.event-detail,
+.tracking-page > div:nth-child(3),
+.profile-page .panel {
+    border-color: #e8e1d5;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(7, 61, 54, 0.04);
+}
+
+.btn-primary,
+.calendar-filter button,
+.calendar-day > a:first-child:hover,
+.filter-pills > span.active,
+.profile-page > div:first-child a {
+    background: #073d36;
+    border-color: #073d36;
+}
+
+.btn-primary:hover,
+.calendar-filter button:hover,
+.profile-page > div:first-child a:hover {
+    background: #166358 !important;
+}
+
+@media (max-width: 992px) {
+    .stats-grid,
+    .tracking-page > div:nth-child(2) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .page-header,
+    .calendar-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .header-actions {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .stats-grid,
+    .tracking-page > div:nth-child(2) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .panel-header,
+    .pipeline-panel .panel-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .filter-pills {
+        justify-content: flex-start;
+    }
+}

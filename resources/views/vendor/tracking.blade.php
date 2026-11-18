@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div style="padding:20px;">
+<div class="tracking-page">
 
     <div style="margin-bottom:25px;">
         <span>VENDOR WORKSPACE</span>

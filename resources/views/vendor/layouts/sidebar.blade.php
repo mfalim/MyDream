@@ -1,51 +1,86 @@
-
-<aside class="vendor-sidebar">
-
-    <div class="vendor-brand">
-        <div class="brand-dot">•</div>
-
-        <div>
-            <div class="brand-label">VENDOR WORKSPACE</div>
-            <h2>Lotus Atelier</h2>
-            <p>MITRA VENDOR PORTAL</p>
+<aside class="sidebar" id="sidebar">
+    <div class="brand-block">
+        <div class="brand-mark">
+            <i class="bi bi-gem"></i>
+        </div>
+        <div class="brand-text">
+            <div class="brand-name">My<span>Dream</span></div>
+            <div class="brand-subtitle">WEDDING ORGANIZER</div>
         </div>
     </div>
 
-    <nav class="vendor-nav">
+    @auth
+        <div class="client-card">
+            <div class="client-avatar">
+                {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+            </div>
+            <div class="client-info">
+                <div class="client-card-top">
+                    <span>Vendor Partner</span>
+                    <i class="bi bi-patch-check-fill text-gold" title="Akses Vendor Terverifikasi"></i>
+                </div>
+                <div class="client-name">{{ auth()->user()->name }}</div>
+            </div>
+        </div>
+    @endauth
 
-        <a href="{{ route('vendor.dashboard') }}"
-           class="vendor-nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
-            <span class="nav-icon">📊</span>
-            <span>Dashboard Vendor</span>
-        </a>
+    <nav class="sidebar-nav">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">
+                <span>RUANG KERJA</span>
+            </div>
 
-        <a href="{{ route('vendor.kalender') }}"
-           class="vendor-nav-item {{ request()->routeIs('vendor.kalender') ? 'active' : '' }}">
-            <span class="nav-icon">📅</span>
-            <span>Kalender & Jadwal Acara</span>
-        </a>
+            <a href="{{ route('vendor.dashboard') }}"
+                class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid-1x2"></i>
+                <span>Dashboard Vendor</span>
+            </a>
 
-        <a href="{{ route('vendor.tracking') }}"
-           class="vendor-nav-item {{ request()->routeIs('vendor.tracking') ? 'active' : '' }}">
-            <span class="nav-icon">🔍</span>
-            <span>Tracking Tugas</span>
-        </a>
+            <a href="{{ route('vendor.kalender') }}"
+                class="nav-item {{ request()->routeIs('vendor.kalender') ? 'active' : '' }}">
+                <i class="bi bi-calendar3"></i>
+                <span>Kalender &amp; Jadwal</span>
+            </a>
 
-        <a href="{{ route('vendor.profil') }}"
-           class="vendor-nav-item {{ request()->routeIs('vendor.profil*') ? 'active' : '' }}">
-            <span class="nav-icon">👤</span>
-            <span>Profil Vendor</span>
-        </a>
+            <a href="{{ route('vendor.tracking') }}"
+                class="nav-item {{ request()->routeIs('vendor.tracking') ? 'active' : '' }}">
+                <i class="bi bi-journal-check"></i>
+                <span>Tracking Tugas</span>
+            </a>
+        </div>
 
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">
+                <span>AKUN VENDOR</span>
+            </div>
+
+            <a href="{{ route('vendor.profil') }}"
+                class="nav-item {{ request()->routeIs('vendor.profil*') ? 'active' : '' }}">
+                <i class="bi bi-person-vcard"></i>
+                <span>Profil Vendor</span>
+            </a>
+        </div>
+
+        <div class="sidebar-section mt-2">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="nav-item nav-item-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span>Keluar Sistem</span>
+                </button>
+            </form>
+        </div>
     </nav>
 
-    <div class="vendor-sidebar-bottom">
-        <div class="duty-label">
-            VENDOR WORKSPACE
+    <div class="sidebar-director">
+        <div class="director-header">
+            <div class="eyebrow">VENDOR WORKSPACE</div>
+            <span class="status-dot" title="Sistem Aktif"></span>
         </div>
-
-        <strong>Vendor Partner</strong>
-        <small>MyDream Wedding Organizer</small>
+        <p>Kelola jadwal dan informasi vendor Anda dalam satu ruang kerja terpadu.</p>
+        <a href="{{ route('home') }}" target="_blank" rel="noopener" class="btn btn-director w-100">
+            <i class="bi bi-arrow-up-right-circle"></i>
+            <span>Kunjungi Website</span>
+        </a>
     </div>
-
 </aside>

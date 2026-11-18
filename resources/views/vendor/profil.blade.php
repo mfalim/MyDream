@@ -5,7 +5,7 @@
 
 @section('content')
 
-<div style="padding:20px;">
+<div class="profile-page">
 
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:25px;">
 
@@ -23,12 +23,6 @@
         @endif
 
     </div>
-
-    @if(session('success'))
-        <div style="padding:12px;background:#e2f5e8;color:#236b3a;border-radius:7px;margin-bottom:20px;">
-            {{ session('success') }}
-        </div>
-    @endif
 
     @if($vendor)
 
