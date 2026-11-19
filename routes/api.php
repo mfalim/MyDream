@@ -39,8 +39,6 @@ Route::post('/auth/register', [AuthController::class, 'register'])->name('api.au
 Route::post('/midtrans/notification', [SitePaymentController::class, 'notification'])
     ->name('midtrans.notification');
 Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->name('api.auth.google');
-Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirectToGoogle'])->name('api.auth.google.redirect');
-Route::get('/auth/google/poll', [GoogleAuthController::class, 'pollAuthResult'])->name('api.auth.google.poll');
 
 Route::get('/home', [HomeController::class, 'index'])->name('api.home');
 Route::get('/about', [AboutController::class, 'show'])->name('api.about');
@@ -123,6 +121,8 @@ Route::middleware(['auth:sanctum', EnsureUserRole::class . ':client'])->prefix('
         ->name('bookings.payments.midtrans');
     Route::get('/events', [ClientController::class, 'events'])->name('events.index');
     Route::post('/events', [ClientController::class, 'createEvent'])->name('events.store');
+    Route::get('/reviews', [ClientController::class, 'reviews'])->name('reviews.index');
+    Route::post('/reviews', [ClientController::class, 'storeReview'])->name('reviews.store');
 });
 
 Route::middleware(['auth:sanctum', EnsureUserRole::class . ':member'])->prefix('member')->name('api.member.')->group(function () {

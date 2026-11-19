@@ -17,6 +17,7 @@ class DashboardController extends Controller
                 'bookings' => fn ($query) => $query
                     ->orderBy('created_at'),
                 'bookings.package',
+                'bookings.payments',
                 'bookings.events' => fn ($query) => $query->orderBy('id'),
                 'bookings.events.schedules.vendor.category',
             ])
@@ -24,6 +25,7 @@ class DashboardController extends Controller
 
         // Ringkasan mengambil booking pertama yang event terawalnya belum completed.
         // Jika event dengan ID terkecil sudah completed, booking tersebut dilewati.
+        $client->bookings->each->syncPaymentStatus();
         $bookings = $client->bookings->values();
         $bookingSummary = $bookings->first(function ($candidateBooking) {
             $firstEvent = $candidateBooking->events->sortBy('id')->first();
@@ -72,11 +74,16 @@ class DashboardController extends Controller
             ])
             ->values();
 
+        $paymentBooking = $booking ?? $bookingSummary;
+        $paymentSummary = $paymentBooking?->paymentSummary();
+
         return view('user.dashboard.index', [
             'userName' => $user->name,
             'client' => $client,
             'booking' => $booking,
             'bookingSummary' => $bookingSummary,
+            'paymentBooking' => $paymentBooking,
+            'paymentSummary' => $paymentSummary,
             'event' => $event,
             'bookingEvents' => $bookingEvents,
             'upcomingEvents' => $upcomingEntries->pluck('event'),

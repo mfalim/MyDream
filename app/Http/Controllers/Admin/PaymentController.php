@@ -19,25 +19,32 @@ use Illuminate\View\View;
 class PaymentController extends Controller
 {
     private const STATUSES = [
-        'pending' => 'Menunggu Verifikasi',
-        'initiated' => 'Diproses Midtrans',
         'verified' => 'Terverifikasi',
-        'rejected' => 'Ditolak',
+        'initiated' => 'Diproses Midtrans',
+        'pending' => 'Menunggu Verifikasi',
+        'rejected' => 'Ditolak / Kedaluwarsa',
     ];
 
     public function index(Request $request): View
     {
-        $activeTab = $request->query('tab', 'verification');
-        if (in_array($activeTab, ['receivables', 'ledger'], true)) {
-            $activeTab = 'bookings';
+        // Sinkronkan transaksi Midtrans yang masih aktif sebelum menampilkan daftar
+        $activeMidtrans = Payment::where('method', 'midtrans')
+            ->whereIn('status', ['initiated', 'pending'])
+            ->get();
+        foreach ($activeMidtrans as $mp) {
+            if ($mp->syncWithMidtrans()) {
+                $mp->booking?->syncPaymentStatus();
+            }
         }
-        if (! in_array($activeTab, ['verification', 'vendor_payouts', 'bookings'], true)) {
-            $activeTab = 'verification';
+
+        $activeTab = $request->query('tab', 'bookings');
+        if (! in_array($activeTab, ['bookings', 'vendor_payouts', 'report'], true)) {
+            $activeTab = 'bookings';
         }
 
         $status = array_key_exists($request->query('status'), self::STATUSES)
             ? $request->query('status')
-            : 'pending';
+            : 'verified';
 
         $vendorStatusFilter = $request->query('vendor_status', '');
         $bookingFilter = $request->query('booking_id', '');
@@ -130,6 +137,7 @@ class PaymentController extends Controller
             return [
                 'booking' => $booking,
                 'events' => $events,
+                'payment_summary' => $booking->paymentSummary(),
                 'vendor_count' => $schedules->count(),
                 'crew_count' => $crewMembers->count(),
                 'contract_total' => $contractTotal,
@@ -147,6 +155,63 @@ class PaymentController extends Controller
             ];
         });
 
+        // Filter Laporan Organizer (Periode Tanggal Acara/Booking & Status Pembayaran)
+        $reportFrom = (string) $request->query('report_from', '');
+        $reportTo = (string) $request->query('report_to', '');
+        $reportStatus = (string) $request->query('report_status', '');
+
+        $reportLedgers = $projectLedgers->filter(function (array $row) use ($reportFrom, $reportTo, $reportStatus) {
+            $b = $row['booking'];
+            $refDate = $row['events']->pluck('event_date')->filter()->sort()->first() ?? $b->created_at;
+            $dateStr = $refDate ? \Carbon\Carbon::parse($refDate)->toDateString() : null;
+
+            if ($reportFrom !== '' && ($dateStr === null || $dateStr < $reportFrom)) {
+                return false;
+            }
+            if ($reportTo !== '' && ($dateStr === null || $dateStr > $reportTo)) {
+                return false;
+            }
+            if ($reportStatus !== '') {
+                $pStatus = $b->payment_status ?: 'unpaid';
+                if ($reportStatus === 'unpaid') {
+                    if (! in_array($pStatus, ['unpaid', 'awaiting_verification'], true)) {
+                        return false;
+                    }
+                } elseif ($pStatus !== $reportStatus) {
+                    return false;
+                }
+            }
+
+            return true;
+        })->values();
+
+        $rContract = (float) $reportLedgers->sum('contract_total');
+        $rClientPaid = (float) $reportLedgers->sum('client_paid');
+        $rClientRem = (float) $reportLedgers->sum('client_remaining');
+        $rVendorTotal = (float) $reportLedgers->sum('vendor_total');
+        $rVendorPaid = (float) $reportLedgers->sum('vendor_paid');
+        $rCrewTotal = (float) $reportLedgers->sum('crew_total');
+        $rCrewPaid = (float) $reportLedgers->sum('crew_paid');
+        $rCashBalance = (float) $reportLedgers->sum('cash_balance_now');
+        $rMargin = (float) $reportLedgers->sum('projected_margin');
+
+        $reportSummary = [
+            'count' => $reportLedgers->count(),
+            'contract_total' => $rContract,
+            'client_paid' => $rClientPaid,
+            'client_remaining' => $rClientRem,
+            'vendor_total' => $rVendorTotal,
+            'vendor_paid' => $rVendorPaid,
+            'crew_total' => $rCrewTotal,
+            'crew_paid' => $rCrewPaid,
+            'outflow_committed' => $rVendorTotal + $rCrewTotal,
+            'outflow_disbursed' => $rVendorPaid + $rCrewPaid,
+            'outflow_remaining' => max(0, ($rVendorTotal + $rCrewTotal) - ($rVendorPaid + $rCrewPaid)),
+            'cash_balance' => $rCashBalance,
+            'projected_margin' => $rMargin,
+            'margin_pct' => $rContract > 0 ? round(($rMargin / $rContract) * 100, 1) : 0,
+        ];
+
         return view('admin.payments.index', [
             'activeTab' => $activeTab,
             'payments' => $payments,
@@ -158,7 +223,12 @@ class PaymentController extends Controller
             'vendorStatusFilter' => $vendorStatusFilter,
             'bookingFilter' => $bookingFilter,
             'projectLedgers' => $projectLedgers,
-            'dpPercent' => max(1, min(100, (int) config('mydream.dp_percent', 30))),
+            'reportLedgers' => $reportLedgers,
+            'reportSummary' => $reportSummary,
+            'reportFrom' => $reportFrom,
+            'reportTo' => $reportTo,
+            'reportStatus' => $reportStatus,
+            'dpPercent' => max(1, min(100, (int) config('mydream.dp_percent', 10))),
             'summary' => [
                 'total_contract' => $totalContractValue,
                 'client_inflow' => $totalClientInflow,

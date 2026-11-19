@@ -31,19 +31,21 @@
         <div class="history-list">
             @foreach($bookings as $booking)
                 @php
-                    $paidAmount = (float) $booking->payments->where('status', 'verified')->sum('amount');
+                    $pSummary = $booking->paymentSummary();
+                    $paidAmount = $pSummary['paid'];
                     $verificationAmount = (float) $booking->payments->where('status', 'pending')->sum('amount');
-                    $midtransPendingAmount = (float) $booking->payments->where('status', 'initiated')->sum('amount');
-                    $remainingAmount = max(0, (float) $booking->total_price - $paidAmount);
+                    $midtransPendingAmount = (float) $booking->payments->filter(fn ($p) => $p->status === 'initiated' && in_array($p->transaction_status, ['pending', 'challenge'], true))->sum('amount');
+                    $remainingAmount = $pSummary['remaining'];
                     $latestPayment = $booking->payments->first();
-                    $isPaid = (float) $booking->total_price > 0 && $remainingAmount <= 0;
+                    $isPaid = $pSummary['total'] > 0 && $remainingAmount <= 0;
                     $paymentLabel = match (true) {
                         $isPaid => 'Lunas',
+                        $paidAmount > 0 && $verificationAmount > 0 => 'DP Terbayar · Pelunasan Diverifikasi',
                         $verificationAmount > 0 => 'Menunggu verifikasi',
                         $midtransPendingAmount > 0 => 'Menunggu pembayaran Midtrans',
                         $latestPayment?->status === 'rejected' && $paidAmount > 0 => 'Pelunasan gagal',
                         $latestPayment?->status === 'rejected' => 'Pembayaran gagal',
-                        $paidAmount > 0 => 'DP terverifikasi',
+                        $paidAmount > 0 => 'DP terverifikasi (' . $pSummary['percent_paid'] . '%)',
                         default => 'Belum dibayar',
                     };
                     $paymentBadge = match (true) {

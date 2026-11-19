@@ -9,7 +9,7 @@
 
 @section('content')
 
-    <div class="vendor-page">
+    <div class="vendor-page" id="vendorWorkspace" data-ajax-workspace>
 
         {{-- Header --}}
         <div class="vendor-header">
@@ -37,7 +37,7 @@
             </form>
 
             <select class="vendor-filter" name="category_id" form="vendor-filter-form"
-                onchange="this.form.submit()" aria-label="Filter kategori">
+                data-ajax-auto-submit="true" aria-label="Filter kategori">
                 <option value="">Semua Kategori</option>
                 @foreach ($categories as $category)
                     <option value="{{ $category->id }}" @selected((string) $categoryId === (string) $category->id)>

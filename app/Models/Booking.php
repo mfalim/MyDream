@@ -73,21 +73,113 @@ class Booking extends Model
     public function syncPaymentStatus(): string
     {
         $payments = $this->payments()->get();
+
+        $midtransChanged = false;
+        foreach ($payments as $payment) {
+            if ($payment->method === 'midtrans' && in_array($payment->status, ['initiated', 'pending'], true)) {
+                if ($payment->syncWithMidtrans()) {
+                    $midtransChanged = true;
+                }
+            }
+        }
+
+        if ($midtransChanged) {
+            $payments = $this->payments()->get();
+        }
+
         $paid = (float) $payments->where('status', 'verified')->sum('amount');
         $total = (float) $this->total_price;
+        $hasPending = $payments->where('status', 'pending')->isNotEmpty();
 
         $status = match (true) {
-            $payments->where('status', 'pending')->isNotEmpty() => 'awaiting_verification',
             $total > 0 && $paid >= $total => 'paid',
             $paid > 0 => 'dp_paid',
+            $hasPending => 'awaiting_verification',
             default => 'unpaid',
         };
 
+        $updates = [];
         if ($this->payment_status !== $status || (float) $this->paid_amount !== $paid) {
-            $this->update(['payment_status' => $status, 'paid_amount' => $paid]);
+            $updates['payment_status'] = $status;
+            $updates['paid_amount'] = $paid;
+        }
+        if ($paid > 0 && $this->status === 'pending') {
+            $updates['status'] = 'approved';
+        }
+        if (! empty($updates)) {
+            $this->update($updates);
         }
 
         return $status;
+    }
+
+    /**
+     * Ringkasan status, nominal DP, sisa tagihan, dan tenggat waktu pembayaran.
+     */
+    public function paymentSummary(): array
+    {
+        $payments = $this->relationLoaded('payments') ? $this->payments : $this->payments()->get();
+        $events = $this->relationLoaded('events') ? $this->events : $this->events()->get();
+
+        $total = (float) $this->total_price;
+        $paid = (float) $this->paid_amount;
+        $remaining = max(0, $total - $paid);
+        $dpPercent = max(1, min(100, (int) config('mydream.dp_percent', 10)));
+        $dpAmount = $remaining > 0
+            ? min((int) ceil($total * $dpPercent / 100), (int) round($remaining))
+            : 0;
+        $percentPaid = $total > 0 ? min(100, (int) round(($paid / $total) * 100)) : 0;
+
+        $pending = (float) $payments
+            ->filter(fn (Payment $p) => $p->status === 'pending'
+                || ($p->status === 'initiated' && in_array($p->transaction_status, ['pending', 'challenge'], true)))
+            ->sum('amount');
+
+        $earliestEventDate = $events->pluck('event_date')->filter()->sort()->first();
+        $deadlineDaysBefore = max(1, (int) config('mydream.payment_deadline_days', 14));
+        $dpDeadlineHours = max(1, (int) config('mydream.dp_deadline_hours', 24));
+
+        $settlementDeadline = $earliestEventDate
+            ? \Carbon\Carbon::parse($earliestEventDate)->subDays($deadlineDaysBefore)->endOfDay()
+            : null;
+
+        $deadline = null;
+        $deadlineType = null;
+
+        if ($remaining > 0) {
+            if ($paid > 0) {
+                $deadline = $settlementDeadline ?? ($this->created_at ?? now())->copy()->addDays($deadlineDaysBefore)->endOfDay();
+                $deadlineType = 'settlement';
+            } else {
+                $dpDeadline = ($this->created_at ?? now())->copy()->addHours($dpDeadlineHours);
+                $deadline = ($settlementDeadline && $settlementDeadline->lt($dpDeadline)) ? $settlementDeadline : $dpDeadline;
+                $deadlineType = 'dp';
+            }
+        }
+
+        $daysToDeadline = $deadline
+            ? (int) now()->startOfDay()->diffInDays($deadline->copy()->startOfDay(), false)
+            : null;
+        $isOverdue = $deadline ? $deadline->isPast() : false;
+        $isUrgent = $deadline && ! $isOverdue && $daysToDeadline !== null && $daysToDeadline <= 7;
+
+        return [
+            'status' => $this->payment_status ?: 'unpaid',
+            'total' => $total,
+            'paid' => $paid,
+            'pending' => $pending,
+            'remaining' => $remaining,
+            'dp_percent' => $dpPercent,
+            'dp_amount' => $dpAmount,
+            'percent_paid' => $percentPaid,
+            'deadline' => $deadline,
+            'deadline_type' => $deadlineType,
+            'deadline_days_before' => $deadlineDaysBefore,
+            'settlement_deadline' => $settlementDeadline,
+            'days_to_deadline' => $daysToDeadline,
+            'is_overdue' => $isOverdue,
+            'is_urgent' => $isUrgent,
+        ];
     }
 
     /**

@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<div class="member-category-page">
+<div class="member-category-page" id="memberCategoryWorkspace" data-ajax-workspace>
     {{-- Header --}}
     <div class="member-category-header">
         <div>

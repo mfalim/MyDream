@@ -57,47 +57,49 @@
             <div class="space-y-6 lg:col-span-2">
 
                 {{-- STATUS --}}
-                @if ($status === 'awaiting_verification')
-                    <div class="rounded-3xl bg-gold/10 p-6 text-sm text-ink/70">
-                        <p class="font-display text-lg font-semibold text-ink">Pembayaran sedang diverifikasi</p>
-                        <p class="mt-1">Tim MyDream akan memeriksa transfer Anda dan mengonfirmasi lewat WhatsApp. Biasanya dalam 1x24 jam.</p>
-                        <x-site.button :href="\App\Support\Format::waLink(config('mydream.whatsapp'), 'Halo MyDream, saya sudah transfer untuk reservasi #' . $booking->id . ($booking->invoice_number ? ' (' . $booking->invoice_number . ')' : '') . '.')" size="sm" class="mt-4">Konfirmasi via WhatsApp</x-site.button>
-                    </div>
-                @elseif ($status === 'paid')
+                @if ($status === 'paid')
                     <div class="rounded-3xl bg-emerald/10 p-6 text-sm text-ink/70">
                         <p class="font-display text-lg font-semibold text-emerald">Pembayaran lunas</p>
                         <p class="mt-1">Terima kasih! Seluruh pembayaran sudah kami terima dan terverifikasi.</p>
                     </div>
                 @elseif ($status === 'dp_paid')
                     <div class="rounded-3xl bg-emerald/10 p-6 text-sm text-ink/70">
-                        <p class="font-display text-lg font-semibold text-emerald">DP sudah terverifikasi</p>
-                        <p class="mt-1">Sisa pembayaran {{ \App\Support\Format::rupiah($remaining) }} dapat dilunasi di bawah ini.</p>
+                        <p class="font-display text-lg font-semibold text-emerald">DP sudah terverifikasi ({{ \App\Support\Format::rupiah($paid) }})</p>
+                        <p class="mt-1">Tanggal acara Anda sudah terkunci. Sisa tagihan {{ \App\Support\Format::rupiah($remaining) }} dapat dilunasi kapan saja sebelum hari acara.</p>
+                    </div>
+                @endif
+
+                @if ($pending > 0)
+                    <div class="rounded-3xl bg-gold/10 p-6 text-sm text-ink/70">
+                        <p class="font-display text-lg font-semibold text-ink">Ada pembayaran menunggu verifikasi ({{ \App\Support\Format::rupiah($pending) }})</p>
+                        <p class="mt-1">Tim MyDream akan memeriksa pembayaran Anda dan mengonfirmasi statusnya. Jika Anda membayar lewat Midtrans, status akan otomatis diperbarui.</p>
+                        <x-site.button :href="\App\Support\Format::waLink(config('mydream.whatsapp'), 'Halo MyDream, saya sudah melakukan pembayaran untuk reservasi #' . $booking->id . ($booking->invoice_number ? ' (' . $booking->invoice_number . ')' : '') . '.')" size="sm" class="mt-4">Konfirmasi via WhatsApp</x-site.button>
                     </div>
                 @endif
 
                 @if ($lastRejected && count($options))
                     <div class="rounded-3xl bg-maroon-light p-6 text-sm text-maroon">
-                        Pembayaran sebelumnya ({{ \App\Support\Format::rupiah($lastRejected->amount) }}) tidak dapat diverifikasi. Silakan transfer ulang atau hubungi admin.
+                        Pembayaran sebelumnya ({{ \App\Support\Format::rupiah($lastRejected->amount) }}) tidak dapat diverifikasi. Silakan coba lagi atau hubungi admin.
                         @if ($lastRejected->admin_note)
                             <br><strong>Catatan admin:</strong> {{ $lastRejected->admin_note }}
                         @endif
                     </div>
                 @endif
 
-                {{-- PEMBAYARAN MIDTRANS & TRANSFER BANK MANUAL --}}
-                @if (count($options))
-                    @php
-                        $field = 'mt-1.5 w-full rounded-xl border border-black/10 bg-cream px-4 py-3 text-sm text-ink file:mr-3 file:rounded-lg file:border-0 file:bg-maroon-light file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-maroon focus:border-maroon focus:bg-white focus:outline-none';
-                    @endphp
-                    <form action="{{ route('payment.pay', $booking->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6" id="midtrans-payment-form">
-                        @csrf
+                @php
+                    $field = 'mt-1.5 w-full rounded-xl border border-black/10 bg-cream px-4 py-3 text-sm text-ink file:mr-3 file:rounded-lg file:border-0 file:bg-maroon-light file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-maroon focus:border-maroon focus:bg-white focus:outline-none';
+                    $defaultScheme = old('scheme', array_key_first($options));
+                @endphp
 
+                @if (count($options))
+                    <div class="space-y-6">
+                        {{-- STEP 1: SKEMA PEMBAYARAN --}}
                         <div class="space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
                             <h2 class="font-display text-lg font-semibold">1. Pilih Skema Pembayaran</h2>
                             <div class="grid gap-4 {{ count($options) > 1 ? 'sm:grid-cols-2' : '' }}">
                                 @foreach ($options as $key => $option)
                                     <label class="cursor-pointer rounded-2xl border-2 border-black/10 p-5 transition-colors has-[:checked]:border-maroon has-[:checked]:bg-maroon-light">
-                                        <input type="radio" name="scheme" value="{{ $key }}" data-label="{{ $option['label'] }}" data-amount="{{ $option['amount'] }}" class="sr-only" @checked(old('scheme', array_key_first($options)) === $key)>
+                                        <input type="radio" name="scheme" value="{{ $key }}" data-label="{{ $option['label'] }}" data-amount="{{ $option['amount'] }}" class="sr-only" @checked($defaultScheme === $key)>
                                         <p class="font-display text-lg font-semibold">{{ $option['label'] }}</p>
                                         <p class="font-display text-2xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($option['amount']) }}</p>
                                         <p class="mt-2 text-xs text-ink/50">{{ $option['note'] }}</p>
@@ -107,55 +109,46 @@
                             @error('scheme') <p class="text-xs text-maroon">{{ $message }}</p> @enderror
                         </div>
 
+                        {{-- STEP 2: PEMBAYARAN VIA MIDTRANS + LAMPIRAN BUKTI OPSIONAL --}}
                         <div class="space-y-5 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                            <h2 class="font-display text-lg font-semibold">2. Pilih Metode Pembayaran</h2>
-
-                            {{-- OPSI A: MIDTRANS SNAP --}}
-                            <div class="space-y-3 rounded-2xl border border-black/10 p-5">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <div>
-                                        <p class="font-display text-base font-semibold text-ink">Opsi A · Pembayaran Instan (Midtrans)</p>
-                                        <p class="text-xs text-ink/60">Virtual Account, QRIS, E-Wallet, atau Kartu Kredit (Terverifikasi Otomatis).</p>
-                                    </div>
-                                    <x-site.badge variant="category">Otomatis</x-site.badge>
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div>
+                                    <h2 class="font-display text-lg font-semibold">2. Pembayaran via Midtrans</h2>
+                                    <p class="text-xs text-ink/60">Pilih metode pembayaran (QRIS, Virtual Account BCA/BNI/BRI/Mandiri, GoPay, ShopeePay, atau Kartu) melalui Midtrans.</p>
                                 </div>
+                                <x-site.badge variant="category">Midtrans Gateway</x-site.badge>
+                            </div>
+
+                            {{-- BAYAR INSTAN MIDTRANS --}}
+                            <div id="method-panel-midtrans" class="space-y-3 rounded-2xl border border-black/10 bg-cream/40 p-5"
+                                 data-pay-url="{{ route('payment.pay', $booking->id) }}" data-csrf="{{ csrf_token() }}">
+                                <p class="text-xs text-ink/70">Status pembayaran akan terverifikasi secara otomatis setelah transaksi Midtrans Anda berhasil diselesaikan.</p>
                                 <p id="midtrans-payment-error" class="hidden rounded-xl bg-maroon-light p-3 text-sm text-maroon" role="alert"></p>
                                 <x-site.button type="button" size="lg" class="w-full" id="midtrans-pay-button">Bayar Sekarang via Midtrans</x-site.button>
                             </div>
 
-                            {{-- OPSI B: TRANSFER BANK MANUAL + UPLOAD BUKTI --}}
-                            <div class="space-y-4 rounded-2xl border border-black/10 p-5">
-                                <div class="flex flex-wrap items-center justify-between gap-2">
-                                    <div>
-                                        <p class="font-display text-base font-semibold text-ink">Opsi B · Transfer Bank Manual &amp; Upload Bukti</p>
-                                        <p class="text-xs text-ink/60">Transfer langsung ke rekening resmi MyDream dan unggah bukti transfer.</p>
-                                    </div>
-                                    <x-site.badge variant="neutral">Verifikasi Admin</x-site.badge>
-                                </div>
+                            {{-- UNGGAH BUKTI PEMBAYARAN (OPSIONAL) --}}
+                            <form id="method-panel-manual" action="{{ route('payment.pay', $booking->id) }}" method="POST" enctype="multipart/form-data" class="space-y-3 rounded-2xl border border-dashed border-black/15 p-5">
+                                @csrf
+                                <input type="hidden" name="scheme" id="manual-scheme-input" value="{{ $defaultScheme }}">
+                                <input type="hidden" name="payment_channel" value="midtrans">
 
-                                @if ($bank)
-                                    <div class="rounded-2xl bg-cream-dark/60 p-5">
-                                        <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">Transfer ke rekening</p>
-                                        <p class="mt-2 font-display text-lg font-semibold">{{ $bank['name'] }}</p>
-                                        <p class="font-display text-2xl font-semibold tracking-wider text-maroon">{{ $bank['number'] }}</p>
-                                        @if ($bank['holder'])
-                                            <p class="text-sm text-ink/60">a.n. {{ $bank['holder'] }}</p>
-                                        @endif
-                                    </div>
-                                    <p class="text-xs text-ink/50">Transfer sesuai nominal skema yang dipilih, unggah bukti transfer, lalu tekan tombol di bawah.</p>
-                                @endif
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <p class="font-display text-base font-semibold text-ink">Unggah Foto Bukti Pembayaran <span class="text-xs font-normal text-ink/50">(Opsional)</span></p>
+                                    <x-site.badge variant="neutral">Opsional</x-site.badge>
+                                </div>
+                                <p class="text-xs text-ink/60">Tidak wajib. Jika ingin melampirkan screenshot atau struk bukti pembayaran Midtrans sebagai arsip tambahan, Anda dapat mengunggahnya di sini.</p>
 
                                 <div>
-                                    <label for="proof" class="text-xs font-medium text-ink/60">Bukti transfer <span class="font-semibold text-maroon">*</span> (wajib untuk transfer manual, JPG/PNG/PDF maks. 2 MB)</label>
+                                    <label for="proof" class="text-xs font-medium text-ink/60">File foto/struk bukti pembayaran (JPG/PNG/PDF, maks. 4 MB)</label>
                                     <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" required class="{{ $field }}">
                                     @error('proof') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                                 </div>
 
-                                <input type="hidden" name="payment_channel" value="bank_transfer">
-                                <x-site.button type="submit" variant="outline" size="lg" class="w-full" :disabled="! $bank">Saya Sudah Transfer (Kirim Bukti)</x-site.button>
-                            </div>
+                                <x-site.button type="submit" variant="outline" size="md" class="w-full">Lampirkan Bukti Pembayaran</x-site.button>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 @endif
 
                 {{-- RIWAYAT --}}
@@ -199,6 +192,19 @@
                     @if ($pending > 0)
                         <div class="flex justify-between"><dt class="text-ink/60">Menunggu verifikasi</dt><dd class="font-medium">{{ \App\Support\Format::rupiah($pending) }}</dd></div>
                     @endif
+                    @if ($paymentSummary['deadline'] ?? null)
+                        <div class="flex justify-between gap-2 border-t border-black/5 pt-2">
+                            <dt class="text-ink/60">{{ $paymentSummary['deadline_type'] === 'dp' ? 'Batas bayar DP' : 'Tenggat pelunasan' }}</dt>
+                            <dd class="text-right font-semibold {{ $paymentSummary['is_overdue'] ? 'text-maroon' : 'text-ink' }}">
+                                {{ $paymentSummary['deadline']->locale('id')->translatedFormat('d M Y') }}
+                                @if ($paymentSummary['is_overdue'])
+                                    <span class="block text-[11px] font-normal text-maroon">Melewati tenggat</span>
+                                @elseif ($paymentSummary['days_to_deadline'] !== null)
+                                    <span class="block text-[11px] font-normal text-ink/50">{{ $paymentSummary['days_to_deadline'] === 0 ? 'Hari ini' : $paymentSummary['days_to_deadline'] . ' hari lagi' }}</span>
+                                @endif
+                            </dd>
+                        </div>
+                    @endif
                     @unless (count($options))
                         <div class="flex justify-between border-t border-black/5 pt-2"><dt class="font-semibold">Sisa pembayaran</dt><dd class="font-display text-lg font-semibold text-maroon">{{ \App\Support\Format::rupiah($remaining) }}</dd></div>
                     @endunless
@@ -229,7 +235,8 @@
                 (function () {
                     var remaining = {{ (int) round($remaining) }};
                     var radios = document.querySelectorAll('input[name="scheme"]');
-                    var form = document.getElementById('midtrans-payment-form');
+                    var midtransBox = document.getElementById('method-panel-midtrans');
+                    var manualSchemeInput = document.getElementById('manual-scheme-input');
                     var button = document.getElementById('midtrans-pay-button');
                     var errorBox = document.getElementById('midtrans-payment-error');
                     var rupiah = function (n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); };
@@ -241,6 +248,9 @@
                         document.getElementById('sum-scheme').textContent = chosen.dataset.label;
                         document.getElementById('sum-pay').textContent = rupiah(amount);
                         document.getElementById('sum-left').textContent = rupiah(Math.max(0, remaining - amount));
+                        if (manualSchemeInput) {
+                            manualSchemeInput.value = chosen.value;
+                        }
                     }
 
                     radios.forEach(function (radio) { radio.addEventListener('change', update); });
@@ -252,13 +262,13 @@
                         button.textContent = 'Menyiapkan pembayaran...';
 
                         try {
-                            var selected = form.querySelector('input[name="scheme"]:checked');
-                            var response = await fetch(form.action, {
+                            var selected = document.querySelector('input[name="scheme"]:checked');
+                            var response = await fetch(midtransBox.dataset.payUrl, {
                                 method: 'POST',
                                 headers: {
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value
+                                    'X-CSRF-TOKEN': midtransBox.dataset.csrf
                                 },
                                 body: JSON.stringify({
                                     scheme: selected ? selected.value : '',
@@ -276,20 +286,24 @@
 
                             window.snap.pay(result.token, {
                                 onSuccess: function () {
-                                    errorBox.textContent = 'Pembayaran terdeteksi. Status akan diperbarui setelah konfirmasi Midtrans.';
+                                    errorBox.textContent = 'Pembayaran Midtrans berhasil! Menyinkronkan status pembayaran...';
                                     errorBox.classList.remove('hidden');
-                                    window.setTimeout(function () { window.location.reload(); }, 1800);
+                                    window.setTimeout(function () { window.location.reload(); }, 800);
                                 },
                                 onPending: function () {
-                                    window.location.reload();
-                                },
-                                onError: function () {
-                                    errorBox.textContent = 'Pembayaran belum berhasil. Silakan coba lagi atau pilih metode lain.';
+                                    errorBox.textContent = 'Instruksi pembayaran Midtrans telah dibuat. Selesaikan pembayaran lalu muat ulang halaman ini.';
                                     errorBox.classList.remove('hidden');
-                                },
-                                onClose: function () {
                                     button.disabled = false;
                                     button.textContent = 'Bayar Sekarang via Midtrans';
+                                },
+                                onError: function () {
+                                    errorBox.textContent = 'Pembayaran belum berhasil. Silakan coba lagi atau pilih metode Midtrans lainnya.';
+                                    errorBox.classList.remove('hidden');
+                                    button.disabled = false;
+                                    button.textContent = 'Bayar Sekarang via Midtrans';
+                                },
+                                onClose: function () {
+                                    window.location.reload();
                                 }
                             });
                         } catch (error) {

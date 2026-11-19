@@ -32,6 +32,8 @@ export default defineConfig({
                 "resources/css/auth/login.css",
                 "resources/css/auth/profile.css",
                 "resources/js/app.js",
+                "resources/js/admin/shared/ajax-workspace.js",
+                "resources/js/admin/finance/index.js",
                 "resources/js/admin/members/create.js",
             ],
             refresh: true,

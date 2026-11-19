@@ -8,7 +8,6 @@ use App\Models\Client;
 use App\Models\Member;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
@@ -67,50 +66,6 @@ class GoogleAuthController extends Controller
                 'message' => 'Terjadi kesalahan saat memproses login Google: ' . $e->getMessage(),
             ], 500);
         }
-    }
-
-    /**
-     * Redirect ke halaman Google OAuth (fallback / web-flow untuk Mobile Flutter).
-     */
-    public function redirectToGoogle(Request $request)
-    {
-        $sessionId = $request->query('session_id', '');
-
-        return Socialite::driver('google')
-            ->stateless()
-            ->with([
-                'state' => 'mobile:' . $sessionId,
-                'prompt' => 'select_account',
-            ])
-            ->redirect();
-    }
-
-    /**
-     * Polling hasil login Google OAuth (ketika callback diterima langsung oleh server Laravel).
-     */
-    public function pollAuthResult(Request $request): JsonResponse
-    {
-        $sessionId = (string) $request->query('session_id', '');
-        if ($sessionId === '') {
-            return response()->json([
-                'success' => false,
-                'message' => 'session_id wajib diisi.',
-            ], 422);
-        }
-
-        $cached = Cache::pull('mobile_google_auth:' . $sessionId);
-        if (! $cached) {
-            return response()->json([
-                'success' => false,
-                'status' => 'pending',
-                'data' => ['status' => 'pending'],
-            ], 202);
-        }
-
-        $statusCode = $cached['status_code'] ?? 200;
-        unset($cached['status_code']);
-
-        return response()->json($cached, $statusCode);
     }
 
     /**

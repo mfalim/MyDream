@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<div class="org-event-page">
+<div class="org-event-page" id="organizerEventWorkspace" data-ajax-workspace>
     {{-- Header --}}
     <div class="org-event-header">
         <div>

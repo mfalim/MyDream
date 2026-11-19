@@ -28,20 +28,18 @@ class PaymentController extends Controller
         $booking->syncPaymentStatus();
         $booking->load('payments');
 
-        $total = (float) $booking->total_price;
-        $paid = (float) $booking->paid_amount;
+        $summary = $booking->paymentSummary();
 
         return view('site.payment.show', [
             'booking' => $booking,
             'event' => $booking->events->first(),
-            'total' => $total,
-            'paid' => $paid,
-            'pending' => (float) $booking->payments
-                ->whereIn('status', ['pending', 'initiated'])
-                ->sum('amount'),
-            'remaining' => max(0, $total - $paid),
+            'total' => $summary['total'],
+            'paid' => $summary['paid'],
+            'pending' => $summary['pending'],
+            'remaining' => $summary['remaining'],
+            'paymentSummary' => $summary,
             'options' => $this->options($booking),
-            'dpPercent' => (int) config('mydream.dp_percent'),
+            'dpPercent' => $summary['dp_percent'],
             'bank' => $this->bank(),
             'payments' => $booking->payments->sortByDesc('id')->values(),
             'snapClientKey' => config('services.midtrans.client_key'),
@@ -56,6 +54,120 @@ class PaymentController extends Controller
         $booking = $this->ownedBooking($request, $bookingId);
         $booking->syncPaymentStatus();
 
+        // Jika pengguna mengunggah foto bukti pembayaran opsional (untuk melampirkan ke transaksi Midtrans)
+        if ($request->hasFile('proof')) {
+            $options = $this->options($booking);
+            $paymentId = $request->integer('payment_id');
+
+            if (empty($options) && ! $paymentId) {
+                if ($request->expectsJson()) {
+                    return response()->json(['message' => 'Tidak ada pembayaran yang perlu dilakukan saat ini.'], 422);
+                }
+
+                return back()->with('error', 'Tagihan reservasi ini sudah lunas atau tidak memerlukan pembayaran lagi.');
+            }
+
+            $allowedSchemes = ! empty($options) ? array_keys($options) : ['dp', 'full', 'remaining'];
+
+            $data = $request->validate([
+                'payment_id' => ['nullable', 'integer'],
+                'scheme' => [$paymentId ? 'nullable' : 'required', Rule::in($allowedSchemes)],
+                'payment_channel' => ['nullable', Rule::in(['bank_transfer', 'midtrans'])],
+                'proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
+            ], [
+                'scheme.required' => 'Pilih skema pembayaran terlebih dahulu.',
+                'scheme.in' => 'Skema pembayaran tidak valid untuk status tagihan saat ini.',
+                'proof.required' => 'Bukti pembayaran wajib diunggah.',
+                'proof.mimes' => 'Bukti pembayaran harus berupa JPG, PNG, atau PDF.',
+                'proof.max' => 'Ukuran bukti pembayaran maksimal 4 MB.',
+            ]);
+
+            $proofPath = $request->file('proof')?->store('payment-proofs', 'public');
+            $scheme = $data['scheme'] ?? array_key_first($options) ?? 'dp';
+            $chosenAmount = $options[$scheme]['amount'] ?? 0;
+
+            $payment = DB::transaction(function () use ($booking, $paymentId, $scheme, $chosenAmount, $proofPath) {
+                $booking->ensureInvoiceNumber();
+
+                $existingMidtrans = Payment::query()
+                    ->where('booking_id', $booking->id)
+                    ->where('method', 'midtrans')
+                    ->when($paymentId, fn ($q) => $q->whereKey($paymentId), fn ($q) => $q
+                        ->whereIn('status', ['initiated', 'pending', 'verified'])
+                        ->whereNull('proof_path'))
+                    ->latest('id')
+                    ->first();
+
+                if ($existingMidtrans) {
+                    $previousStatus = $existingMidtrans->status;
+                    $previousTx = $existingMidtrans->transaction_status;
+
+                    $existingMidtrans->syncWithMidtrans();
+                    $existingMidtrans->update([
+                        'proof_path' => $proofPath,
+                        'status' => 'verified',
+                        'verified_at' => $existingMidtrans->verified_at ?? now(),
+                        'transaction_status' => 'settlement',
+                    ]);
+
+                    $existingMidtrans->recordLifecycleEvent(
+                        'midtrans_proof_upload',
+                        $previousStatus,
+                        $previousTx,
+                        'Pembayaran Midtrans dikonfirmasi dan diverifikasi otomatis.'
+                    );
+
+                    $booking->syncPaymentStatus();
+
+                    return $existingMidtrans->fresh();
+                }
+
+                $newPayment = Payment::create([
+                    'booking_id' => $booking->id,
+                    'type' => $scheme,
+                    'amount' => $chosenAmount,
+                    'method' => 'midtrans',
+                    'bank_info' => 'Midtrans Payment Gateway',
+                    'status' => 'verified',
+                    'verified_at' => now(),
+                    'proof_path' => $proofPath,
+                    'transaction_status' => 'settlement',
+                ]);
+
+                $newPayment->recordLifecycleEvent(
+                    'midtrans_proof_upload',
+                    null,
+                    null,
+                    'Bukti pembayaran Midtrans diunggah oleh klien.'
+                );
+
+                $booking->syncPaymentStatus();
+
+                return $newPayment;
+            });
+
+            if ($request->expectsJson()) {
+                $booking->refresh()->load(['package', 'payments']);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Bukti pembayaran berhasil dikirim.',
+                    'data' => [
+                        'booking' => $booking,
+                        'payment' => $payment,
+                    ],
+                ], 201);
+            }
+
+            $statusMessage = $payment->status === 'verified'
+                ? 'Pembayaran terverifikasi lunas dan bukti pembayaran berhasil disimpan!'
+                : 'Bukti transfer berhasil dikirim dan sedang menunggu verifikasi admin.';
+
+            return redirect()
+                ->route('payment.index', $booking->id)
+                ->with('success', $statusMessage);
+        }
+
         $options = $this->options($booking);
         if (empty($options)) {
             if ($request->expectsJson()) {
@@ -65,56 +177,7 @@ class PaymentController extends Controller
             return back()->with('error', 'Tidak ada pembayaran yang perlu dilakukan saat ini.');
         }
 
-        // Alur 1: Transfer Bank Manual + Upload Bukti Transfer
-        if ($request->input('payment_channel') === 'bank_transfer' || $request->hasFile('proof')) {
-            $bank = $this->bank();
-            if (! $bank) {
-                return back()->with('error', 'Rekening transfer belum diatur. Silakan hubungi admin.');
-            }
-
-            $data = $request->validate([
-                'scheme' => ['required', Rule::in(array_keys($options))],
-                'proof' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            ], [
-                'scheme.required' => 'Pilih skema pembayaran terlebih dahulu.',
-                'scheme.in' => 'Skema pembayaran tidak valid.',
-                'proof.required' => 'Bukti transfer wajib diunggah untuk proses verifikasi.',
-                'proof.mimes' => 'Bukti transfer harus berupa JPG, PNG, atau PDF.',
-                'proof.max' => 'Ukuran bukti transfer maksimal 2 MB.',
-            ]);
-
-            $proofPath = $request->file('proof')?->store('payment-proofs', 'public');
-            $chosen = $options[$data['scheme']];
-
-            DB::transaction(function () use ($booking, $data, $chosen, $bank, $proofPath) {
-                $booking->ensureInvoiceNumber();
-
-                $payment = Payment::create([
-                    'booking_id' => $booking->id,
-                    'type' => $data['scheme'],
-                    'amount' => $chosen['amount'],
-                    'method' => 'bank_transfer',
-                    'bank_info' => trim($bank['name'] . ' ' . $bank['number'] . ' ' . $bank['holder']),
-                    'status' => 'pending',
-                    'proof_path' => $proofPath,
-                ]);
-
-                $payment->recordLifecycleEvent(
-                    'bank_transfer_submission',
-                    null,
-                    null,
-                    'Permintaan pembayaran transfer manual dibuat.'
-                );
-
-                $booking->syncPaymentStatus();
-            });
-
-            return redirect()
-                ->route('payment.index', $booking->id)
-                ->with('success', 'Bukti transfer berhasil dikirim dan sedang menunggu verifikasi admin.');
-        }
-
-        // Alur 2: Pembayaran Otomatis melalui Midtrans Snap
+        // Pembayaran melalui Midtrans Snap
         $validated = $request->validate([
             'scheme' => ['required', Rule::in(array_keys($options))],
         ], [
@@ -143,14 +206,19 @@ class PaymentController extends Controller
                 ->where('booking_id', $lockedBooking->id)
                 ->where('type', $validated['scheme'])
                 ->where('amount', $amount)
-                ->where('status', 'initiated')
+                ->whereIn('status', ['initiated', 'pending'])
                 ->whereIn('transaction_status', ['created', 'pending', 'capture', 'challenge'])
                 ->whereNotNull('snap_token')
                 ->latest('id')
                 ->first();
 
             if ($payment) {
-                return ['token' => $payment->snap_token];
+                return [
+                    'token' => $payment->snap_token,
+                    'redirect_url' => $payment->snap_redirect_url,
+                    'order_id' => $payment->midtrans_order_id,
+                    'payment_id' => $payment->id,
+                ];
             }
 
             $invoice = $lockedBooking->ensureInvoiceNumber();
@@ -166,11 +234,16 @@ class PaymentController extends Controller
             ]);
             $payment->recordLifecycleEvent('midtrans', null, null, 'Transaksi Midtrans dibuat.');
 
+            $snapBaseUrl = rtrim(config('services.midtrans.base_url', 'https://app.sandbox.midtrans.com'), '/');
+            // Pastikan pembuatan transaksi Snap menuju ke app.(sandbox.)midtrans.com
+            $snapBaseUrl = str_replace('://api.sandbox.midtrans.com', '://app.sandbox.midtrans.com', $snapBaseUrl);
+            $snapBaseUrl = str_replace('://api.midtrans.com', '://app.midtrans.com', $snapBaseUrl);
+
             try {
                 $response = Http::withBasicAuth($serverKey, '')
                     ->acceptJson()
                     ->timeout(20)
-                    ->post(rtrim(config('services.midtrans.base_url'), '/') . '/snap/v1/transactions', [
+                    ->post($snapBaseUrl . '/snap/v1/transactions', [
                         'transaction_details' => [
                             'order_id' => $orderId,
                             'gross_amount' => $amount,
@@ -218,14 +291,25 @@ class PaymentController extends Controller
             ]);
             $payment->recordLifecycleEvent('midtrans', $previousStatus, $previousTransactionStatus, 'Token pembayaran Midtrans berhasil dibuat.');
 
-            return ['token' => $token];
+            return [
+                'token' => $token,
+                'redirect_url' => $payment->snap_redirect_url,
+                'order_id' => $payment->midtrans_order_id,
+                'payment_id' => $payment->id,
+            ];
         });
 
         if (isset($result['error'])) {
             return response()->json(['message' => $result['error']], 502);
         }
 
-        return response()->json(['token' => $result['token']]);
+        return response()->json([
+            'token' => $result['token'],
+            'redirect_url' => $result['redirect_url'] ?? null,
+            'order_id' => $result['order_id'] ?? null,
+            'payment_id' => $result['payment_id'] ?? null,
+            'data' => $result,
+        ]);
     }
 
     public function notification(Request $request): JsonResponse
@@ -351,38 +435,43 @@ class PaymentController extends Controller
     private function options(Booking $booking): array
     {
         $total = (float) $booking->total_price;
-        $percent = max(1, min(100, (int) config('mydream.dp_percent')));
+        $paid = (float) $booking->paid_amount;
+        $remaining = max(0, $total - $paid);
+        $percent = max(1, min(100, (int) config('mydream.dp_percent', 10)));
 
-        if ($total <= 0) {
+        if ($total <= 0 || $remaining <= 0) {
             return [];
         }
 
-        if ($booking->payment_status === 'unpaid') {
-            return [
+        if ($paid <= 0) {
+            $dpAmount = min((int) ceil($total * $percent / 100), (int) round($remaining));
+
+            $options = [
                 'dp' => [
                     'label' => "DP {$percent}%",
-                    'amount' => (int) ceil($total * $percent / 100),
+                    'amount' => $dpAmount,
                     'note' => 'Kunci tanggal sekarang, sisanya dilunasi sebelum hari acara.',
                 ],
-                'full' => [
+            ];
+
+            if ($dpAmount < (int) round($remaining)) {
+                $options['full'] = [
                     'label' => 'Bayar Lunas',
-                    'amount' => (int) round($total),
+                    'amount' => (int) round($remaining),
                     'note' => 'Selesaikan seluruh pembayaran sekaligus.',
-                ],
-            ];
+                ];
+            }
+
+            return $options;
         }
 
-        if ($booking->payment_status === 'dp_paid') {
-            return [
-                'remaining' => [
-                    'label' => 'Pelunasan',
-                    'amount' => (int) round(max(0, $total - (float) $booking->paid_amount)),
-                    'note' => 'Sisa pembayaran setelah DP.',
-                ],
-            ];
-        }
-
-        return [];
+        return [
+            'remaining' => [
+                'label' => 'Pelunasan Sisa',
+                'amount' => (int) round($remaining),
+                'note' => 'Sisa pembayaran setelah DP / pembayaran sebelumnya.',
+            ],
+        ];
     }
 
     /** Rekening transfer dari config/mydream.php; null bila belum diatur di .env. */

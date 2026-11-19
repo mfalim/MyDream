@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class Payment extends Model
@@ -70,5 +71,93 @@ class Payment extends Model
     public function getProofUrlAttribute(): ?string
     {
         return $this->proof_path ? asset('storage/' . ltrim($this->proof_path, '/')) : null;
+    }
+
+    public function getSnapRedirectUrlAttribute(): ?string
+    {
+        if (! filled($this->snap_token)) {
+            return null;
+        }
+
+        $baseUrl = rtrim(config('services.midtrans.base_url', 'https://app.sandbox.midtrans.com'), '/');
+
+        return $baseUrl . '/snap/v2/vtweb/' . $this->snap_token;
+    }
+
+    /**
+     * Sinkronkan status transaksi langsung ke REST API Midtrans (/v2/{order_id}/status).
+     * Memastikan pembayaran tetap terdeteksi lunas tanpa memerlukan webhook/ngrok.
+     */
+    public function syncWithMidtrans(): bool
+    {
+        if ($this->method !== 'midtrans' || ! filled($this->midtrans_order_id)) {
+            return false;
+        }
+
+        if (in_array($this->status, ['verified', 'rejected'], true)) {
+            return false;
+        }
+
+        $serverKey = config('services.midtrans.server_key');
+        if (! filled($serverKey)) {
+            return false;
+        }
+
+        $apiUrl = rtrim(config('services.midtrans.api_url', 'https://api.sandbox.midtrans.com'), '/');
+
+        try {
+            $response = Http::withBasicAuth($serverKey, '')
+                ->acceptJson()
+                ->timeout(8)
+                ->get($apiUrl . '/v2/' . urlencode($this->midtrans_order_id) . '/status');
+
+            if (! $response->successful()) {
+                return false;
+            }
+
+            $statusCode = (string) $response->json('status_code', '');
+            $txStatus = $response->json('transaction_status');
+            $fraudStatus = $response->json('fraud_status');
+
+            if ($statusCode === '404' || ! is_string($txStatus) || $txStatus === '') {
+                return false;
+            }
+
+            $previousStatus = $this->status;
+            $previousTxStatus = $this->transaction_status;
+
+            if ($txStatus === 'settlement' || ($txStatus === 'capture' && $fraudStatus === 'accept')) {
+                $this->update([
+                    'status' => 'verified',
+                    'verified_at' => $this->verified_at ?? now(),
+                    'transaction_status' => $txStatus,
+                ]);
+            } elseif (in_array($txStatus, ['refund', 'partial_refund', 'deny', 'cancel', 'expire'], true) || ($txStatus === 'capture' && $fraudStatus === 'deny')) {
+                $this->update([
+                    'status' => 'rejected',
+                    'transaction_status' => $txStatus,
+                ]);
+            } elseif (in_array($txStatus, ['pending', 'capture', 'challenge'], true)) {
+                $this->update([
+                    'status' => filled($this->proof_path) ? 'pending' : 'initiated',
+                    'transaction_status' => $txStatus,
+                ]);
+            }
+
+            if ($previousStatus !== $this->status || $previousTxStatus !== $this->transaction_status) {
+                $this->recordLifecycleEvent(
+                    'midtrans_sync',
+                    $previousStatus,
+                    $previousTxStatus,
+                    'Status transaksi disinkronkan dari Midtrans (' . $txStatus . ').'
+                );
+
+                return true;
+            }
+        } catch (\Throwable) {
+            // Abaikan kegagalan jaringan sementara saat sinkronisasi pasif
+        }
+
+        return false;
     }
 }

@@ -46,6 +46,8 @@ class RiwayatController extends Controller
         }
 
         $bookings = $query->orderByDesc('created_at')->paginate(8)->withQueryString();
+        $bookings->getCollection()->each->syncPaymentStatus();
+        $bookings->load(['payments' => fn ($q) => $q->orderByDesc('created_at')->orderByDesc('id')]);
         $vendors = Vendor::whereHas('schedules', fn ($q) => $q
             ->whereNotNull('event_id')
             ->where('status', 'approved')
@@ -70,6 +72,12 @@ class RiwayatController extends Controller
                 'payments.events',
             ])
             ->findOrFail($booking);
+
+        $booking->syncPaymentStatus();
+        $booking->load([
+            'payments' => fn ($q) => $q->orderByDesc('created_at')->orderByDesc('id'),
+            'payments.events',
+        ]);
 
         return view('user.riwayat.show', compact('booking'));
     }

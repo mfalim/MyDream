@@ -47,10 +47,15 @@ return [
         'base_url' => env(
             'MIDTRANS_BASE_URL',
             env('MIDTRANS_IS_PRODUCTION', false)
+                ? 'https://app.midtrans.com'
+                : 'https://app.sandbox.midtrans.com'
+        ),
+        'api_url' => env(
+            'MIDTRANS_API_URL',
+            env('MIDTRANS_IS_PRODUCTION', false)
                 ? 'https://api.midtrans.com'
                 : 'https://api.sandbox.midtrans.com'
         ),
-
     ],
 
 ];

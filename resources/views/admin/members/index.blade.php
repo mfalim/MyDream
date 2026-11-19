@@ -10,7 +10,7 @@
 
 @section('content')
 
-    <div class="member-page">
+    <div class="member-page" id="memberWorkspace" data-ajax-workspace>
 
         {{-- Header --}}
         <div class="member-header">
@@ -74,7 +74,7 @@
 
             <select class="member-filter"
                 name="division"
-                onchange="this.form.submit()"
+                data-ajax-auto-submit="true"
                 form="member-filter-form">
 
                 <option value="">
@@ -106,7 +106,7 @@
 
             <select class="member-filter"
                 name="status"
-                onchange="this.form.submit()"
+                data-ajax-auto-submit="true"
                 form="member-filter-form">
 
                 <option value="">

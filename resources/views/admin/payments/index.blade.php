@@ -10,7 +10,6 @@
 @section('content')
 @php
     $rupiah = fn ($n) => 'Rp ' . number_format((float) ($n ?? 0), 0, ',', '.');
-    $pendingCount = (int) ($counts['pending'] ?? 0);
     $unpaidVendorCount = $vendorSchedules->where('payment_status', '!=', 'paid')->count();
 @endphp
 
@@ -20,9 +19,9 @@
         <div>
             <div class="finance-header-eyebrow">KEUANGAN &amp; ARUS KAS</div>
             <h1>Pusat Keuangan &amp; Kas Acara</h1>
-            <p>Verifikasi bukti transfer klien, atur pencairan dana ke rekening vendor, dan pantau buku kas serta invoice per booking.</p>
+            <p>Pantau buku kas &amp; invoice per booking, atur pencairan dana ke rekening vendor, dan kelola pembayaran klien.</p>
         </div>
-        <div class="finance-header-actions">
+        <div class="finance-header-actions no-print">
             <button type="button" class="btn-fin-primary" data-bs-toggle="modal" data-bs-target="#manualPaymentModal">
                 <i class="bi bi-plus-circle"></i>
                 <span>Catat Bayar Klien</span>
@@ -55,8 +54,8 @@
             </div>
             <div class="kpi-value">{{ $rupiah($summary['client_receivables']) }}</div>
             <div class="kpi-sub">
-                <span>Antrean Verifikasi:</span>
-                <strong class="num-tabular text-warning-emphasis">{{ $rupiah($summary['pending_verification_amount']) }}</strong>
+                <span>Booking Belum Lunas:</span>
+                <strong class="num-tabular text-warning-emphasis">{{ $bookings->where('payment_status', '!=', 'paid')->count() }} booking</strong>
             </div>
         </div>
 
@@ -86,16 +85,14 @@
     </div>
 
     {{-- UNIFIED WORKSPACE CARD (3 NON-OVERLAPPING TABS) --}}
-    <div class="finance-workspace">
+    <div class="finance-workspace" id="financeWorkspace" data-ajax-workspace>
         <div class="finance-workspace-head">
-            <div class="finance-nav-tabs">
-                <a href="{{ route('admin.payments.index', ['tab' => 'verification', 'status' => $status]) }}"
-                   class="finance-tab-link {{ $activeTab === 'verification' ? 'active' : '' }}">
-                    <i class="bi bi-patch-check"></i>
-                    <span>Verifikasi Transfer Klien</span>
-                    @if ($pendingCount > 0)
-                        <span class="finance-tab-badge">{{ $pendingCount }}</span>
-                    @endif
+            <div class="finance-nav-tabs no-print">
+                <a href="{{ route('admin.payments.index', ['tab' => 'bookings']) }}"
+                   class="finance-tab-link {{ $activeTab === 'bookings' ? 'active' : '' }}">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                    <span>Buku Kas &amp; Invoice Booking</span>
+                    <span class="finance-tab-badge">{{ $bookings->count() }}</span>
                 </a>
 
                 <a href="{{ route('admin.payments.index', ['tab' => 'vendor_payouts']) }}"
@@ -107,26 +104,15 @@
                     @endif
                 </a>
 
-                <a href="{{ route('admin.payments.index', ['tab' => 'bookings']) }}"
-                   class="finance-tab-link {{ $activeTab === 'bookings' ? 'active' : '' }}">
-                    <i class="bi bi-journal-bookmark-fill"></i>
-                    <span>Buku Kas &amp; Invoice Booking</span>
-                    <span class="finance-tab-badge">{{ $bookings->count() }}</span>
+                <a href="{{ route('admin.payments.index', ['tab' => 'report']) }}"
+                   class="finance-tab-link {{ $activeTab === 'report' ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                    <span>Laporan Organizer</span>
                 </a>
             </div>
 
             {{-- CONTEXTUAL FILTER RIGHT INSIDE HEADER --}}
-            @if ($activeTab === 'verification')
-                <div class="finance-pill-group">
-                    @foreach ($statuses as $key => $label)
-                        <a href="{{ route('admin.payments.index', ['tab' => 'verification', 'status' => $key]) }}"
-                           class="finance-pill {{ $status === $key ? 'active' : '' }}">
-                            <span>{{ $label }}</span>
-                            <span class="badge rounded-pill text-bg-light">{{ $counts[$key] ?? 0 }}</span>
-                        </a>
-                    @endforeach
-                </div>
-            @elseif ($activeTab === 'vendor_payouts')
+            @if ($activeTab === 'vendor_payouts')
                 <div class="d-flex align-items-center flex-wrap gap-2">
                     <div class="finance-pill-group">
                         <a href="{{ route('admin.payments.index', ['tab' => 'vendor_payouts', 'booking_id' => $bookingFilter]) }}"
@@ -141,7 +127,7 @@
                     <form method="GET" action="{{ route('admin.payments.index') }}">
                         <input type="hidden" name="tab" value="vendor_payouts">
                         <input type="hidden" name="vendor_status" value="{{ $vendorStatusFilter }}">
-                        <select name="booking_id" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 210px;">
+                        <select name="booking_id" class="form-select form-select-sm" data-ajax-auto-submit="true" style="min-width: 210px;">
                             <option value="">Semua Booking</option>
                             @foreach ($bookings as $b)
                                 <option value="{{ $b->id }}" {{ (string) $bookingFilter === (string) $b->id ? 'selected' : '' }}>
@@ -180,122 +166,19 @@
                         </button>
                     </div>
                 </div>
+            @elseif ($activeTab === 'report')
+                <div class="d-flex align-items-center gap-2 no-print">
+                    <button type="button" class="btn-fin-outline" onclick="exportOrganizerReportCsv()">
+                        <i class="bi bi-filetype-csv"></i>
+                        <span>Unduh CSV</span>
+                    </button>
+                    <button type="button" class="btn-fin-primary" onclick="window.print()">
+                        <i class="bi bi-printer"></i>
+                        <span>Cetak Laporan</span>
+                    </button>
+                </div>
             @endif
         </div>
-
-        {{-- ==================================================================
-             TAB 1: VERIFIKASI PEMBAYARAN KLIEN (INFLOW)
-             ================================================================== --}}
-        @if ($activeTab === 'verification')
-            <div class="table-responsive">
-                <table class="finance-table">
-                    <thead>
-                        <tr>
-                            <th>Klien &amp; Invoice</th>
-                            <th>Nominal &amp; Skema</th>
-                            <th>Metode &amp; Rekening</th>
-                            <th>Bukti Struk</th>
-                            <th>Status</th>
-                            <th class="text-end">Aksi Verifikasi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($payments as $payment)
-                            @php
-                                $booking = $payment->booking;
-                                $typeLabel = [
-                                    'dp' => 'Down Payment (DP)',
-                                    'full' => 'Lunas Penuh (100%)',
-                                    'remaining' => 'Pelunasan Sisa',
-                                ][$payment->type] ?? strtoupper($payment->type);
-                            @endphp
-                            <tr>
-                                <td>
-                                    <div class="fw-bold">{{ $booking?->client?->groom_name ?? 'N/A' }} &amp; {{ $booking?->client?->bride_name ?? 'N/A' }}</div>
-                                    <div class="text-muted small">
-                                        #{{ $booking?->id }}{{ $booking?->invoice_number ? ' · ' . $booking->invoice_number : '' }}
-                                        · {{ $booking?->package?->name ?? 'Custom Vendor' }}
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="num-tabular fs-6 text-dark">{{ $rupiah($payment->amount) }}</div>
-                                    <span class="badge text-bg-light border">{{ $typeLabel }}</span>
-                                    <span class="text-muted small ms-1">({{ $payment->created_at?->format('d/m/Y H:i') }})</span>
-                                </td>
-                                <td>
-                                    @if ($payment->method === 'midtrans')
-                                        <div class="small fw-semibold text-primary">
-                                            <i class="bi bi-lightning-charge-fill"></i> Midtrans Payment Gateway
-                                        </div>
-                                        <div class="text-muted" style="font-size: 11px;">
-                                            Order ID: <code>{{ $payment->midtrans_order_id ?? '-' }}</code>
-                                            @if ($payment->transaction_status)
-                                                · <span class="badge text-bg-light border">{{ strtoupper($payment->transaction_status) }}</span>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <span class="small fw-semibold">{{ $payment->bank_info ?: 'Transfer Rekening WO' }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($payment->proof_url)
-                                        <button type="button" class="btn-fin-outline"
-                                                onclick="openProofPreview('{{ $payment->proof_url }}', 'Bukti Transfer Klien — #{{ $booking?->id }} ({{ $typeLabel }}: {{ $rupiah($payment->amount) }})')">
-                                            <i class="bi bi-eye-fill text-success"></i>
-                                            <span>Preview Struk</span>
-                                        </button>
-                                    @elseif ($payment->method === 'midtrans')
-                                        <span class="fin-badge verified">
-                                            <i class="bi bi-shield-check"></i> Otomatis Midtrans
-                                        </span>
-                                    @else
-                                        <span class="fin-badge unpaid">Tanpa Struk</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="fin-badge {{ $payment->status }}">
-                                        {{ $statuses[$payment->status] ?? ucfirst($payment->status) }}
-                                    </span>
-                                </td>
-                                <td class="text-end" style="min-width: 260px;">
-                                    @if ($payment->status === 'pending')
-                                        <div class="d-inline-flex align-items-center gap-1 flex-wrap justify-content-end">
-                                            <form action="{{ route('admin.payments.verify', $payment) }}" method="POST"
-                                                  onsubmit="return confirm('Verifikasi pembayaran {{ $rupiah($payment->amount) }} ini?')">
-                                                @csrf
-                                                <button type="submit" class="btn-fin-primary">
-                                                    <i class="bi bi-check2-circle"></i> Setujui
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('admin.payments.reject', $payment) }}" method="POST" class="d-inline-flex gap-1">
-                                                @csrf
-                                                <input type="text" name="admin_note" class="form-control form-control-sm"
-                                                       placeholder="Alasan..." style="width: 115px;">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">Tolak</button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <div class="small text-muted">
-                                            {{ $payment->verified_at?->format('d/m/Y H:i') ?? '-' }}
-                                            @if ($payment->admin_note)
-                                                <div class="text-secondary">"{{ $payment->admin_note }}"</div>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                                    Tidak ada pembayaran dengan status <strong>{{ $statuses[$status] ?? $status }}</strong>.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        @endif
 
         {{-- ==================================================================
              TAB 2: PENCAIRAN DANA VENDOR REKANAN (OUTFLOW)
@@ -600,6 +483,23 @@
                                             </span>
                                         @endif
                                     </div>
+                                    @php
+                                        $pSum = $row['payment_summary'] ?? null;
+                                    @endphp
+                                    @if ($remaining > 0 && ($pSum['deadline'] ?? null))
+                                        <div class="mt-1" style="font-size: 11px;">
+                                            <span class="badge {{ $pSum['is_overdue'] ? 'text-bg-danger' : ($pSum['is_urgent'] ? 'text-bg-warning' : 'text-bg-light border text-muted') }}">
+                                                <i class="bi {{ $pSum['is_overdue'] ? 'bi-exclamation-triangle-fill' : 'bi-calendar-event' }}"></i>
+                                                {{ $pSum['deadline_type'] === 'dp' ? 'Batas DP' : 'Tenggat Lunas' }}:
+                                                {{ $pSum['deadline']->locale('id')->translatedFormat('d M Y') }}
+                                                @if ($pSum['is_overdue'])
+                                                    (Lewat tenggat)
+                                                @elseif ($pSum['days_to_deadline'] !== null)
+                                                    ({{ $pSum['days_to_deadline'] === 0 ? 'Hari ini' : $pSum['days_to_deadline'] . 'h lagi' }})
+                                                @endif
+                                            </span>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="ledger-outflow-card">
@@ -762,6 +662,181 @@
                 </div>
             @endforeach
         @endif
+
+        {{-- ==================================================================
+             TAB 3: LAPORAN KEUANGAN & ARUS KAS ORGANIZER
+             ================================================================== --}}
+        @if ($activeTab === 'report')
+            <div class="report-shell">
+                <div class="report-header-bar">
+                    <div>
+                        <h5 class="fw-bold mb-1 text-dark">Laporan Keuangan &amp; Laba Rugi Organizer</h5>
+                        <div class="small text-muted">
+                            Dicetak pada {{ now()->locale('id')->translatedFormat('d F Y, H:i') }} WIB
+                            · {{ $reportSummary['count'] }} Booking
+                            @if ($reportFrom || $reportTo)
+                                · Periode: <strong>{{ $reportFrom ?: 'Awal' }}</strong> s.d. <strong>{{ $reportTo ?: 'Sekarang' }}</strong>
+                            @endif
+                        </div>
+                    </div>
+                    <span class="fin-badge verified">Margin Estimasi: {{ $reportSummary['margin_pct'] }}%</span>
+                </div>
+
+                {{-- FILTER PERIODE & STATUS LAPORAN --}}
+                <form method="GET" action="{{ route('admin.payments.index') }}" class="report-filter-bar no-print">
+                    <input type="hidden" name="tab" value="report">
+                    <div class="report-filter-field">
+                        <label for="reportFrom">Dari Tanggal Acara/Booking</label>
+                        <input type="date" id="reportFrom" name="report_from" value="{{ $reportFrom }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="report-filter-field">
+                        <label for="reportTo">Sampai Tanggal</label>
+                        <input type="date" id="reportTo" name="report_to" value="{{ $reportTo }}" class="form-control form-control-sm">
+                    </div>
+                    <div class="report-filter-field">
+                        <label for="reportStatus">Status Pembayaran</label>
+                        <select id="reportStatus" name="report_status" class="form-select form-select-sm" style="min-width: 160px;">
+                            <option value="">Semua Status</option>
+                            <option value="paid" {{ $reportStatus === 'paid' ? 'selected' : '' }}>Lunas (100%)</option>
+                            <option value="dp_paid" {{ $reportStatus === 'dp_paid' ? 'selected' : '' }}>DP Terbayar</option>
+                            <option value="unpaid" {{ $reportStatus === 'unpaid' ? 'selected' : '' }}>Belum Bayar</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-fin-primary">
+                        <i class="bi bi-funnel"></i> Terapkan Filter
+                    </button>
+                    <a href="{{ route('admin.payments.index', ['tab' => 'report', 'report_from' => now()->startOfMonth()->toDateString(), 'report_to' => now()->endOfMonth()->toDateString(), 'report_status' => $reportStatus]) }}"
+                       class="btn-fin-outline">Bulan Ini</a>
+                    @if ($reportFrom || $reportTo || $reportStatus)
+                        <a href="{{ route('admin.payments.index', ['tab' => 'report']) }}" class="btn-fin-outline text-danger">Reset</a>
+                    @endif
+                </form>
+
+                {{-- RINGKASAN ARUS KAS & PROYEKSI LABA SESUAI FILTER --}}
+                <div class="report-statement-grid">
+                    <div class="report-statement-card">
+                        <div class="report-statement-title">
+                            <i class="bi bi-cash-coin text-success"></i>
+                            <span>Arus Kas Riil (Realized Cash Flow)</span>
+                        </div>
+                        <div class="report-line">
+                            <span>(+) Kas Masuk Klien (Verified)</span>
+                            <strong class="num-tabular text-success">{{ $rupiah($reportSummary['client_paid']) }}</strong>
+                        </div>
+                        <div class="report-line">
+                            <span>(-) Pencairan Mitra Vendor</span>
+                            <strong class="num-tabular text-danger">-{{ $rupiah($reportSummary['vendor_paid']) }}</strong>
+                        </div>
+                        <div class="report-line">
+                            <span>(-) Pembayaran Honor Kru</span>
+                            <strong class="num-tabular text-danger">-{{ $rupiah($reportSummary['crew_paid']) }}</strong>
+                        </div>
+                        <div class="report-line total">
+                            <span>(=) Saldo Kas Riil</span>
+                            <span class="num-tabular {{ $reportSummary['cash_balance'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                {{ $rupiah($reportSummary['cash_balance']) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="report-statement-card">
+                        <div class="report-statement-title">
+                            <i class="bi bi-graph-up-arrow text-primary"></i>
+                            <span>Proyeksi Laba &amp; Kewajiban Organizer</span>
+                        </div>
+                        <div class="report-line">
+                            <span>(+) Nilai Kontrak Terfilter</span>
+                            <strong class="num-tabular text-dark">{{ $rupiah($reportSummary['contract_total']) }}</strong>
+                        </div>
+                        <div class="report-line">
+                            <span>(-) Komitmen Mitra Vendor (Nett)</span>
+                            <strong class="num-tabular text-danger">-{{ $rupiah($reportSummary['vendor_total']) }}</strong>
+                        </div>
+                        <div class="report-line">
+                            <span>(-) Komitmen Honor Kru</span>
+                            <strong class="num-tabular text-danger">-{{ $rupiah($reportSummary['crew_total']) }}</strong>
+                        </div>
+                        <div class="report-line total">
+                            <span>(=) Proyeksi Laba Bersih WO ({{ $reportSummary['margin_pct'] }}%)</span>
+                            <span class="num-tabular {{ $reportSummary['projected_margin'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                {{ $rupiah($reportSummary['projected_margin']) }}
+                            </span>
+                        </div>
+                        <div class="report-line meta">
+                            <span>Piutang Klien: <strong class="num-tabular text-dark">{{ $rupiah($reportSummary['client_remaining']) }}</strong></span>
+                            <span>Sisa Hutang Vendor/Kru: <strong class="num-tabular text-danger">{{ $rupiah($reportSummary['outflow_remaining']) }}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- TABEL REKAP PER BOOKING --}}
+                <div class="report-table-wrap table-responsive">
+                    <table class="finance-table" id="organizerReportTable">
+                        <thead>
+                            <tr>
+                                <th>Booking &amp; Mempelai</th>
+                                <th>Tgl Acara</th>
+                                <th>Status</th>
+                                <th class="text-end">Nilai Kontrak</th>
+                                <th class="text-end">Kas Masuk</th>
+                                <th class="text-end">Beban Vendor &amp; Kru</th>
+                                <th class="text-end">Kas Riil</th>
+                                <th class="text-end">Est. Margin WO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($reportLedgers as $row)
+                                @php
+                                    $b = $row['booking'];
+                                    $st = $b->payment_status ?: 'unpaid';
+                                    $stLabel = match ($st) {
+                                        'paid' => 'Lunas',
+                                        'dp_paid' => 'DP Terbayar',
+                                        'awaiting_verification' => 'Menunggu Verifikasi',
+                                        default => 'Belum Bayar',
+                                    };
+                                    $totalBeban = $row['vendor_total'] + $row['crew_total'];
+                                    $evDate = $row['events']->pluck('event_date')->filter()->sort()->first() ?? $b->created_at;
+                                @endphp
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">#{{ $b->id }} · {{ $b->client?->groom_name ?? 'N/A' }} &amp; {{ $b->client?->bride_name ?? 'N/A' }}</div>
+                                        <div class="small text-muted">{{ $b->invoice_number ?? '-' }} · {{ $b->package?->name ?? 'Custom Vendor' }}</div>
+                                    </td>
+                                    <td class="small text-muted">{{ $evDate ? \Carbon\Carbon::parse($evDate)->format('d/m/Y') : '-' }}</td>
+                                    <td><span class="fin-badge {{ $st }}">{{ $stLabel }}</span></td>
+                                    <td class="text-end num-tabular">{{ $rupiah($row['contract_total']) }}</td>
+                                    <td class="text-end num-tabular text-success">{{ $rupiah($row['client_paid']) }}</td>
+                                    <td class="text-end num-tabular">{{ $rupiah($totalBeban) }}</td>
+                                    <td class="text-end num-tabular {{ $row['cash_balance_now'] >= 0 ? 'text-dark' : 'text-danger' }}">
+                                        {{ $rupiah($row['cash_balance_now']) }}
+                                    </td>
+                                    <td class="text-end num-tabular fw-bold {{ $row['projected_margin'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                        {{ $rupiah($row['projected_margin']) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-muted">Tidak ada data booking yang cocok dengan filter laporan ini.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                        @if ($reportLedgers->isNotEmpty())
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3">TOTAL ({{ $reportSummary['count'] }} BOOKING)</td>
+                                    <td class="text-end num-tabular">{{ $rupiah($reportSummary['contract_total']) }}</td>
+                                    <td class="text-end num-tabular text-success">{{ $rupiah($reportSummary['client_paid']) }}</td>
+                                    <td class="text-end num-tabular">{{ $rupiah($reportSummary['outflow_committed']) }}</td>
+                                    <td class="text-end num-tabular {{ $reportSummary['cash_balance'] >= 0 ? 'text-dark' : 'text-danger' }}">{{ $rupiah($reportSummary['cash_balance']) }}</td>
+                                    <td class="text-end num-tabular {{ $reportSummary['projected_margin'] >= 0 ? 'text-success' : 'text-danger' }}">{{ $rupiah($reportSummary['projected_margin']) }}</td>
+                                </tr>
+                            </tfoot>
+                        @endif
+                    </table>
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 
@@ -788,7 +863,7 @@
                             @foreach ($bookings as $b)
                                 @php
                                     $rem = max(0, (float) $b->total_price - (float) $b->paid_amount);
-                                    $dpAmt = (int) ceil((float) $b->total_price * ($dpPercent ?? 30) / 100);
+                                    $dpAmt = (int) ceil((float) $b->total_price * ($dpPercent ?? 10) / 100);
                                 @endphp
                                 <option value="{{ $b->id }}"
                                         data-total="{{ (int) $b->total_price }}"
@@ -804,7 +879,7 @@
                         <div class="col-md-6">
                             <label class="form-label fw-bold small text-uppercase">Tahapan Pembayaran</label>
                             <select name="type" id="manualTypeSelect" class="form-select" required>
-                                <option value="dp">Down Payment (DP {{ $dpPercent ?? 30 }}%)</option>
+                                <option value="dp">Down Payment (DP {{ $dpPercent ?? 10 }}%)</option>
                                 <option value="remaining">Pelunasan Sisa Tagihan</option>
                                 <option value="full">Pembayaran Lunas (100%)</option>
                             </select>
@@ -874,128 +949,6 @@
 </div>
 
 @push('scripts')
-<script>
-function openProofPreview(url, title) {
-    const modalEl = document.getElementById('proofPreviewModal');
-    const titleEl = document.getElementById('proofPreviewTitle');
-    const container = document.getElementById('proofPreviewContainer');
-    const newTabBtn = document.getElementById('proofOpenNewTabBtn');
-
-    titleEl.textContent = title || 'Preview Bukti Transfer';
-    newTabBtn.href = url;
-
-    if (url.toLowerCase().endsWith('.pdf')) {
-        container.innerHTML = `<iframe src="${url}" style="width:100%; height:65vh; border:0; border-radius:8px; background:#fff;"></iframe>`;
-    } else {
-        container.innerHTML = `<img src="${url}" alt="Bukti Transfer">`;
-    }
-
-    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-    modal.show();
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.vendor-scheme-select').forEach(function (select) {
-        const targetSelector = select.getAttribute('data-target');
-        const targetEl = targetSelector ? document.querySelector(targetSelector) : null;
-        if (!targetEl) return;
-
-        const syncVisibility = () => {
-            targetEl.style.display = select.value === 'custom' ? 'block' : 'none';
-        };
-        syncVisibility();
-        select.addEventListener('change', syncVisibility);
-    });
-
-    const bookingSelect = document.getElementById('manualBookingSelect');
-    const typeSelect = document.getElementById('manualTypeSelect');
-    const amountInput = document.getElementById('manualAmountInput');
-
-    function syncManualAmount() {
-        if (!bookingSelect || !typeSelect || !amountInput) return;
-        const opt = bookingSelect.selectedOptions[0];
-        if (!opt || !opt.value) return;
-
-        const type = typeSelect.value;
-        if (type === 'dp') {
-            amountInput.value = opt.getAttribute('data-dp') || '';
-        } else if (type === 'remaining') {
-            amountInput.value = opt.getAttribute('data-remaining') || '';
-        } else {
-            amountInput.value = opt.getAttribute('data-total') || '';
-        }
-    }
-
-    bookingSelect?.addEventListener('change', syncManualAmount);
-    typeSelect?.addEventListener('change', syncManualAmount);
-
-    // Real-time Client Search & Filter Pills in Tab 3 (Buku Kas & Invoice Booking)
-    const bookingSearchInput = document.getElementById('bookingSearchInput');
-    const bookingClearBtn = document.getElementById('bookingClearSearchBtn');
-    const filterButtons = document.querySelectorAll('#bookingStatusFilterGroup button[data-filter]');
-    const bookingRows = document.querySelectorAll('#bookingFinanceTable tbody tr.booking-ledger-row');
-    const noMatchRow = document.getElementById('bookingNoMatchRow');
-
-    let currentFilter = 'all';
-
-    function applyBookingFilter() {
-        const query = (bookingSearchInput ? bookingSearchInput.value : '').toLowerCase().trim();
-        if (bookingClearBtn) {
-            bookingClearBtn.classList.toggle('d-none', query.length === 0);
-        }
-
-        let visibleCount = 0;
-        bookingRows.forEach(function (row) {
-            const rowSearch = (row.getAttribute('data-search') || '').toLowerCase();
-            const rowStatus = row.getAttribute('data-status') || '';
-
-            const matchSearch = query === '' || rowSearch.includes(query);
-            let matchStatus = false;
-
-            if (currentFilter === 'all') {
-                matchStatus = true;
-            } else if (currentFilter === 'paid') {
-                matchStatus = rowStatus === 'paid';
-            } else if (currentFilter === 'dp_paid') {
-                matchStatus = rowStatus === 'dp_paid';
-            } else if (currentFilter === 'unpaid') {
-                matchStatus = rowStatus === 'unpaid' || rowStatus === 'awaiting_verification';
-            }
-
-            if (matchSearch && matchStatus) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        if (noMatchRow) {
-            noMatchRow.style.display = (visibleCount === 0 && bookingRows.length > 0) ? '' : 'none';
-        }
-    }
-
-    if (bookingSearchInput) {
-        bookingSearchInput.addEventListener('input', applyBookingFilter);
-    }
-
-    if (bookingClearBtn) {
-        bookingClearBtn.addEventListener('click', function () {
-            bookingSearchInput.value = '';
-            applyBookingFilter();
-            bookingSearchInput.focus();
-        });
-    }
-
-    filterButtons.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilter = this.getAttribute('data-filter') || 'all';
-            applyBookingFilter();
-        });
-    });
-});
-</script>
+    @vite('resources/js/admin/finance/index.js')
 @endpush
 @endsection

@@ -13,6 +13,12 @@ return [
     // Persentase DP minimum (ubah lewat .env: MYDREAM_DP_PERCENT=30).
     'dp_percent' => (int) env('MYDREAM_DP_PERCENT', 10),
 
+    // Batas waktu pembayaran DP awal setelah booking dibuat (dalam jam).
+    'dp_deadline_hours' => (int) env('MYDREAM_DP_DEADLINE_HOURS', 24),
+
+    // Batas waktu pelunasan sisa tagihan sebelum tanggal acara (H-N hari).
+    'payment_deadline_days' => (int) env('MYDREAM_PAYMENT_DEADLINE_DAYS', 14),
+
     // Rekening tujuan transfer. Diisi lewat .env, tidak ditulis permanen di kode/view.
     'bank' => [
         'name' => env('MYDREAM_BANK_NAME', 'BCA'),

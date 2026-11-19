@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Article;
 use App\Models\Booking;
 use App\Models\Client;
 use App\Models\Event;
@@ -56,27 +57,92 @@ class ClientController extends Controller
 
     public function bookings(Request $request)
     {
-        $client = Client::where('users_id', $request->user()->id)->firstOrFail();
+        $client = Client::where('users_id', $request->user()->id)->first();
+        if (! $client) {
+            return response()->json(['data' => []]);
+        }
 
-        return response()->json($client->bookings()->with(['package', 'events.schedules.vendor', 'payments'])->latest()->paginate(15));
+        $paginator = $client->bookings()
+            ->with([
+                'package',
+                'events.package',
+                'events.schedules.vendor.category',
+                'events.schedules.member',
+                'events.eventMembers.member',
+                'payments',
+            ])
+            ->latest()
+            ->paginate(15);
+
+        $paginator->getCollection()->transform(function (Booking $b) {
+            $b->syncPaymentStatus();
+            $summary = $b->paymentSummary();
+            $summary['deadline'] = $summary['deadline']?->toIso8601String();
+            $summary['settlement_deadline'] = $summary['settlement_deadline']?->toIso8601String();
+            $b->setAttribute('payment_summary', $summary);
+
+            $schedules = $b->events->flatMap->schedules;
+            $b->setAttribute('schedule_progress', [
+                'approved' => $schedules->where('status', 'approved')->count(),
+                'pending' => $schedules->where('status', 'pending')->count(),
+                'rejected' => $schedules->where('status', 'rejected')->count(),
+                'total' => $schedules->count(),
+            ]);
+
+            return $b;
+        });
+
+        return response()->json($paginator);
     }
 
     public function bookingPayments(Request $request, int $bookingId)
     {
         $booking = $this->ownedBooking($request, $bookingId);
         $booking->syncPaymentStatus();
-        $booking->load('payments');
-        $total = (float) $booking->total_price;
-        $paid = (float) $booking->paid_amount;
+
+        $latestMidtrans = $booking->payments()
+            ->where('method', 'midtrans')
+            ->whereIn('status', ['initiated', 'pending'])
+            ->latest('id')
+            ->first();
+
+        if ($latestMidtrans) {
+            $latestMidtrans->syncWithMidtrans();
+            if ($latestMidtrans->status !== 'verified') {
+                $latestMidtrans->update([
+                    'status' => 'verified',
+                    'verified_at' => now(),
+                    'transaction_status' => 'settlement',
+                ]);
+            }
+            $booking->syncPaymentStatus();
+        }
+
+        $booking->load([
+            'package',
+            'payments',
+            'events.package',
+            'events.schedules.vendor.category',
+            'events.schedules.member',
+            'events.eventMembers.member',
+        ]);
+        $summary = $booking->paymentSummary();
 
         return response()->json([
             'data' => $booking,
             'summary' => [
-                'total' => $total,
-                'paid' => $paid,
-                'pending' => (float) $booking->payments->where('status', 'pending')->sum('amount'),
-                'remaining' => max(0, $total - $paid),
-                'payment_status' => $booking->payment_status,
+                'total' => $summary['total'],
+                'paid' => $summary['paid'],
+                'pending' => $summary['pending'],
+                'remaining' => $summary['remaining'],
+                'dp_percent' => $summary['dp_percent'],
+                'dp_amount' => $summary['dp_amount'],
+                'percent_paid' => $summary['percent_paid'],
+                'payment_status' => $summary['status'],
+                'deadline' => $summary['deadline']?->toIso8601String(),
+                'deadline_type' => $summary['deadline_type'],
+                'days_to_deadline' => $summary['days_to_deadline'],
+                'is_overdue' => $summary['is_overdue'],
             ],
         ]);
     }
@@ -87,67 +153,230 @@ class ClientController extends Controller
         $booking->syncPaymentStatus();
         $total = (float) $booking->total_price;
         $paid = (float) $booking->paid_amount;
-        $percent = max(1, min(100, (int) config('mydream.dp_percent')));
-        $options = match ($booking->payment_status) {
-            'unpaid' => ['dp' => (int) ceil($total * $percent / 100), 'full' => (int) round($total)],
-            'dp_paid' => ['remaining' => (int) round(max(0, $total - $paid))],
-            default => [],
-        };
-        abort_if($total <= 0 || ! $options, 422, 'No payment is due.');
-        $bank = config('mydream.bank');
-        abort_unless(filled($bank['name'] ?? null) && filled($bank['number'] ?? null), 422, 'Bank transfer details are not configured.');
+        $remaining = max(0, $total - $paid);
+        $percent = max(1, min(100, (int) config('mydream.dp_percent', 10)));
+        $dpAmount = (int) ceil($total * $percent / 100);
+
+        $options = [
+            'dp' => $dpAmount,
+            'full' => (int) round($total),
+            'remaining' => (int) round($remaining > 0 ? $remaining : ($total - $dpAmount)),
+        ];
+
         $data = $request->validate([
-            'scheme' => ['required', 'in:' . implode(',', array_keys($options))],
-            'proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'scheme' => ['required', 'in:dp,full,remaining'],
+            'proof' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
         ]);
+
         $proof = $request->file('proof')?->store('payment-proofs', 'public');
-        $payment = DB::transaction(function () use ($booking, $data, $options, $bank, $proof) {
+        $payment = DB::transaction(function () use ($booking, $data, $options, $proof) {
             $booking->ensureInvoiceNumber();
+
+            // Gunakan transaksi Midtrans yang sudah diinisiasi untuk booking ini bila ada
+            $existingMidtrans = Payment::query()
+                ->where('booking_id', $booking->id)
+                ->where('method', 'midtrans')
+                ->whereIn('status', ['initiated', 'pending', 'verified'])
+                ->latest('id')
+                ->first();
+
+            if ($existingMidtrans && ($existingMidtrans->proof_path === null || $existingMidtrans->type === $data['scheme'])) {
+                $previousStatus = $existingMidtrans->status;
+                $previousTx = $existingMidtrans->transaction_status;
+
+                $existingMidtrans->syncWithMidtrans();
+
+                $updates = [
+                    'bank_info' => 'Midtrans Payment Gateway',
+                    'status' => 'verified',
+                    'verified_at' => $existingMidtrans->verified_at ?? now(),
+                    'transaction_status' => 'settlement',
+                ];
+                if ($proof) {
+                    $updates['proof_path'] = $proof;
+                }
+
+                $existingMidtrans->update($updates);
+                $existingMidtrans->recordLifecycleEvent(
+                    'midtrans_proof_upload',
+                    $previousStatus,
+                    $previousTx,
+                    'Pembayaran Midtrans dikonfirmasi dan diverifikasi otomatis.'
+                );
+                $booking->syncPaymentStatus();
+
+                return $existingMidtrans->fresh();
+            }
+
             $payment = Payment::create([
                 'booking_id' => $booking->id,
                 'type' => $data['scheme'],
                 'amount' => $options[$data['scheme']],
-                'method' => 'bank_transfer',
-                'bank_info' => trim(($bank['name'] ?? '') . ' ' . ($bank['number'] ?? '') . ' ' . ($bank['holder'] ?? '')),
-                'status' => 'pending',
+                'method' => 'midtrans',
+                'bank_info' => 'Midtrans Payment Gateway',
+                'status' => 'verified',
+                'verified_at' => now(),
                 'proof_path' => $proof,
+                'transaction_status' => 'settlement',
             ]);
-            $payment->recordLifecycleEvent('bank_transfer_submission', null, null, 'Permintaan pembayaran transfer dibuat.');
+            $payment->recordLifecycleEvent('midtrans_proof_upload', null, null, 'Pembayaran Midtrans dikonfirmasi dan diverifikasi otomatis.');
             $booking->syncPaymentStatus();
 
             return $payment;
         });
 
+        $freshBooking = $booking->fresh();
+
         return response()->json([
             'data' => [
                 'payment' => $payment,
-                'booking' => $booking->fresh(),
+                'booking' => $freshBooking,
                 'id' => $payment->id,
                 'booking_id' => $payment->booking_id,
                 'type' => $payment->type,
                 'amount' => $payment->amount,
                 'method' => $payment->method,
-                'bank_info' => $payment->bank_info,
+                'bank_info' => $payment->bank_info ?: 'Midtrans Payment Gateway',
                 'status' => $payment->status,
+                'transaction_status' => $payment->transaction_status,
                 'proof_path' => $payment->proof_path,
                 'created_at' => $payment->created_at,
             ],
-            'booking' => $booking->fresh(),
+            'booking' => $freshBooking,
         ], 201);
     }
 
     public function events(Request $request)
     {
-        $client = Client::where('users_id', $request->user()->id)->firstOrFail();
-        $events = Event::with(['booking.package', 'package', 'schedules.vendor.category'])
+        $client = Client::where('users_id', $request->user()->id)->first();
+        if (! $client) {
+            return response()->json(['data' => []]);
+        }
+
+        $events = Event::with([
+            'booking.package',
+            'package',
+            'schedules' => fn ($q) => $q->orderBy('start_time')->orderBy('id'),
+            'schedules.vendor.category',
+            'schedules.member',
+            'eventMembers.member',
+        ])
             ->whereHas('booking', fn ($query) => $query->where('client_id', $client->id))
             ->when($request->filled('month'), function ($query) use ($request) {
                 $month = $request->validate(['month' => ['date_format:Y-m']])['month'];
                 $query->whereYear('event_date', substr($month, 0, 4))->whereMonth('event_date', substr($month, 5, 2));
             })
-            ->orderByDesc('event_date')->get();
+            ->orderByDesc('event_date')
+            ->get();
+
+        $reviewedMap = Article::whereIn('event_id', $events->pluck('id'))
+            ->get()
+            ->keyBy('event_id');
+
+        $events->transform(function (Event $event) use ($reviewedMap) {
+            $review = $reviewedMap->get($event->id);
+            $event->setAttribute('has_review', $review !== null);
+            $event->setAttribute('review', $review);
+
+            return $event;
+        });
 
         return response()->json(['data' => $events]);
+    }
+
+    public function reviews(Request $request)
+    {
+        $client = Client::where('users_id', $request->user()->id)->first();
+        if (! $client) {
+            return response()->json([
+                'data' => [
+                    'completed_events' => [],
+                    'reviews' => [],
+                ],
+            ]);
+        }
+
+        $completedEvents = Event::query()
+            ->where('status', 'completed')
+            ->whereHas('booking', fn ($query) => $query
+                ->where('client_id', $client->id)
+                ->where('status', 'approved'))
+            ->with(['booking.package', 'package'])
+            ->orderByDesc('event_date')
+            ->get();
+
+        $reviews = Article::query()
+            ->with('event')
+            ->where('client_id', $client->id)
+            ->whereNotNull('event_id')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $reviewedEventIds = $reviews->pluck('event_id')->flip();
+        $completedEvents->transform(function (Event $event) use ($reviewedEventIds) {
+            $event->setAttribute('has_review', $reviewedEventIds->has($event->id));
+
+            return $event;
+        });
+
+        return response()->json([
+            'data' => [
+                'completed_events' => $completedEvents,
+                'reviews' => $reviews,
+            ],
+        ]);
+    }
+
+    public function storeReview(Request $request)
+    {
+        $client = Client::where('users_id', $request->user()->id)->firstOrFail();
+        $data = $request->validate([
+            'event_id' => ['required', 'integer', 'exists:events,id'],
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'excerpt' => ['nullable', 'string', 'max:255'],
+            'comment' => ['nullable', 'string', 'max:3000'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ]);
+
+        $event = Event::query()
+            ->with('booking')
+            ->whereKey($data['event_id'])
+            ->where('status', 'completed')
+            ->whereHas('booking', fn ($query) => $query
+                ->where('client_id', $client->id)
+                ->where('status', 'approved'))
+            ->first();
+
+        if (! $event) {
+            return response()->json(['message' => 'Acara belum berstatus selesai atau tidak tersedia untuk diulas.'], 422);
+        }
+
+        if (Article::where('event_id', $event->id)->exists()) {
+            return response()->json(['message' => 'Acara ini sudah memiliki ulasan.'], 422);
+        }
+
+        $photoPath = $request->file('photo')?->store('articles', 'public');
+        $comment = trim((string) ($data['comment'] ?? ''));
+        $content = $comment !== ''
+            ? $comment
+            : 'Acara ini mendapatkan rating ' . $data['rating'] . ' dari 5 bintang.';
+
+        $article = Article::create([
+            'title' => $event->name,
+            'category' => 'Ulasan Client',
+            'excerpt' => $data['excerpt'] ?? null,
+            'content' => $content,
+            'photo' => $photoPath,
+            'author' => $client->groom_name . ' & ' . $client->bride_name,
+            'published_at' => today(),
+            'package_id' => $event->package_id ?: $event->booking->package_id,
+            'is_published' => true,
+            'event_id' => $event->id,
+            'client_id' => $client->id,
+            'rating' => $data['rating'],
+        ]);
+
+        return response()->json(['data' => $article->load('event')], 201);
     }
 
     public function createEvent(Request $request)

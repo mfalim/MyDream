@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-<div class="tracking-page">
+<div class="tracking-page" id="payrollWorkspace" data-ajax-workspace>
     {{-- Header --}}
     <div class="tracking-header">
         <div>
@@ -74,7 +74,7 @@
         <form method="GET" action="{{ route('admin.payroll.index') }}" class="row g-2 align-items-center">
             <div class="col-md-3">
                 <label class="form-label small fw-semibold text-muted mb-1">Status Pembayaran</label>
-                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <select name="status" class="form-select form-select-sm" data-ajax-auto-submit="true">
                     <option value="">-- Semua Status --</option>
                     <option value="pending" @selected($status === 'pending')>Menunggu ACC Admin</option>
                     <option value="approved" @selected($status === 'approved')>Disetujui (Siap Cair)</option>
@@ -84,7 +84,7 @@
 
             <div class="col-md-4">
                 <label class="form-label small fw-semibold text-muted mb-1">Filter Event / Acara</label>
-                <select name="event_id" class="form-select form-select-sm" onchange="this.form.submit()">
+                <select name="event_id" class="form-select form-select-sm" data-ajax-auto-submit="true">
                     <option value="">-- Semua Acara --</option>
                     @foreach($events as $ev)
                         <option value="{{ $ev->id }}" @selected((string)$eventId === (string)$ev->id)>
@@ -449,9 +449,11 @@ function onItemCheckChange() {
     }
 }
 
-document.getElementById('checkAll')?.addEventListener('change', function() {
-    document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = this.checked);
-    onItemCheckChange();
+document.getElementById('payrollWorkspace')?.addEventListener('change', function(e) {
+    if (e.target && e.target.id === 'checkAll') {
+        document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = e.target.checked);
+        onItemCheckChange();
+    }
 });
 
 async function updateSingleStatus(id, status, notes = '') {

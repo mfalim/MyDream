@@ -37,6 +37,86 @@
         @endif
     </section>
 
+    @if($paymentBooking && $paymentSummary && $paymentSummary['total'] > 0 && ($paymentSummary['remaining'] > 0 || $paymentSummary['status'] === 'dp_paid'))
+        @php
+            $pStatus = $paymentSummary['status'];
+            $pDeadline = $paymentSummary['deadline'];
+            $pDaysLeft = $paymentSummary['days_to_deadline'];
+            $pIsOverdue = $paymentSummary['is_overdue'];
+            $pDeadlineText = null;
+            if ($pDeadline) {
+                $dateStr = $paymentSummary['deadline_type'] === 'dp'
+                    ? $pDeadline->locale('id')->translatedFormat('d M Y, H:i')
+                    : $pDeadline->locale('id')->translatedFormat('d M Y');
+                if ($pIsOverdue) {
+                    $pDeadlineText = 'Melewati tenggat (' . $dateStr . ') — segera selesaikan pembayaran';
+                } elseif ($pDaysLeft === 0) {
+                    $pDeadlineText = 'Jatuh tempo hari ini (' . $dateStr . ')';
+                } else {
+                    $suffix = $paymentSummary['deadline_type'] === 'settlement'
+                        ? ' · H-' . $paymentSummary['deadline_days_before'] . ' sebelum acara'
+                        : '';
+                    $pDeadlineText = 'Batas waktu: ' . $dateStr . ' (' . $pDaysLeft . ' hari lagi' . $suffix . ')';
+                }
+            }
+        @endphp
+        <section class="dh-payment-banner {{ $pIsOverdue ? 'is-overdue' : ($pStatus === 'dp_paid' ? 'is-dp' : '') }}" aria-label="Pengingat Pembayaran">
+            <div class="dh-payment-banner-main">
+                <div class="dh-payment-banner-top">
+                    @if($pStatus === 'dp_paid')
+                        <span class="wo-badge wo-badge-green"><i class="bi bi-check-circle-fill"></i> Sedang Masa DP ({{ $paymentSummary['percent_paid'] }}% Terbayar)</span>
+                    @elseif($pStatus === 'awaiting_verification')
+                        <span class="wo-badge wo-badge-gold"><i class="bi bi-hourglass-split"></i> Menunggu Verifikasi Pembayaran</span>
+                    @else
+                        <span class="wo-badge wo-badge-gold"><i class="bi bi-exclamation-circle-fill"></i> Menunggu Pembayaran DP ({{ $paymentSummary['dp_percent'] }}%)</span>
+                    @endif
+                    @if($paymentBooking->invoice_number)
+                        <span class="wo-badge wo-badge-neutral">{{ $paymentBooking->invoice_number }}</span>
+                    @endif
+                </div>
+
+                @if($pStatus === 'dp_paid')
+                    <h2>Pelunasan Sisa Tagihan: Rp {{ number_format($paymentSummary['remaining'], 0, ',', '.') }}</h2>
+                    <p>
+                        DP sebesar <strong>Rp {{ number_format($paymentSummary['paid'], 0, ',', '.') }}</strong> sudah terverifikasi.
+                        @if($paymentSummary['pending'] > 0)
+                            Ada pembayaran <strong>Rp {{ number_format($paymentSummary['pending'], 0, ',', '.') }}</strong> yang sedang diverifikasi.
+                        @else
+                            Tanggal acara Anda telah terkunci. Segera lunasi sisa tagihan sebelum tenggat waktu.
+                        @endif
+                    </p>
+                @elseif($pStatus === 'awaiting_verification')
+                    <h2>Pembayaran Sedang Diverifikasi (Rp {{ number_format($paymentSummary['pending'], 0, ',', '.') }})</h2>
+                    <p>Tim kami sedang memeriksa bukti transfer Anda. Sisa tagihan saat ini: <strong>Rp {{ number_format($paymentSummary['remaining'], 0, ',', '.') }}</strong>.</p>
+                @else
+                    <h2>Segera Bayar DP Minimal Rp {{ number_format($paymentSummary['dp_amount'], 0, ',', '.') }}</h2>
+                    <p>Lakukan pembayaran DP ({{ $paymentSummary['dp_percent'] }}%) atau bayar lunas untuk mengunci jadwal dan vendor pernikahan Anda.</p>
+                @endif
+
+                @if($pDeadlineText)
+                    <span class="dh-payment-deadline {{ $pIsOverdue ? 'overdue' : '' }}">
+                        <i class="bi {{ $pIsOverdue ? 'bi-exclamation-triangle-fill' : 'bi-calendar-event' }}"></i>
+                        {{ $pDeadlineText }}
+                    </span>
+                @endif
+            </div>
+
+            <div class="dh-payment-banner-actions">
+                <div class="dh-payment-progress-wrap">
+                    <div class="dh-payment-progress-meta">
+                        <span>Progres Pembayaran</span>
+                        <strong>{{ $paymentSummary['percent_paid'] }}%</strong>
+                    </div>
+                    <progress class="dh-progress" max="100" value="{{ $paymentSummary['percent_paid'] }}"></progress>
+                </div>
+                <a href="{{ route('payment.index', $paymentBooking->id) }}" class="wo-btn wo-btn-dark">
+                    <i class="bi bi-credit-card"></i>
+                    {{ $pStatus === 'dp_paid' ? 'Lunasi Sekarang' : 'Bayar DP / Lunas' }}
+                </a>
+            </div>
+        </section>
+    @endif
+
     <section class="dh-stat-grid">
             <article class="wo-card dh-stat-card">
                 <span class="wo-badge wo-badge-gold">Ringkasan Booking</span>
@@ -47,8 +127,19 @@
                     default => 'Belum tersedia',
                 } }}</h2>
                 <p class="dh-budget-amount">{{ $bookingSummary?->total_price !== null ? 'Rp ' . number_format((float) $bookingSummary->total_price, 0, ',', '.') : 'Belum ditentukan' }}</p>
-                <div class="dh-stat-foot"><span>Status sistem</span><strong class="dh-status dh-status-{{ $bookingSummary?->status ?? 'unavailable' }}">{{ ucfirst($bookingSummary?->status ?? 'Belum tersedia') }}</strong></div>
-                <div class="dh-stat-foot"><span>Jumlah tamu</span><strong>{{ number_format((int) ($bookingSummary?->guest_count ?? 0), 0, ',', '.') }} orang</strong></div>
+                @if($paymentSummary)
+                    <div class="dh-stat-foot">
+                        <span>Terbayar ({{ $paymentSummary['percent_paid'] }}%)</span>
+                        <strong class="text-success">Rp {{ number_format($paymentSummary['paid'], 0, ',', '.') }}</strong>
+                    </div>
+                    <div class="dh-stat-foot">
+                        <span>Sisa tagihan</span>
+                        <strong>Rp {{ number_format($paymentSummary['remaining'], 0, ',', '.') }}</strong>
+                    </div>
+                @else
+                    <div class="dh-stat-foot"><span>Status sistem</span><strong class="dh-status dh-status-{{ $bookingSummary?->status ?? 'unavailable' }}">{{ ucfirst($bookingSummary?->status ?? 'Belum tersedia') }}</strong></div>
+                    <div class="dh-stat-foot"><span>Jumlah tamu</span><strong>{{ number_format((int) ($bookingSummary?->guest_count ?? 0), 0, ',', '.') }} orang</strong></div>
+                @endif
                 <a href="{{ route('user.history.index') }}" class="wo-link">Buka Riwayat Pembelian <i class="bi bi-arrow-right"></i></a>
             </article>
 
@@ -149,9 +240,17 @@
                 </article>
 
                 <article class="dh-booking-note">
-                    <span class="wo-badge wo-badge-gold">Data Booking</span>
-                    <strong>Ringkasan dari data Anda</strong>
-                    <p>Anggaran menunjukkan total booking. Informasi pembayaran belum ditampilkan karena belum tersedia pada data aplikasi.</p>
+                    <span class="wo-badge wo-badge-gold">Ketentuan Pembayaran</span>
+                    @if($paymentSummary && $paymentSummary['status'] === 'paid')
+                        <strong>Pembayaran Lunas 100%</strong>
+                        <p>Seluruh tagihan booking Anda sudah terverifikasi lunas. Tim MyDream siap mendampingi persiapan hingga hari acara.</p>
+                    @elseif($paymentSummary && $paymentSummary['deadline'])
+                        <strong>{{ $paymentSummary['deadline_type'] === 'dp' ? 'Batas DP ' . $paymentSummary['dp_percent'] . '%' : 'Tenggat Pelunasan H-' . $paymentSummary['deadline_days_before'] }}</strong>
+                        <p>Pelunasan penuh paling lambat {{ $paymentSummary['deadline']->locale('id')->translatedFormat('d M Y') }} agar seluruh jadwal vendor tetap aman hingga hari pernikahan.</p>
+                    @else
+                        <strong>Ringkasan dari data Anda</strong>
+                        <p>Anggaran menunjukkan total nilai booking. Anda dapat melakukan pembayaran DP minimal {{ config('mydream.dp_percent', 10) }}% atau pelunasan penuh melalui menu Riwayat Pembelian.</p>
+                    @endif
                 </article>
             </aside>
         </div>
