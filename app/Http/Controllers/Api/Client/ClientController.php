@@ -471,9 +471,29 @@ class ClientController extends Controller
             $capacity = Package::findOrFail($data['package_id'])->guest_capacity;
             abort_if($capacity && $data['guest_count'] > $capacity, 422, 'Guest count exceeds package capacity.');
         }
+
         $booking = DB::transaction(function () use ($data, $client) {
-            $package = isset($data['package_id']) ? Package::with('vendors')->findOrFail($data['package_id']) : null;
-            $vendors = $package ? $package->vendors : Vendor::whereIn('id', $data['vendor_ids'] ?? [])->get();
+            $isPackage = isset($data['package_id']);
+            $package = $isPackage ? Package::with('vendors')->findOrFail($data['package_id']) : null;
+            $vendors = $package
+                ? $package->vendors
+                : Vendor::with('category')->whereIn('id', $data['vendor_ids'] ?? [])->get();
+
+            $guestCount = (int) $data['guest_count'];
+            if (! $isPackage) {
+                $cateringCapacities = $vendors
+                    ->filter(fn (Vendor $v) => $v->isCatering() && (int) $v->guest_capacity > 0)
+                    ->pluck('guest_capacity');
+                if ($cateringCapacities->isNotEmpty()) {
+                    $maxGuests = (int) $cateringCapacities->min();
+                    abort_if($guestCount > $maxGuests, 422, 'Jumlah tamu melebihi kapasitas vendor catering.');
+                }
+            }
+
+            $totalPrice = $isPackage
+                ? (float) $vendors->sum('price')
+                : (float) $vendors->sum(fn (Vendor $v) => $v->priceForGuests($guestCount));
+
             $booking = Booking::create([
                 'client_id' => $client->id,
                 'package_id' => $package?->id,
@@ -482,23 +502,33 @@ class ClientController extends Controller
                 'venue_city' => $data['venue_city'],
                 'venue_province' => $data['venue_province'],
                 'venue_maps' => $data['venue_maps'] ?? null,
-                'guest_count' => $data['guest_count'],
-                'total_price' => $vendors->sum('price'),
+                'guest_count' => $guestCount,
+                'total_price' => $totalPrice,
                 'notes' => $data['notes'] ?? null,
                 'status' => 'pending',
             ]);
+            $booking->ensureInvoiceNumber();
+
             $event = Event::create([
                 'booking_id' => $booking->id,
                 'package_id' => $package?->id,
                 'name' => 'Pernikahan ' . $client->groom_name . ' & ' . $client->bride_name,
                 'event_type' => 'wedding',
                 'event_date' => $data['event_date'],
-                'guest_count' => $data['guest_count'],
+                'guest_count' => $guestCount,
                 'status' => 'upcoming',
             ]);
             foreach ($vendors as $vendor) {
+                $vendorPrice = $isPackage
+                    ? (float) $vendor->price
+                    : $vendor->priceForGuests($guestCount);
+
                 $event->schedules()->create([
                     'vendor_id' => $vendor->id,
+                    'price' => $vendorPrice,
+                    'agreed_fee' => $vendorPrice,
+                    'paid_amount' => 0,
+                    'payment_status' => 'unpaid',
                     'activity' => $vendor->name,
                     'start_time' => $data['event_date'] . ' 09:00:00',
                     'end_time' => $data['event_date'] . ' 17:00:00',
