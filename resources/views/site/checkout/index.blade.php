@@ -6,7 +6,7 @@
 
     @php
         $isPackage = ($cart['type'] ?? null) === 'package' && $package;
-        $maxGuests = $isPackage ? $package->guest_capacity : null;
+        $guestLimit = $isPackage ? $package->guest_capacity : ($isCustomCatering ? $maxGuests : null);
         $dpPercent = (int) config('mydream.dp_percent');
         $field = 'mt-1 w-full rounded-xl border border-black/10 bg-white px-4 py-2.5 text-sm focus:border-maroon focus:outline-none';
     @endphp
@@ -52,8 +52,11 @@
                             @error('event_date') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                         </div>
                         <div>
-                            <label for="guest_count" class="text-xs font-medium text-ink/60">Estimasi jumlah tamu{{ $maxGuests ? ' (maks. ' . $maxGuests . ')' : '' }}</label>
-                            <input id="guest_count" type="number" name="guest_count" value="{{ old('guest_count') }}" min="1" @if ($maxGuests) max="{{ $maxGuests }}" @endif required class="{{ $field }}">
+                            <label for="guest_count" class="text-xs font-medium text-ink/60">Estimasi jumlah tamu{{ $guestLimit ? ' (maks. ' . $guestLimit . ')' : '' }}</label>
+                            <input id="guest_count" type="number" name="guest_count" value="{{ old('guest_count', $guestCount) }}" min="1" @if ($guestLimit) max="{{ $guestLimit }}" @endif required class="{{ $field }}">
+                            @if ($isCustomCatering)
+                                <p class="mt-1 text-xs text-ink/50">Jumlah tamu digunakan untuk menyesuaikan total reservasi catering.</p>
+                            @endif
                             @error('guest_count') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                         </div>
                     </div>
@@ -94,18 +97,20 @@
                 <div class="space-y-2 text-sm">
                     <p class="font-medium">{{ $isPackage ? $package->name : 'Vendor pilihan sendiri' }}</p>
                     @foreach ($vendors as $vendor)
-                        <div class="flex justify-between gap-3 text-ink/60">
-                            <span class="truncate">{{ $vendor->name }}</span>
-                            <span class="shrink-0">{{ \App\Support\Format::rupiah($vendor->price) }}</span>
-                        </div>
+                        <p class="truncate text-ink/60">{{ $vendor->name }}</p>
                     @endforeach
                 </div>
 
                 <div class="flex items-center justify-between border-t border-black/5 pt-3">
                     <span class="font-semibold">Total</span>
-                    <span class="font-display text-xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($totalPrice) }}</span>
+                    <span id="checkout-total" class="font-display text-xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($totalPrice) }}</span>
                 </div>
-                <p class="text-xs text-ink/50">DP minimal {{ $dpPercent }}% ({{ \App\Support\Format::rupiah(ceil($totalPrice * $dpPercent / 100)) }}) dibayar di langkah berikutnya.</p>
+                <p class="text-xs text-ink/50" @if ($isCustomCatering) data-dp-percent="{{ $dpPercent }}" @endif>
+                    DP minimal {{ $dpPercent }}% (<span id="checkout-dp">{{ \App\Support\Format::rupiah(ceil($totalPrice * $dpPercent / 100)) }}</span>) dibayar di langkah berikutnya.
+                </p>
+                @if ($isCustomCatering)
+                    <p id="checkout-price-error" class="hidden text-xs text-maroon" role="alert"></p>
+                @endif
 
                 <label class="flex items-start gap-2 text-xs text-ink/60">
                     <input type="checkbox" form="checkout-form" required class="mt-0.5 accent-maroon">
@@ -118,3 +123,66 @@
     </section>
 
 @endsection
+
+@if ($isCustomCatering)
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const guestInput = document.getElementById('guest_count');
+                const totalElement = document.getElementById('checkout-total');
+                const dpElement = document.getElementById('checkout-dp');
+                const dpSummary = document.querySelector('[data-dp-percent]');
+                const errorElement = document.getElementById('checkout-price-error');
+                const currency = new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 });
+                const quoteUrl = @json(route('user.checkout.quote'));
+                const csrfToken = document.querySelector('#checkout-form input[name="_token"]').value;
+                let quoteTimer;
+                let latestRequest = 0;
+
+                const updateTotal = async () => {
+                    const requestId = ++latestRequest;
+                    const guestCount = Number(guestInput.value);
+                    const maxGuests = Number(guestInput.max);
+                    const hasGuestCount = guestInput.value !== '';
+                    if (hasGuestCount && (!Number.isInteger(guestCount) || guestCount < 1 || (maxGuests && guestCount > maxGuests))) {
+                        errorElement.textContent = 'Masukkan jumlah tamu sesuai batas kapasitas vendor catering.';
+                        errorElement.classList.remove('hidden');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(quoteUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                            body: JSON.stringify({ guest_count: hasGuestCount ? guestCount : null }),
+                        });
+                        const quote = await response.json();
+                        if (!response.ok) {
+                            throw new Error(quote.message || 'Total reservasi tidak dapat diperbarui.');
+                        }
+                        if (requestId !== latestRequest) return;
+
+                        totalElement.textContent = `Rp ${currency.format(quote.totalPrice)}`;
+                        dpElement.textContent = `Rp ${currency.format(quote.dpAmount)}`;
+                        errorElement.classList.add('hidden');
+                    } catch (error) {
+                        if (requestId !== latestRequest) return;
+                        errorElement.textContent = error instanceof Error ? error.message : 'Total reservasi tidak dapat diperbarui.';
+                        errorElement.classList.remove('hidden');
+                    }
+                };
+
+                guestInput.addEventListener('input', () => {
+                    latestRequest++;
+                    window.clearTimeout(quoteTimer);
+                    quoteTimer = window.setTimeout(updateTotal, 250);
+                });
+                if (guestInput.value) updateTotal();
+            });
+        </script>
+    @endpush
+@endif

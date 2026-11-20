@@ -8,15 +8,11 @@ use App\Http\Controllers\Member\DashboardController as MemberDashboardController
 use App\Http\Controllers\Member\ProfileController as MemberProfileController;
 use App\Http\Middleware\EnsureUserRole;
 
-Route::get('/login', function () {
-    return view('login.login');
-})->name('login');
-
+Route::view('/login', 'login.login')->name('login');
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::post('/login', [GoogleAuthController::class, 'loginWithCredentials'])->name('login.attempt');
 Route::post('/register', [GoogleAuthController::class, 'registerWithCredentials'])->name('register.attempt');
-
-Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.redirect');
-Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('google.callback');
 
 Route::post('/logout', function () {
     Auth::logout();
@@ -42,6 +38,7 @@ Route::prefix('member')->name('member.')->middleware(['auth', EnsureUserRole::cl
     Route::post('/dashboard/event/{eventId}/member/{memberId}/attendance', [MemberDashboardController::class, 'updateTeamAttendance'])->name('event.attendance');
 });
 
+require __DIR__ . '/vendor.php';
 require __DIR__ . '/site.php';
 require __DIR__ . '/frontend.php';
 require __DIR__ . '/admin.php';

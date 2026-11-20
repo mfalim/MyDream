@@ -8,8 +8,11 @@
         $type = $cart['type'] ?? null;
         $isPackage = $type === 'package' && $package;
         $isCustom = $type === 'custom' && $vendors->isNotEmpty();
-        $minVendors = 3;
+        $minVendors = 2;
         $canCheckout = $isPackage || ($isCustom && $vendors->count() >= $minVendors);
+        if ($isCustom && $hasCatering && $missingCateringCapacity) {
+            $canCheckout = false;
+        }
         $dpPercent = (int) config('mydream.dp_percent');
     @endphp
 
@@ -17,6 +20,12 @@
         <x-site.steps :current="1" />
         <h1 class="mt-6 font-display text-3xl font-semibold">Keranjang Reservasi</h1>
         <p class="mt-2 text-ink/60">Tinjau paket atau vendor pilihanmu sebelum melanjutkan ke validasi data.</p>
+        @if (session('success'))
+            <p class="mt-4 rounded-xl bg-emerald/10 p-3 text-sm text-emerald">{{ session('success') }}</p>
+        @endif
+        @if (session('error'))
+            <p class="mt-4 rounded-xl bg-maroon-light p-3 text-sm text-maroon">{{ session('error') }}</p>
+        @endif
     </section>
 
     <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -47,12 +56,11 @@
                         </div>
                         <ul class="divide-y divide-black/5 border-t border-black/5 bg-cream-dark/40">
                             @foreach ($vendors as $vendor)
-                                <li class="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+                                <li class="flex items-center gap-4 px-5 py-3 text-sm">
                                     <div class="min-w-0">
                                         <span class="text-xs font-medium uppercase tracking-wide text-emerald">{{ $vendor->category?->name ?? 'Vendor' }}</span>
                                         <p class="truncate font-medium">{{ $vendor->name }}</p>
                                     </div>
-                                    <span class="shrink-0 text-ink/70">{{ \App\Support\Format::rupiah($vendor->price) }}</span>
                                 </li>
                             @endforeach
                         </ul>
@@ -74,8 +82,7 @@
                                 <a href="{{ route('vendor.show', $vendor->slug) }}" class="mt-1.5 block truncate font-display text-base font-semibold hover:text-maroon">{{ $vendor->name }}</a>
                                 <p class="truncate text-xs text-ink/50">{{ $vendor->city ?: \Illuminate\Support\Str::limit((string) $vendor->address, 40) }}</p>
                             </div>
-                            <div class="shrink-0 text-right">
-                                <x-site.price :amount="$vendor->price" />
+                            <div class="shrink-0">
                                 <form action="{{ route('user.cart.remove', $vendor->id) }}" method="POST" class="mt-1">
                                     @csrf
                                     @method('DELETE')
@@ -88,7 +95,7 @@
                     <a href="{{ route('catalog.index', ['type' => 'vendor']) }}" class="block rounded-2xl border border-dashed border-maroon/40 p-4 text-center text-sm font-medium text-maroon hover:bg-maroon-light">+ Tambah vendor lainnya</a>
 
                 @else
-                    <x-site.empty-state title="Keranjangmu masih kosong" description="Pilih satu paket lengkap, atau susun sendiri dengan minimal 3 vendor." />
+                    <x-site.empty-state title="Keranjangmu masih kosong" description="Pilih satu paket lengkap, atau susun sendiri dengan minimal 2 vendor." />
                     <div class="flex flex-wrap justify-center gap-3">
                         <x-site.button :href="route('catalog.index', ['type' => 'package'])">Lihat Paket</x-site.button>
                         <x-site.button :href="route('catalog.index', ['type' => 'vendor'])" variant="outline">Lihat Vendor</x-site.button>
@@ -113,16 +120,36 @@
                             <span class="text-ink/60">{{ $isPackage ? 'Paket' : 'Vendor' }}</span>
                             <span>{{ $isPackage ? '1 paket · ' . $vendors->count() . ' vendor' : $vendors->count() . ' vendor' }}</span>
                         </div>
-                        <div class="flex items-center justify-between border-t border-black/5 pt-3">
-                            <span class="font-semibold">Total</span>
-                            <span class="font-display text-xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($totalPrice) }}</span>
-                        </div>
+                        @if ($isPackage || $vendors->count() >= $minVendors)
+                            <div class="flex items-center justify-between border-t border-black/5 pt-3">
+                                <span class="font-semibold">Total</span>
+                                <span class="font-display text-xl font-semibold text-maroon">{{ \App\Support\Format::rupiah($totalPrice) }}</span>
+                            </div>
+                        @else
+                            <p class="border-t border-black/5 pt-3 text-xs text-ink/60">
+                                Total biaya ditampilkan setelah minimal {{ $minVendors }} vendor dipilih.
+                            </p>
+                        @endif
                     </div>
 
-                    <p class="rounded-2xl bg-emerald/5 p-4 text-xs text-ink/60">
-                        <span class="font-semibold text-emerald">DP minimal {{ $dpPercent }}%</span>
-                        ({{ \App\Support\Format::rupiah(ceil($totalPrice * $dpPercent / 100)) }}). Skema DP atau lunas dipilih di langkah pembayaran.
-                    </p>
+                    @if ($isCustom && $hasCatering)
+                        @if ($missingCateringCapacity)
+                            <p class="rounded-xl bg-maroon-light p-3 text-xs text-maroon">
+                                Kapasitas vendor catering belum diatur. Hubungi admin agar harga dapat dihitung dan checkout dibuka.
+                            </p>
+                        @else
+                            <p class="text-xs text-ink/50">
+                                Maksimal {{ number_format($maxGuestCount, 0, ',', '.') }} tamu untuk vendor catering yang dipilih.
+                            </p>
+                        @endif
+                    @endif
+
+                    @if ($isPackage || $vendors->count() >= $minVendors)
+                        <p class="rounded-2xl bg-emerald/5 p-4 text-xs text-ink/60">
+                            <span class="font-semibold text-emerald">DP minimal {{ $dpPercent }}%</span>
+                            ({{ \App\Support\Format::rupiah(ceil($totalPrice * $dpPercent / 100)) }}). Skema DP atau lunas dipilih di langkah pembayaran.
+                        </p>
+                    @endif
 
                     @auth
                         @if ($canCheckout)

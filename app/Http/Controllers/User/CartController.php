@@ -20,6 +20,9 @@ class CartController extends Controller
         $package = null;
         $vendors = collect();
         $totalPrice = 0;
+        $hasCatering = false;
+        $maxGuestCount = null;
+        $missingCateringCapacity = false;
 
         if ($cart['type'] === 'package' && $cart['package_id']) {
             $package = Package::with('vendors.category')
@@ -32,9 +35,18 @@ class CartController extends Controller
         }
 
         if ($cart['type'] === 'custom' && !empty($cart['vendor_ids'])) {
-            $vendors = Vendor::with('category')
+            $vendors = Vendor::with(['category', 'photos'])
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
+
+            $cateringVendors = $vendors->filter(fn (Vendor $vendor) => $vendor->isCatering());
+            $hasCatering = $cateringVendors->isNotEmpty();
+            $missingCateringCapacity = $cateringVendors->contains(
+                fn (Vendor $vendor) => (int) $vendor->guest_capacity < 1
+            );
+            if ($hasCatering && ! $missingCateringCapacity) {
+                $maxGuestCount = (int) $cateringVendors->min('guest_capacity');
+            }
 
             $totalPrice = $vendors->sum('price');
         }
@@ -44,6 +56,9 @@ class CartController extends Controller
             'package' => $package,
             'vendors' => $vendors,
             'totalPrice' => $totalPrice,
+            'hasCatering' => $hasCatering,
+            'maxGuestCount' => $maxGuestCount,
+            'missingCateringCapacity' => $missingCateringCapacity,
         ]);
     }
 

@@ -42,7 +42,7 @@
             border-radius: 12px;
             padding: 20px;
             display: grid;
-            grid-template-columns: 120px 1fr auto;
+            grid-template-columns: 120px minmax(0, 1fr);
             gap: 20px;
             align-items: center;
         }
@@ -64,13 +64,6 @@
             color: #6b7280;
             font-size: 14px;
             margin-bottom: 8px;
-        }
-
-        .cart-item-price {
-            font-size: 20px;
-            font-weight: 700;
-            color: #16302a;
-            text-align: right;
         }
 
         .cart-item-remove {
@@ -165,10 +158,10 @@
             <div class="wo-badge" style="margin-bottom: 20px; background: #fecaca; color: #dc2626;">{{ session('error') }}</div>
         @endif
 
-        @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3)
+        @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 2)
             <div class="wo-badge" style="margin-bottom: 20px; background: #fef3c7; color: #92400e;">
-                <i class="bi bi-exclamation-triangle"></i> Minimal pilih 3 vendor untuk melanjutkan ke checkout
-                ({{ count($cart['vendor_ids']) }}/3)
+                <i class="bi bi-exclamation-triangle"></i> Minimal pilih 2 vendor untuk melanjutkan ke checkout
+                ({{ count($cart['vendor_ids']) }}/2)
             </div>
         @endif
 
@@ -209,9 +202,6 @@
                                         <h3>{{ $vendor->name }}</h3>
                                         <p><i class="bi bi-tag"></i> {{ $vendor->category->name ?? 'Vendor' }}</p>
                                     </div>
-                                    <div class="cart-item-price">
-                                        Rp {{ number_format($vendor->price, 0, ',', '.') }}
-                                    </div>
                                 </div>
                             @endforeach
 
@@ -246,9 +236,6 @@
                                         </button>
                                     </form>
                                 </div>
-                                <div class="cart-item-price">
-                                    Rp {{ number_format($vendor->price, 0, ',', '.') }}
-                                </div>
                             </div>
                         @endforeach
                     @endif
@@ -257,30 +244,27 @@
                 <div class="cart-summary">
                     <h3>Ringkasan</h3>
 
-                    @if ($cart['type'] === 'package')
-                        <div class="summary-row">
+                    <div class="summary-row">
+                        @if ($cart['type'] === 'package')
                             <span>Paket {{ $package->name }}</span>
+                            <span>{{ $vendors->count() }} vendor</span>
+                        @else
+                            <span>{{ $vendors->count() }} Vendor dipilih</span>
+                        @endif
+                    </div>
+
+                    @if ($cart['type'] === 'package' || $vendors->count() >= 2)
+                        <div class="summary-row total">
+                            <span>Total</span>
                             <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
                         </div>
                     @else
-                        <div class="summary-row">
-                            <span>{{ $vendors->count() }} Vendor dipilih</span>
-                            <strong>{{ $vendors->count() }}x</strong>
-                        </div>
-                        <div class="summary-row">
-                            <span>Subtotal</span>
-                            <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
-                        </div>
+                        <p class="summary-row">Total biaya ditampilkan setelah minimal 2 vendor dipilih.</p>
                     @endif
 
-                    <div class="summary-row total">
-                        <span>Total</span>
-                        <strong>Rp {{ number_format($totalPrice, 0, ',', '.') }}</strong>
-                    </div>
-
-                    @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3)
+                    @if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 2)
                         <button type="button" class="btn-checkout" style="background: #d1d5db; cursor: not-allowed;" disabled>
-                            <i class="bi bi-exclamation-circle"></i> Minimal 3 Vendor ({{ count($cart['vendor_ids']) }}/3)
+                            <i class="bi bi-exclamation-circle"></i> Minimal 2 Vendor ({{ count($cart['vendor_ids']) }}/2)
                         </button>
                     @else
                         <a href="{{ route('user.checkout') }}" class="btn-checkout">

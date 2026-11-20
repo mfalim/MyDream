@@ -13,6 +13,5 @@
         <x-site.badge variant="category">{{ $vendor->category?->name ?? 'Vendor' }}</x-site.badge>
         <h3 class="font-display text-base font-semibold leading-snug text-ink">{{ $vendor->name }}</h3>
         <p class="text-xs text-ink/50">{{ $location }}</p>
-        <x-site.price :amount="$vendor->price" prefix="Mulai dari" class="pt-2" />
     </div>
 </a>

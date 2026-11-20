@@ -13,7 +13,7 @@ use Illuminate\View\View;
 
 /**
  * Catalog = pencarian & filter seluruh paket dan vendor. Semua filter lewat query string
- * dan bisa dikombinasikan: ?type=vendor&city=Jember&price=25to50&category=3&q=dekor
+ * dan bisa dikombinasikan: ?type=vendor&city=Jember&category=3&q=dekor
  */
 class CatalogController extends Controller
 {
@@ -30,7 +30,10 @@ class CatalogController extends Controller
     {
         $type = in_array($request->query('type'), ['package', 'vendor'], true) ? $request->query('type') : 'all';
         $city = in_array($request->query('city'), config('mydream.cities'), true) ? $request->query('city') : null;
-        $priceKey = array_key_exists((string) $request->query('price'), self::PRICE_BRACKETS) ? $request->query('price') : null;
+        $priceKey = $type !== 'vendor'
+            && array_key_exists((string) $request->query('price'), self::PRICE_BRACKETS)
+                ? $request->query('price')
+                : null;
         $categoryId = $request->integer('category') ?: null;
         $q = trim((string) $request->query('q', ''));
 
@@ -67,8 +70,6 @@ class CatalogController extends Controller
                 ))
                 ->when($city, $inCity)
                 ->when($categoryId, fn ($query) => $query->where('category_id', $categoryId))
-                ->when($min !== null, fn ($query) => $query->where('price', '>=', $min))
-                ->when($max !== null, fn ($query) => $query->where('price', '<=', $max))
                 ->latest()
                 ->get();
         }

@@ -28,15 +28,18 @@ class CheckoutController extends Controller
                 ->with('error', 'Keranjang kosong. Pilih paket atau vendor terlebih dahulu.');
         }
 
-        if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 3) {
+        if ($cart['type'] === 'custom' && count($cart['vendor_ids']) < 2) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Minimal pilih 3 vendor untuk melanjutkan ke checkout.');
+                ->with('error', 'Minimal pilih 2 vendor untuk melanjutkan ke checkout.');
         }
 
         $package = null;
         $vendors = collect();
         $totalPrice = 0;
+        $guestCount = null;
+        $isCustomCatering = false;
+        $maxGuests = null;
 
         if ($cart['type'] === 'package' && $cart['package_id']) {
             $package = Package::with('vendors.category')
@@ -45,15 +48,34 @@ class CheckoutController extends Controller
             if ($package) {
                 $vendors = $package->vendors;
                 $totalPrice = $vendors->sum('price');
+                $maxGuests = $package->guest_capacity ?: null;
             }
         }
 
         if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
-            $vendors = Vendor::with('category')
+            $vendors = Vendor::with(['category', 'photos'])
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
 
-            $totalPrice = $vendors->sum('price');
+            if ($vendors->count() < 2) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with('error', 'Minimal pilih 2 vendor untuk melanjutkan ke checkout.');
+            }
+
+            $cateringVendors = $vendors->filter(fn (Vendor $vendor) => $vendor->isCatering());
+            $isCustomCatering = $cateringVendors->isNotEmpty();
+            if ($isCustomCatering) {
+                if ($cateringVendors->contains(fn (Vendor $vendor) => (int) $vendor->guest_capacity < 1)) {
+                    return redirect()
+                        ->route('cart.index')
+                        ->with('error', 'Kapasitas vendor catering belum diatur. Hubungi admin sebelum checkout.');
+                }
+
+                $maxGuests = (int) $cateringVendors->min('guest_capacity');
+            }
+
+            $totalPrice = $vendors->sum(fn (Vendor $vendor) => $vendor->priceForGuests($guestCount));
         }
 
         $client = Client::where('users_id', Auth::id())->first();
@@ -64,18 +86,98 @@ class CheckoutController extends Controller
             'vendors' => $vendors,
             'totalPrice' => $totalPrice,
             'client' => $client,
+            'guestCount' => $guestCount,
+            'maxGuests' => $maxGuests,
+            'isCustomCatering' => $isCustomCatering,
+        ]);
+    }
+
+    public function quote(Request $request)
+    {
+        $cart = session()->get('cart');
+        if (($cart['type'] ?? null) !== 'custom' || empty($cart['vendor_ids'])) {
+            return response()->json(['message' => 'Keranjang vendor custom tidak ditemukan.'], 422);
+        }
+
+        $vendors = Vendor::with('category')
+            ->whereIn('id', $cart['vendor_ids'])
+            ->get();
+
+        if ($vendors->count() < 2) {
+            return response()->json(['message' => 'Minimal pilih 2 vendor untuk melanjutkan.'], 422);
+        }
+
+        $cateringVendors = $vendors->filter(fn (Vendor $vendor) => $vendor->isCatering());
+        if ($cateringVendors->isEmpty()) {
+            return response()->json(['message' => 'Perhitungan jumlah tamu hanya tersedia untuk pesanan catering custom.'], 422);
+        }
+
+        if ($cateringVendors->contains(fn (Vendor $vendor) => (int) $vendor->guest_capacity < 1)) {
+            return response()->json(['message' => 'Kapasitas vendor catering belum diatur. Hubungi admin sebelum checkout.'], 422);
+        }
+
+        $guestCapacity = (int) $cateringVendors->min('guest_capacity');
+        $validated = $request->validate([
+            'guest_count' => 'nullable|integer|min:1|max:' . $guestCapacity,
+        ]);
+        $guestCount = isset($validated['guest_count']) ? (int) $validated['guest_count'] : null;
+        $totalPrice = $vendors->sum(fn (Vendor $vendor) => $vendor->priceForGuests($guestCount));
+        $dpPercent = (int) config('mydream.dp_percent');
+
+        return response()->json([
+            'totalPrice' => $totalPrice,
+            'dpAmount' => (int) ceil($totalPrice * $dpPercent / 100),
         ]);
     }
 
     public function store(Request $request)
     {
         $cart = session()->get('cart');
+        if (empty($cart['type'])) {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Keranjang kosong');
+        }
+
         $package = null;
+        $vendors = collect();
         $guestCapacity = 10000;
 
         if (($cart['type'] ?? null) === 'package' && ! empty($cart['package_id'])) {
-            $package = Package::find($cart['package_id']);
-            $guestCapacity = $package?->guest_capacity ?: $guestCapacity;
+            $package = Package::with('vendors.category')->find($cart['package_id']);
+            if (! $package) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with('error', 'Paket tidak ditemukan.');
+            }
+
+            $vendors = $package->vendors;
+            $guestCapacity = $package->guest_capacity ?: $guestCapacity;
+        } elseif (($cart['type'] ?? null) === 'custom' && ! empty($cart['vendor_ids'])) {
+            $vendors = Vendor::with('category')
+                ->whereIn('id', $cart['vendor_ids'])
+                ->get();
+
+            if ($vendors->count() < 2) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with('error', 'Minimal pilih 2 vendor untuk melanjutkan.');
+            }
+
+            $cateringVendors = $vendors->filter(fn (Vendor $vendor) => $vendor->isCatering());
+            if ($cateringVendors->isNotEmpty()) {
+                if ($cateringVendors->contains(fn (Vendor $vendor) => (int) $vendor->guest_capacity < 1)) {
+                    return redirect()
+                        ->route('cart.index')
+                        ->with('error', 'Kapasitas vendor catering belum diatur. Hubungi admin sebelum checkout.');
+                }
+
+                $guestCapacity = (int) $cateringVendors->min('guest_capacity');
+            }
+        } else {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Keranjang tidak valid.');
         }
 
         $validated = $request->validate([
@@ -92,44 +194,22 @@ class CheckoutController extends Controller
             'venue_province.required' => 'Provinsi venue wajib diisi',
             'guest_count.required' => 'Jumlah tamu wajib diisi',
             'guest_count.min' => 'Jumlah tamu minimal 1 orang',
-            'guest_count.max' => 'Jumlah tamu tidak boleh melebihi kapasitas paket (:max orang)',
+            'guest_count.max' => 'Jumlah tamu tidak boleh melebihi kapasitas yang dipilih (:max orang)',
             'event_date.required' => 'Tanggal acara wajib diisi',
             'event_date.after' => 'Tanggal acara harus setelah hari ini',
         ]);
 
-        if (empty($cart['type'])) {
-            return redirect()
-                ->route('cart.index')
-                ->with('error', 'Keranjang kosong');
-        }
-
         $packageId = null;
         $totalPrice = 0;
 
-        if ($cart['type'] === 'package' && $cart['package_id']) {
-            $package = Package::with('vendors')
-                ->find($cart['package_id']);
-
-            if (! $package) {
-                return redirect()
-                    ->route('cart.index')
-                    ->with('error', 'Paket tidak ditemukan.');
-            }
-
+        if ($cart['type'] === 'package') {
             $packageId = $package->id;
-            $totalPrice = $package->vendors->sum('price');
+            $totalPrice = $vendors->sum('price');
         }
 
-        if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
-            $vendors = Vendor::whereIn('id', $cart['vendor_ids'])->get();
-
-            if ($vendors->count() < 3) {
-                return redirect()
-                    ->route('cart.index')
-                    ->with('error', 'Minimal pilih 3 vendor untuk melanjutkan.');
-            }
-
-            $totalPrice = $vendors->sum('price');
+        if ($cart['type'] === 'custom') {
+            $guestCount = (int) $validated['guest_count'];
+            $totalPrice = $vendors->sum(fn (Vendor $vendor) => $vendor->priceForGuests($guestCount));
         }
 
         $client = Client::where('users_id', Auth::id())->first();
@@ -168,10 +248,7 @@ class CheckoutController extends Controller
             ]);
 
             if ($cart['type'] === 'package' && $packageId) {
-                $package = Package::with('vendors')
-                    ->findOrFail($packageId);
-
-                foreach ($package->vendors as $vendor) {
+                foreach ($vendors as $vendor) {
                     $event->schedules()->create([
                         'vendor_id' => $vendor->id,
                         'price' => $vendor->price,
@@ -187,17 +264,17 @@ class CheckoutController extends Controller
             }
 
             if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
-                $vendors = Vendor::whereIn('id', $cart['vendor_ids'])->get();
-
                 foreach ($vendors as $vendor) {
+                    $vendorPrice = $vendor->priceForGuests($guestCount);
+
                     $event->schedules()->create([
                         'vendor_id' => $vendor->id,
-                        'price' => $vendor->price,
+                        'price' => $vendorPrice,
                         'activity' => $vendor->name,
                         'start_time' => $validated['event_date'] . ' 09:00:00',
                         'end_time' => $validated['event_date'] . ' 17:00:00',
                         'status' => 'pending',
-                        'agreed_fee' => $vendor->price,
+                        'agreed_fee' => $vendorPrice,
                         'paid_amount' => 0,
                         'payment_status' => 'unpaid',
                     ]);

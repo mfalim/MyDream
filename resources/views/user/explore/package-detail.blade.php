@@ -171,14 +171,6 @@
                                         {{ \Illuminate\Support\Str::limit($vendor->description, 120) }}
                                     </p>
 
-                                    <div class="package-price">
-                                        <div>
-                                            <span>Harga Vendor</span>
-                                            <strong>
-                                                Rp {{ number_format($vendor->price, 0, ',', '.') }}
-                                            </strong>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </a>

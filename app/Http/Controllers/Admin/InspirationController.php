@@ -11,7 +11,6 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
-/** Admin: tinjau cerita/inspirasi yang dikirim client sebelum tayang di /inspirasi. */
 class InspirationController extends Controller
 {
     private const STATUSES = ['pending' => 'Menunggu', 'approved' => 'Tayang', 'rejected' => 'Perlu Revisi'];

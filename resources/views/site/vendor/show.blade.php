@@ -67,8 +67,8 @@
             </div>
 
             <aside class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
-                <x-site.price :amount="$vendor->price" prefix="Mulai dari" />
-                <p class="text-xs text-ink/50">Pesan vendor satuan: pilih minimal 3 vendor di keranjang untuk lanjut ke checkout, atau pilih paket lengkap.</p>
+                <h2 class="font-display text-lg font-semibold">{{ $vendor->name }}</h2>
+                <p class="text-sm text-ink/60">Susun reservasi custom dengan memilih minimal 2 vendor. Total biaya akan ditampilkan di keranjang dan checkout.</p>
 
                 @auth
                     <form action="{{ route('user.cart.add-vendor', $vendor->id) }}" method="POST">

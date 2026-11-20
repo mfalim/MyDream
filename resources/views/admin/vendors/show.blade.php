@@ -151,6 +151,13 @@
                         </strong>
                     </div>
 
+                    @if ($vendor->isCatering())
+                        <div class="vendor-info-item">
+                            <small>Kapasitas Tamu Catering</small>
+                            <strong>{{ $vendor->guest_capacity ? number_format($vendor->guest_capacity, 0, ',', '.') . ' tamu' : 'Belum diatur' }}</strong>
+                        </div>
+                    @endif
+
 
                     <div class="vendor-info-item">
                         <small>Nomor Telepon</small>
@@ -174,6 +181,35 @@
                         ☎ Hubungi Vendor via WhatsApp
                     </a>
 
+                </div>
+
+                <div class="vendor-info-card">
+                    <div class="vendor-info-card-header">
+                        <span>AKUN LOGIN VENDOR</span>
+                    </div>
+
+                    @if ($vendor->user)
+                        <div class="vendor-info-item">
+                            <small>Nama Akun</small>
+                            <strong>{{ $vendor->user->name }}</strong>
+                        </div>
+                        <div class="vendor-info-item">
+                            <small>Username</small>
+                            <strong>{{ $vendor->user->username ?: '-' }}</strong>
+                        </div>
+                        <div class="vendor-info-item">
+                            <small>Email</small>
+                            <strong>{{ $vendor->user->email ?: '-' }}</strong>
+                        </div>
+                        <div class="vendor-info-item">
+                            <small>Status Akun</small>
+                            <strong>{{ $vendor->user->status }}</strong>
+                        </div>
+                    @else
+                        <p class="text-muted mb-0">
+                            Belum ada akun login. Gunakan tombol Edit untuk menautkan atau membuat akun.
+                        </p>
+                    @endif
                 </div>
 
 

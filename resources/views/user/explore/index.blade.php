@@ -108,11 +108,6 @@
                         <strong>{{ $vendor->name }}</strong>
                         <p>{{ \Illuminate\Support\Str::limit($vendor->description, 78) }}</p>
 
-                        <div class="ev-card-price">
-                            <span>Harga</span>
-                            <strong>Rp {{ number_format($vendor->price, 0, ',', '.') }}</strong>
-                        </div>
-
                         <span class="wo-btn wo-btn-dark ev-card-btn">
                             <i class="bi bi-cart-plus"></i> Tambah ke Keranjang
                         </span>
