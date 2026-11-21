@@ -7,7 +7,7 @@
     <style>
         .edit-photo-card {
             overflow: hidden;
-            border: 1px solid #e4ebe8;
+            border: 1px solid #E8D8CC;
             border-radius: 8px;
             background: #ffffff;
         }

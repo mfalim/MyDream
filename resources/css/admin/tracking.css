@@ -19,7 +19,7 @@
 }
 .tracking-eyebrow {
     margin-bottom: 4px;
-    color: #55756d;
+    color: #7A6760;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -55,9 +55,9 @@
     gap: 14px;
     padding: 16px 18px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
 }
 .tracking-stat-info small {
     display: block;
@@ -93,7 +93,7 @@
     padding: 12px 14px;
     margin-bottom: 16px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
 }
 .tracking-search-box {
@@ -103,7 +103,7 @@
     flex: 1;
     min-width: 260px;
     padding: 0 14px;
-    background: #f4f8f6;
+    background: #FCF8F4;
     border: 1px solid #dfeae5;
     border-radius: 9px;
 }
@@ -117,7 +117,7 @@
     border: 0;
     outline: 0;
     background: transparent;
-    color: #173b32;
+    color: #5C1620;
     font-size: 14.5px;
 }
 .tracking-filter-tabs {
@@ -142,18 +142,18 @@
     color: #173f39;
 }
 .tracking-filter-tab.active {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 
 /* Table Card */
 .tracking-table-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 6px 20px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 6px 20px rgba(92, 22, 32, 0.04);
 }
 .tracking-table {
     width: 100%;
@@ -161,14 +161,14 @@
     margin: 0;
 }
 .tracking-table thead th {
-    background: #f7faf8;
+    background: #FCF8F4;
     color: #485f56;
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: 14px 18px;
-    border-bottom: 1px solid #e4ebe8;
+    border-bottom: 1px solid #E8D8CC;
     white-space: nowrap;
 }
 .tracking-table tbody td {
@@ -201,7 +201,7 @@
 }
 .client-couple-name {
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     font-size: 16px;
     line-height: 1.3;
     margin-bottom: 2px;
@@ -212,7 +212,7 @@
 }
 .venue-title {
     font-weight: 600;
-    color: #173b32;
+    color: #5C1620;
     font-size: 14px;
     margin-bottom: 2px;
 }
@@ -225,7 +225,7 @@
 }
 .price-text {
     font-weight: 700;
-    color: #073d36;
+    color: #7A1F2B;
     font-size: 14px;
     white-space: nowrap;
 }
@@ -269,7 +269,7 @@
     margin: 0 -10px;
     border-radius: 10px;
     text-decoration: none;
-    color: #173b32;
+    color: #5C1620;
     transition: background 0.15s ease;
 }
 .event-clean-item + .event-clean-item {
@@ -279,7 +279,7 @@
 .event-clean-item:hover {
     background: #f2f7f5;
     border-radius: 10px;
-    color: #073d36;
+    color: #7A1F2B;
 }
 .event-clean-left {
     display: flex;
@@ -292,7 +292,7 @@
     height: 42px;
     border-radius: 9px;
     background: #f1f6f3;
-    color: #073d36;
+    color: #7A1F2B;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -314,7 +314,7 @@
 .event-clean-name {
     font-weight: 700;
     font-size: 14.5px;
-    color: #173b32;
+    color: #5C1620;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -338,7 +338,7 @@
     flex-shrink: 0;
 }
 .event-clean-item:hover .event-clean-right {
-    color: #073d36;
+    color: #7A1F2B;
 }
 
 /* Progress Bar */
@@ -362,7 +362,7 @@
 .wo-progress-fill {
     height: 100%;
     border-radius: inherit;
-    background: #073d36;
+    background: #7A1F2B;
 }
 .wo-progress-fill.warn {
     background: #d89a2f;
@@ -376,8 +376,8 @@
     gap: 6px;
     padding: 9px 16px;
     border-radius: 8px;
-    background: #073d36;
-    border: 1px solid #073d36;
+    background: #7A1F2B;
+    border: 1px solid #7A1F2B;
     color: #fff;
     font-size: 13.5px;
     font-weight: 600;
@@ -399,7 +399,7 @@
     padding: 9px 15px;
     border-radius: 8px;
     border: 1px solid #d4e0dc;
-    color: #173b32;
+    color: #5C1620;
     background: #fff;
     font-size: 13.5px;
     font-weight: 600;
@@ -409,8 +409,8 @@
     transition: all 0.15s ease;
 }
 .btn-wo-outline:hover {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #fff;
 }
 .btn-wo-soft {
@@ -421,7 +421,7 @@
     padding: 6px 12px;
     border-radius: 7px;
     border: 1px solid #d4e0dc;
-    background: #f7faf8;
+    background: #FCF8F4;
     color: #344b42;
     font-size: 12.5px;
     font-weight: 600;
@@ -431,7 +431,7 @@
 }
 .btn-wo-soft:hover {
     background: #e8f1ed;
-    color: #073d36;
+    color: #7A1F2B;
 }
 .btn-wo-gold {
     display: inline-flex;
@@ -456,13 +456,13 @@
 
 /* Modal Styling */
 .tracking-modal .modal-content {
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 18px;
-    box-shadow: 0 24px 48px rgba(7, 61, 54, 0.16);
+    box-shadow: 0 24px 48px rgba(92, 22, 32, 0.16);
     overflow: hidden;
 }
 .tracking-modal .modal-header {
-    background: linear-gradient(135deg, #073d36 0%, #16382d 100%);
+    background: linear-gradient(135deg, #7A1F2B 0%, #16382d 100%);
     color: #fff;
     padding: 18px 24px;
     border-bottom: 0;
@@ -477,18 +477,18 @@
 }
 .tracking-modal .modal-body {
     padding: 22px 24px;
-    background: #f7faf8;
+    background: #FCF8F4;
 }
 .tracking-modal .modal-footer {
     padding: 14px 24px;
     background: #fff;
-    border-top: 1px solid #e4ebe8;
+    border-top: 1px solid #E8D8CC;
 }
 
 /* Modal Booking Overview */
 .modal-booking-hero {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 18px 20px;
     margin-bottom: 20px;
@@ -497,7 +497,7 @@
     font-family: "Cormorant Garamond", serif;
     font-size: 26px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     line-height: 1.2;
     margin-bottom: 4px;
 }
@@ -507,7 +507,7 @@
 }
 .modal-event-block {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 18px;
     margin-bottom: 16px;
@@ -524,7 +524,7 @@
 .modal-event-title {
     font-size: 16px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
 }
 
 /* Modal Booking Detail Summary */
@@ -533,7 +533,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     background: #fff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 16px;
     margin-bottom: 16px;
@@ -564,19 +564,19 @@
 .booking-summary-value {
     font-size: 14.5px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     line-height: 1.35;
 }
 .modal-section-card {
     background: #fff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 18px 20px;
     margin-bottom: 14px;
 }
 .team-row-card {
-    background: #f7faf8;
-    border: 1px solid #e4ebe8;
+    background: #FCF8F4;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     padding: 14px;
     margin-bottom: 10px;
@@ -606,11 +606,11 @@
 }
 .modal-event-tab-btn:hover {
     background: #edf4f1;
-    border-color: #073d36;
+    border-color: #7A1F2B;
 }
 .modal-event-tab-btn.active {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 .modal-event-tab-btn .tab-date {
@@ -643,25 +643,25 @@
    ========================================================================== */
 .tracking-show-title {
     font-family: "Cormorant Garamond", serif;
-    color: #173b32;
+    color: #5C1620;
     font-weight: 700;
     font-size: 2.2rem;
 }
 .wo-card {
     background: #fff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 16px;
     box-shadow: 0 10px 26px rgba(13, 35, 30, 0.05);
 }
 .wo-card-title {
     font-family: "Cormorant Garamond", serif;
-    color: #173b32;
+    color: #5C1620;
     font-weight: 700;
     font-size: 1.4rem;
 }
 .btn-wo-primary {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #fff;
     font-weight: 600;
 }
@@ -671,13 +671,13 @@
     color: #fff;
 }
 .btn-wo-outline {
-    border: 1px solid #073d36;
-    color: #073d36;
+    border: 1px solid #7A1F2B;
+    color: #7A1F2B;
     background: #fff;
 }
 .btn-wo-outline:hover {
     background: #f1f6f3;
-    color: #073d36;
+    color: #7A1F2B;
 }
 .member-avatar-circle {
     width: 40px;
@@ -690,12 +690,12 @@
     flex-shrink: 0;
 }
 .member-avatar-circle.coord {
-    background: #073d36;
+    background: #7A1F2B;
     color: #fff;
 }
 .member-avatar-circle.crew {
-    background: #e7f1ea;
-    color: #073d36;
+    background: #F4E4E6;
+    color: #7A1F2B;
 }
 .badge-wo-coord {
     background: #f6ebd7;
@@ -716,20 +716,20 @@
     padding: 14px 16px;
     border-radius: 12px;
     border: 1px solid #d8e5de;
-    background: #f7faf8;
-    color: #173b32;
+    background: #FCF8F4;
+    color: #5C1620;
     text-decoration: none;
     transition: all 0.2s ease;
 }
 .event-switcher-card:hover {
-    border-color: #073d36;
+    border-color: #7A1F2B;
     background: #edf4f1;
-    color: #173b32;
+    color: #5C1620;
     transform: translateY(-1px);
 }
 .event-switcher-card.active {
-    background: linear-gradient(135deg, #073d36 0%, #16382d 100%);
-    border-color: #073d36;
+    background: linear-gradient(135deg, #7A1F2B 0%, #16382d 100%);
+    border-color: #7A1F2B;
     color: #fff;
-    box-shadow: 0 8px 20px rgba(7, 61, 54, 0.18);
+    box-shadow: 0 8px 20px rgba(92, 22, 32, 0.18);
 }

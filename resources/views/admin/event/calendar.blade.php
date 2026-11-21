@@ -377,10 +377,10 @@
             let html = `
                 <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
                     <div>
-                        <h6 class="fw-bold mb-0" style="color: #073d36; font-size: 15px;">Agenda Acara</h6>
+                        <h6 class="fw-bold mb-0" style="color: #7A1F2B; font-size: 15px;">Agenda Acara</h6>
                         <small class="text-muted" style="font-size: 12px;">${formattedDate}</small>
                     </div>
-                    <span class="badge" style="background: #edf5f2; color: #073d36; font-size: 12px; font-weight: 700;">
+                    <span class="badge" style="background: #edf5f2; color: #7A1F2B; font-size: 12px; font-weight: 700;">
                         ${events.length} Agenda
                     </span>
                 </div>

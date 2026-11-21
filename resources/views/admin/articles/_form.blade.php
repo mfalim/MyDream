@@ -74,7 +74,7 @@
     </div>
 </div>
 
-<div class="form-check form-switch p-3 rounded-3 mb-2" style="background: #f7faf9; border: 1px solid #e4ebe8;">
+<div class="form-check form-switch p-3 rounded-3 mb-2" style="background: #f7faf9; border: 1px solid #E8D8CC;">
     <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" name="is_published" value="1" id="is_published" @checked(old('is_published', $article->is_published ?? true)) style="width: 2.2em; height: 1.2em; cursor: pointer;">
     <label class="form-check-label fw-semibold" for="is_published" style="color: #173f39; font-size: 13.5px; cursor: pointer;">
         Publikasikan di Halaman Website

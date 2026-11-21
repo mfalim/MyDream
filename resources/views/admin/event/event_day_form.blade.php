@@ -71,11 +71,11 @@
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <small class="text-muted d-block">Pasangan Mempelai</small>
-                                        <span id="bookingClient" class="fw-bold" style="color:#173b32;">-</span>
+                                        <span id="bookingClient" class="fw-bold" style="color:#5C1620;">-</span>
                                     </div>
                                     <div class="col-md-4">
                                         <small class="text-muted d-block">Lokasi Venue</small>
-                                        <span id="bookingVenue" class="fw-bold" style="color:#173b32;">-</span>
+                                        <span id="bookingVenue" class="fw-bold" style="color:#5C1620;">-</span>
                                     </div>
                                     <div class="col-md-4">
                                         <small class="text-muted d-block">Paket Booking</small>

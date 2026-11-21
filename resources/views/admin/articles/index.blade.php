@@ -44,7 +44,7 @@
                 <small>TOTAL ARTIKEL</small>
                 <strong>{{ $total }}</strong>
             </div>
-            <div class="cms-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #073d36;">
+            <div class="cms-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #7A1F2B;">
                 <i class="bi bi-journal-richtext"></i>
             </div>
         </div>

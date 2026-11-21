@@ -9,7 +9,7 @@
     margin: 0 auto;
     padding: 6px 4px 36px;
     font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #16302a;
+    color: #2B211C;
 }
 
 /* Clean Top Header */
@@ -76,9 +76,9 @@
 }
 
 .finance-kpi-card.highlight {
-    background: linear-gradient(145deg, #073d36 0%, #0d5248 100%);
+    background: linear-gradient(145deg, #7A1F2B 0%, #0d5248 100%);
     color: #ffffff;
-    border-color: #073d36;
+    border-color: #7A1F2B;
 }
 
 .kpi-top {
@@ -95,7 +95,7 @@
 }
 
 .finance-kpi-card.highlight .kpi-label {
-    color: #dfc28b;
+    color: #E2BE82;
 }
 
 .kpi-icon {
@@ -202,13 +202,13 @@
 }
 
 .finance-tab-link:hover {
-    color: #073d36;
+    color: #7A1F2B;
 }
 
 .finance-tab-link.active {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(7, 61, 54, 0.16);
+    box-shadow: 0 2px 8px rgba(92, 22, 32, 0.16);
 }
 
 .finance-tab-badge {
@@ -221,12 +221,12 @@
     border-radius: 999px;
     font-size: 11px;
     font-weight: 800;
-    background: rgba(7, 61, 54, 0.1);
-    color: #073d36;
+    background: rgba(92, 22, 32, 0.1);
+    color: #7A1F2B;
 }
 
 .finance-tab-link.active .finance-tab-badge {
-    background: #dfc28b;
+    background: #E2BE82;
     color: #072823;
 }
 
@@ -255,12 +255,12 @@
 
 .finance-pill:hover {
     background: #f1f7f4;
-    color: #073d36;
+    color: #7A1F2B;
 }
 
 .finance-pill.active {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 
@@ -278,8 +278,8 @@
 }
 
 .ledger-search-box:focus-within {
-    border-color: #073d36;
-    box-shadow: 0 0 0 3px rgba(7, 61, 54, 0.08);
+    border-color: #7A1F2B;
+    box-shadow: 0 0 0 3px rgba(92, 22, 32, 0.08);
 }
 
 .ledger-search-box input {
@@ -329,7 +329,7 @@
     padding: 2px 7px;
     border-radius: 6px;
     background: #eaf1ee;
-    color: #073d36;
+    color: #7A1F2B;
     font-size: 11px;
     font-weight: 800;
     font-family: monospace;
@@ -377,7 +377,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    color: #073d36;
+    color: #7A1F2B;
     font-weight: 600;
 }
 
@@ -547,7 +547,7 @@
 .fin-progress-bar {
     height: 100%;
     border-radius: inherit;
-    background: #073d36;
+    background: #7A1F2B;
 }
 
 .fin-progress-bar.gold {
@@ -561,9 +561,9 @@
     gap: 6px;
     padding: 8px 14px;
     border-radius: 9px;
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
     font-size: 12.5px;
     font-weight: 700;
     text-decoration: none;
@@ -583,7 +583,7 @@
     padding: 7px 12px;
     border-radius: 8px;
     background: #ffffff;
-    color: #173b32;
+    color: #5C1620;
     border: 1px solid #d2e0db;
     font-size: 12.5px;
     font-weight: 600;
@@ -593,9 +593,9 @@
 }
 
 .btn-fin-outline:hover {
-    border-color: #073d36;
+    border-color: #7A1F2B;
     background: #f2f7f5;
-    color: #073d36;
+    color: #7A1F2B;
 }
 
 .bank-pill {
@@ -628,16 +628,16 @@
     padding: 4px 10px;
     border-radius: 6px;
     border: 1px solid #cfe0da;
-    background: #f4f9f7;
-    color: #073d36;
+    background: #FCF8F4;
+    color: #7A1F2B;
     font-size: 11.5px;
     font-weight: 700;
     cursor: pointer;
 }
 
 .fee-preset-btn:hover {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 
@@ -694,7 +694,7 @@
 }
 
 .batch-action-bar {
-    background: #073d36;
+    background: #7A1F2B;
     color: #fff;
     border-radius: 10px;
     padding: 12px 18px;
@@ -724,7 +724,7 @@
     border: 1px solid #dce7e3;
     border-radius: 18px;
     padding: 40px 44px;
-    box-shadow: 0 12px 32px rgba(7, 61, 54, 0.06);
+    box-shadow: 0 12px 32px rgba(92, 22, 32, 0.06);
 }
 
 .invoice-top {
@@ -733,14 +733,14 @@
     align-items: flex-start;
     gap: 20px;
     padding-bottom: 24px;
-    border-bottom: 2px solid #073d36;
+    border-bottom: 2px solid #7A1F2B;
     margin-bottom: 28px;
 }
 
 .invoice-brand-title {
     font-size: 24px;
     font-weight: 800;
-    color: #073d36;
+    color: #7A1F2B;
     letter-spacing: -0.02em;
 }
 
@@ -833,7 +833,7 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #073d36;
+    color: #7A1F2B;
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -874,7 +874,7 @@
 }
 
 .finance-table tfoot td {
-    background: #f4f8f6;
+    background: #FCF8F4;
     padding: 14px 18px;
     border-top: 2px solid #cfe0da;
     font-weight: 800;

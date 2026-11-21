@@ -29,7 +29,7 @@
                 <small>TOTAL AGENDA</small>
                 <strong>{{ $stats['total'] ?? 0 }}</strong>
             </div>
-            <div class="org-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #073d36;">
+            <div class="org-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #7A1F2B;">
                 <i class="bi bi-calendar-event-fill"></i>
             </div>
         </div>

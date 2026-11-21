@@ -12,7 +12,7 @@
 }
 
 .member-detail-breadcrumb a {
-    color: #073d36;
+    color: #7A1F2B;
     font-weight: 600;
     text-decoration: none;
 }
@@ -54,7 +54,7 @@
 }
 
 .member-detail-actions a {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
 }
 
@@ -71,7 +71,7 @@
 
 .member-detail-card {
     overflow: hidden;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     background: #ffffff;
 }
@@ -127,7 +127,7 @@
     padding: 6px 12px;
     border-radius: 20px;
     background: #e7f3ee;
-    color: #073d36;
+    color: #7A1F2B;
     font-size: 12px;
     font-weight: 700;
 }

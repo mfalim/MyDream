@@ -41,7 +41,7 @@
         {{-- Card 1: Informasi Pokok Agenda --}}
         <div class="org-detail-card mb-4">
             <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
-                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background: #edf5f2; color: #073d36;">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background: #edf5f2; color: #7A1F2B;">
                     <i class="bi bi-calendar-event fs-5"></i>
                 </div>
                 <div>

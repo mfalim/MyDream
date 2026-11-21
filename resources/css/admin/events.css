@@ -19,7 +19,7 @@
 }
 .eventday-eyebrow {
     margin-bottom: 4px;
-    color: #55756d;
+    color: #7A6760;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -54,9 +54,9 @@
     gap: 14px;
     padding: 16px 18px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
 }
 .eventday-stat-info small {
     display: block;
@@ -92,7 +92,7 @@
     padding: 12px 14px;
     margin-bottom: 22px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
 }
 .eventday-search-box {
@@ -102,7 +102,7 @@
     flex: 1;
     min-width: 260px;
     padding: 0 14px;
-    background: #f4f8f6;
+    background: #FCF8F4;
     border: 1px solid #dfeae5;
     border-radius: 9px;
 }
@@ -116,7 +116,7 @@
     border: 0;
     outline: 0;
     background: transparent;
-    color: #173b32;
+    color: #5C1620;
     font-size: 14.5px;
 }
 .eventday-filter-tabs {
@@ -141,8 +141,8 @@
     color: #173f39;
 }
 .eventday-filter-tab.active {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 
@@ -154,17 +154,17 @@
 }
 .wo-event-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     display: flex;
     flex-direction: column;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .wo-event-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(7, 61, 54, 0.09);
+    box-shadow: 0 10px 24px rgba(92, 22, 32, 0.09);
 }
 
 /* Card Photo & Badges */
@@ -188,7 +188,7 @@
     align-items: center;
     justify-content: center;
     color: #899793;
-    background: linear-gradient(135deg, #f2f7f4 0%, #e2ece7 100%);
+    background: linear-gradient(135deg, #FBF3EC 0%, #e2ece7 100%);
 }
 .event-card-no-img i {
     font-size: 38px;
@@ -228,7 +228,7 @@
     100% { transform: scale(0.9); opacity: 0.7; }
 }
 .event-status-badge.upcoming {
-    background: rgba(7, 61, 54, 0.88);
+    background: rgba(92, 22, 32, 0.88);
     color: #ffffff;
 }
 .event-status-badge.completed {
@@ -298,7 +298,7 @@
     font-family: "Cormorant Garamond", serif;
     font-size: 1.45rem;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     line-height: 1.25;
     margin: 0 0 4px;
     overflow: hidden;
@@ -307,7 +307,7 @@
 }
 .event-name-sub {
     font-size: 14px;
-    color: #073d36;
+    color: #7A1F2B;
     font-weight: 600;
     margin-bottom: 12px;
 }
@@ -332,8 +332,8 @@
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    background: #f7faf8;
-    border: 1px solid #e4ebe8;
+    background: #FCF8F4;
+    border: 1px solid #E8D8CC;
     border-radius: 9px;
     margin-bottom: 12px;
 }
@@ -341,8 +341,8 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #073d36;
-    color: #dfc28b;
+    background: #7A1F2B;
+    color: #E2BE82;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -362,7 +362,7 @@
 }
 .coord-info-text strong {
     font-size: 14px;
-    color: #173b32;
+    color: #5C1620;
     line-height: 1.2;
 }
 
@@ -382,7 +382,7 @@
     padding: 4px 10px;
     border-radius: 6px;
     background: #edf4f1;
-    color: #073d36;
+    color: #7A1F2B;
     font-size: 12.5px;
     font-weight: 600;
 }
@@ -395,7 +395,7 @@
 .vendor-mini-chip {
     padding: 4px 9px;
     border-radius: 6px;
-    background: #f4f8f6;
+    background: #FCF8F4;
     border: 1px solid #dfe9e4;
     color: #2f4941;
     font-size: 12px;
@@ -420,8 +420,8 @@
     gap: 6px;
     padding: 9px 15px;
     border-radius: 8px;
-    background: #073d36;
-    border: 1px solid #073d36;
+    background: #7A1F2B;
+    border: 1px solid #7A1F2B;
     color: #ffffff;
     font-size: 13.5px;
     font-weight: 600;
@@ -444,7 +444,7 @@
     border-radius: 8px;
     border: 1px solid #d4e0dc;
     background: #ffffff;
-    color: #173b32;
+    color: #5C1620;
     font-size: 13.5px;
     font-weight: 600;
     text-decoration: none;
@@ -453,8 +453,8 @@
     transition: all 0.15s ease;
 }
 .btn-wo-outline:hover {
-    background: #073d36;
-    border-color: #073d36;
+    background: #7A1F2B;
+    border-color: #7A1F2B;
     color: #ffffff;
 }
 .btn-icon-soft {
@@ -462,7 +462,7 @@
     height: 38px;
     border-radius: 8px;
     border: 1px solid #d4e0dc;
-    background: #f7faf8;
+    background: #FCF8F4;
     color: #344b42;
     display: inline-flex;
     align-items: center;
@@ -473,19 +473,19 @@
 }
 .btn-icon-soft:hover {
     background: #e8f1ed;
-    color: #073d36;
-    border-color: #073d36;
+    color: #7A1F2B;
+    border-color: #7A1F2B;
 }
 
 /* Modal Detail Acara */
 .eventday-modal .modal-content {
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 18px;
-    box-shadow: 0 24px 48px rgba(7, 61, 54, 0.16);
+    box-shadow: 0 24px 48px rgba(92, 22, 32, 0.16);
     overflow: hidden;
 }
 .eventday-modal .modal-header {
-    background: linear-gradient(135deg, #073d36 0%, #16382d 100%);
+    background: linear-gradient(135deg, #7A1F2B 0%, #16382d 100%);
     color: #ffffff;
     padding: 18px 24px;
     border-bottom: 0;
@@ -500,18 +500,18 @@
 }
 .eventday-modal .modal-body {
     padding: 24px;
-    background: #f7faf8;
+    background: #FCF8F4;
 }
 .eventday-modal .modal-footer {
     padding: 14px 24px;
     background: #ffffff;
-    border-top: 1px solid #e4ebe8;
+    border-top: 1px solid #E8D8CC;
 }
 
 /* Modal Layout Items */
 .modal-hero-box {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 20px 22px;
     margin-bottom: 18px;
@@ -520,13 +520,13 @@
     font-family: "Cormorant Garamond", serif;
     font-size: 28px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     line-height: 1.2;
     margin-bottom: 4px;
 }
 .modal-hero-event-name {
     font-size: 15px;
-    color: #073d36;
+    color: #7A1F2B;
     font-weight: 600;
     margin-bottom: 14px;
 }
@@ -548,13 +548,13 @@
 }
 .modal-hero-item strong {
     font-size: 15px;
-    color: #173b32;
+    color: #5C1620;
     font-weight: 700;
 }
 
 .modal-section-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
     padding: 20px;
     margin-bottom: 16px;
@@ -565,7 +565,7 @@
     gap: 8px;
     font-size: 15px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     margin-bottom: 14px;
     padding-bottom: 10px;
     border-bottom: 1px solid #edf2ef;
@@ -582,8 +582,8 @@
     justify-content: space-between;
     gap: 12px;
     padding: 12px 14px;
-    background: #f7faf8;
-    border: 1px solid #e4ebe8;
+    background: #FCF8F4;
+    border: 1px solid #E8D8CC;
     border-radius: 9px;
     margin-bottom: 8px;
 }
@@ -599,9 +599,9 @@
 /* Form Styles for Event Day */
 .wo-form-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     margin-bottom: 24px;
     overflow: hidden;
 }
@@ -610,15 +610,15 @@
     align-items: center;
     justify-content: space-between;
     padding: 18px 24px;
-    background: #f7faf8;
-    border-bottom: 1px solid #e4ebe8;
+    background: #FCF8F4;
+    border-bottom: 1px solid #E8D8CC;
 }
 .wo-section-icon {
     width: 36px;
     height: 36px;
     border-radius: 8px;
     background: #edf4f1;
-    color: #073d36;
+    color: #7A1F2B;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -680,14 +680,14 @@
     margin-bottom: 6px;
 }
 .wo-breadcrumb a {
-    color: #073d36;
+    color: #7A1F2B;
     text-decoration: none;
     font-weight: 600;
 }
 .wo-page-header h2 {
     font-size: 30px;
     font-weight: 700;
-    color: #173b32;
+    color: #5C1620;
     margin: 0 0 4px;
 }
 .wo-page-header p {
@@ -710,27 +710,27 @@
 .wo-control:focus,
 .wo-select:focus {
     outline: none;
-    border-color: #073d36;
-    box-shadow: 0 0 0 3px rgba(7, 61, 54, 0.1);
+    border-color: #7A1F2B;
+    box-shadow: 0 0 0 3px rgba(92, 22, 32, 0.1);
 }
 .wo-booking-summary {
     background: #f1f6f3;
     border: 1px solid #d8e5de;
-    border-left: 4px solid #073d36;
+    border-left: 4px solid #7A1F2B;
     border-radius: 10px;
     padding: 16px 18px;
 }
 .wo-item-row {
     background: #f9fbfa;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 12px;
 }
 .wo-btn-primary {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
     border-radius: 8px;
     padding: 10px 20px;
     font-size: 14px;
@@ -765,7 +765,7 @@
 }
 .wo-btn-add {
     background: #edf4f1;
-    color: #073d36;
+    color: #7A1F2B;
     border: 1px solid #cfe0d9;
     border-radius: 8px;
     padding: 8px 16px;

@@ -63,7 +63,7 @@
     <div class="row g-3 mb-4">
         <div class="col-md-4">
             <div class="p-3 rounded-4 bg-white border shadow-sm d-flex align-items-center gap-3">
-                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: #edf5f2; color: #073d36; flex-shrink: 0;">
+                <div class="rounded-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; background: #edf5f2; color: #7A1F2B; flex-shrink: 0;">
                     <i class="bi bi-calendar3 fs-4"></i>
                 </div>
                 <div>
@@ -119,7 +119,7 @@
             {{-- Card Deskripsi --}}
             <div class="org-detail-card mb-4">
                 <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #173f39; font-size: 16px;">
-                    <i class="bi bi-file-earmark-text" style="color: #073d36;"></i>
+                    <i class="bi bi-file-earmark-text" style="color: #7A1F2B;"></i>
                     <span>Deskripsi &amp; Agenda Pembahasan</span>
                 </h5>
                 @if($organizerEvent->description)
@@ -152,7 +152,7 @@
             {{-- Card Peserta --}}
             <div class="org-detail-card mb-4">
                 <h5 class="fw-bold mb-3 d-flex align-items-center gap-2" style="color: #173f39; font-size: 16px;">
-                    <i class="bi bi-people" style="color: #073d36;"></i>
+                    <i class="bi bi-people" style="color: #7A1F2B;"></i>
                     <span>Peserta &amp; Kru Terlibat</span>
                 </h5>
 
@@ -163,7 +163,7 @@
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($attendeeList as $attendee)
                             @if(!empty($attendee))
-                                <span class="badge px-3 py-2 d-inline-flex align-items-center gap-2" style="background: #edf5f2; color: #073d36; border: 1px solid #c2dbd0; font-size: 12.5px; font-weight: 500;">
+                                <span class="badge px-3 py-2 d-inline-flex align-items-center gap-2" style="background: #edf5f2; color: #7A1F2B; border: 1px solid #c2dbd0; font-size: 12.5px; font-weight: 500;">
                                     <i class="bi bi-person-check-fill"></i>
                                     <span>{{ $attendee }}</span>
                                 </span>
@@ -180,7 +180,7 @@
             {{-- Card Metadata --}}
             <div class="org-detail-card">
                 <h5 class="fw-bold mb-3" style="color: #173f39; font-size: 16px;">
-                    <i class="bi bi-info-circle me-1" style="color: #073d36;"></i> Informasi Sistem
+                    <i class="bi bi-info-circle me-1" style="color: #7A1F2B;"></i> Informasi Sistem
                 </h5>
                 <ul class="list-unstyled mb-0" style="font-size: 13px;">
                     <li class="d-flex justify-content-between py-2 border-bottom">

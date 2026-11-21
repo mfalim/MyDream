@@ -50,9 +50,9 @@
     gap: 14px;
     padding: 16px 18px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
 }
 .cms-stat-info small {
     display: block;
@@ -111,19 +111,19 @@
 }
 .cms-tab-btn.active {
     background: #ffffff;
-    color: #073d36;
-    box-shadow: 0 2px 6px rgba(7, 61, 54, 0.08);
+    color: #7A1F2B;
+    box-shadow: 0 2px 6px rgba(92, 22, 32, 0.08);
 }
 .cms-tab-count {
     font-size: 12px;
     font-weight: 700;
     padding: 1px 7px;
     border-radius: 10px;
-    background: rgba(7, 61, 54, 0.08);
+    background: rgba(92, 22, 32, 0.08);
 }
 .cms-tab-btn.active .cms-tab-count {
-    background: #073d36;
-    color: #dfc28b;
+    background: #7A1F2B;
+    color: #E2BE82;
 }
 
 .cms-search-box {
@@ -150,16 +150,16 @@
     transition: border-color 0.2s;
 }
 .cms-search-box input:focus {
-    border-color: #073d36;
-    box-shadow: 0 0 0 3px rgba(7, 61, 54, 0.1);
+    border-color: #7A1F2B;
+    box-shadow: 0 0 0 3px rgba(92, 22, 32, 0.1);
 }
 
 /* Main Table Card */
 .cms-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     overflow: hidden;
 }
 .cms-table {
@@ -175,7 +175,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: 14px 18px;
-    border-bottom: 1px solid #e4ebe8;
+    border-bottom: 1px solid #E8D8CC;
 }
 .cms-table td {
     padding: 16px 18px;
@@ -227,7 +227,7 @@
 }
 .event-title-link:hover,
 .article-title-link:hover {
-    color: #073d36;
+    color: #7A1F2B;
     text-decoration: underline;
 }
 .event-meta-line {
@@ -270,7 +270,7 @@
     font-size: 12.5px;
     padding: 3px 9px;
     background: #f0f7f4;
-    color: #073d36;
+    color: #7A1F2B;
     border-radius: 6px;
     border: 1px solid #d4dfda;
     text-decoration: none;
@@ -328,9 +328,9 @@
 
 /* Buttons */
 .btn-emerald {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
     font-size: 13.5px;
     font-weight: 600;
     padding: 9px 18px;
@@ -343,11 +343,11 @@
 }
 .btn-emerald:hover {
     background: #052c27;
-    color: #dfc28b;
+    color: #E2BE82;
 }
 .btn-outline-web {
     background: #ffffff;
-    color: #073d36;
+    color: #7A1F2B;
     border: 1px solid #cad9d3;
     font-size: 13.5px;
     font-weight: 600;
@@ -360,8 +360,8 @@
     transition: all 0.2s;
 }
 .btn-outline-web:hover {
-    background: #f2f7f4;
-    color: #073d36;
+    background: #FBF3EC;
+    color: #7A1F2B;
 }
 .btn-outline-back {
     background: #ffffff;
@@ -378,7 +378,7 @@
     transition: all 0.2s;
 }
 .btn-outline-back:hover {
-    background: #f2f7f4;
+    background: #FBF3EC;
     color: #173f39;
 }
 .action-btn-group {
@@ -402,9 +402,9 @@
     transition: all 0.15s;
 }
 .btn-action-icon:hover {
-    background: #073d36;
-    color: #dfc28b;
-    border-color: #073d36;
+    background: #7A1F2B;
+    color: #E2BE82;
+    border-color: #7A1F2B;
 }
 .btn-action-icon.delete:hover {
     background: #dc2626;
@@ -415,9 +415,9 @@
 /* Form Cards */
 .cms-form-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     padding: 28px 32px;
     max-width: 900px;
 }
@@ -465,7 +465,7 @@
 .nav-tabs-wo {
     display: flex;
     gap: 8px;
-    border-bottom: 2px solid #e4ebe8;
+    border-bottom: 2px solid #E8D8CC;
     margin-bottom: 20px;
 }
 .nav-tabs-wo button {
@@ -483,21 +483,21 @@
     gap: 8px;
 }
 .nav-tabs-wo button:hover {
-    color: #073d36;
+    color: #7A1F2B;
 }
 .nav-tabs-wo button.active {
-    color: #073d36;
-    border-bottom-color: #073d36;
+    color: #7A1F2B;
+    border-bottom-color: #7A1F2B;
 }
 .nav-tabs-wo .badge-count {
     background: #eef3f1;
-    color: #073d36;
+    color: #7A1F2B;
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 11.5px;
 }
 .nav-tabs-wo button.active .badge-count {
-    background: #073d36;
+    background: #7A1F2B;
     color: #fff;
 }
 .badge-promoted-yes {
@@ -538,15 +538,15 @@
 }
 .vendor-auto-badge {
     background: #ffffff;
-    color: #073d36;
+    color: #7A1F2B;
     border: 1px solid #a4c4b7;
     font-size: 12.5px;
     font-weight: 500;
 }
 .btn-emerald-sm {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
     font-size: 12px;
     font-weight: 600;
     padding: 5px 12px;
@@ -559,6 +559,6 @@
 }
 .btn-emerald-sm:hover {
     background: #052c27;
-    color: #dfc28b;
+    color: #E2BE82;
 }
 

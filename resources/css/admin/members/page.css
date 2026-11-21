@@ -14,7 +14,7 @@
 }
 .member-eyebrow {
     margin-bottom: 5px;
-    color: #55756d;
+    color: #7A6760;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -40,7 +40,7 @@
 .member-stat {
     min-width: 118px;
     padding: 11px 14px;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 9px;
     background: #ffffff;
 }
@@ -62,7 +62,7 @@
     align-items: center;
     margin-bottom: 12px;
     padding: 9px;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 9px;
     background: #ffffff;
 }
@@ -108,7 +108,7 @@
     justify-content: center;
     padding: 10px 14px;
     border-radius: 7px;
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
     font-size: 12px;
     font-weight: 600;
@@ -138,12 +138,12 @@
 }
 .member-tab.active,
 .member-tab.active:hover {
-    border-color: #073d36;
-    background: #073d36;
+    border-color: #7A1F2B;
+    background: #7A1F2B;
     color: #ffffff;
 }
 .member-tab:hover {
-    background: #edf5f2;
+    background: #F4E4E6;
     color: #17463f;
 }
 .member-result-count {
@@ -260,7 +260,7 @@
     text-transform: uppercase;
 }
 .member-project-name {
-    color: #173b32;
+    color: #5C1620;
     font-size: 13.5px;
     font-weight: 600;
     line-height: 1.5;
@@ -316,7 +316,7 @@
     color: #173f39;
 }
 .member-action.dark {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
 }
 .member-action.dark:hover {
@@ -375,13 +375,13 @@
     transition: all 0.15s ease;
 }
 .member-page-btn:hover {
-    border-color: #073d36;
-    color: #073d36;
+    border-color: #7A1F2B;
+    color: #7A1F2B;
     background: #f0f5f3;
 }
 .member-page-btn.active {
-    border-color: #073d36;
-    background: #073d36;
+    border-color: #7A1F2B;
+    background: #7A1F2B;
     color: #ffffff;
 }
 @media (max-width: 1150px) {

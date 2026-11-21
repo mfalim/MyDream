@@ -36,7 +36,7 @@
                 <small>Total Seluruh Acara</small>
                 <strong>{{ $totalEvents }}</strong>
             </div>
-            <div class="eventday-stat-icon" style="background: #edf4f1; color: #073d36;">
+            <div class="eventday-stat-icon" style="background: #F4E4E6; color: #7A1F2B;">
                 <i class="bi bi-calendar-event"></i>
             </div>
         </div>
@@ -54,9 +54,9 @@
         <div class="eventday-stat-card">
             <div class="eventday-stat-info">
                 <small>Acara Mendatang</small>
-                <strong style="color: #073d36;">{{ $upcomingEvents }}</strong>
+                <strong style="color: #7A1F2B;">{{ $upcomingEvents }}</strong>
             </div>
-            <div class="eventday-stat-icon" style="background: #e7f1ea; color: #073d36;">
+            <div class="eventday-stat-icon" style="background: #e7f1ea; color: #7A1F2B;">
                 <i class="bi bi-clock-history"></i>
             </div>
         </div>
@@ -215,7 +215,7 @@
                                 </strong>
                             </div>
                         @else
-                            <div class="coord-avatar-circle" style="background:#e4ebe8; color:#74847c;">
+                            <div class="coord-avatar-circle" style="background:#E8D8CC; color:#74847c;">
                                 <i class="bi bi-person"></i>
                             </div>
                             <div class="coord-info-text">
@@ -246,7 +246,7 @@
                         @endforelse
 
                         @if ($event->schedules->count() > 2)
-                            <span class="vendor-mini-chip" style="background: #e7f1ea; color: #073d36; font-weight: 700;">
+                            <span class="vendor-mini-chip" style="background: #e7f1ea; color: #7A1F2B; font-weight: 700;">
                                 +{{ $event->schedules->count() - 2 }} vendor lagi
                             </span>
                         @endif
@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const statusLabel = String(info.status || 'upcoming').toUpperCase();
             const statusPillStyle = info.status === 'ongoing' 
                 ? 'background:#1b9e6a; color:#fff;'
-                : (info.status === 'completed' ? 'background:#52665e; color:#fff;' : 'background:#073d36; color:#fff;');
+                : (info.status === 'completed' ? 'background:#52665e; color:#fff;' : 'background:#7A1F2B; color:#fff;');
 
             // Render Vendor List
             let vendorRows = '';
@@ -388,7 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     vendorRows += `
                         <div class="modal-item-row">
                             <div>
-                                <strong style="color: #173b32; font-size: 14.5px;">${v.name}</strong>
+                                <strong style="color: #5C1620; font-size: 14.5px;">${v.name}</strong>
                                 <small class="text-muted d-block" style="font-size: 12.5px;">${v.category} • Waktu: ${timeRange}</small>
                             </div>
                             <span class="badge" style="${statusBadgeClass}; font-size: 12px; font-weight: 700; padding: 4px 10px;">
@@ -408,11 +408,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     crewRows += `
                         <div class="modal-item-row">
                             <div class="d-flex align-items-center gap-2">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #edf4f1; color: #073d36; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #F4E4E6; color: #7A1F2B; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">
                                     ${member.name.substring(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                    <strong style="color: #173b32; font-size: 14px;">${member.name}</strong>
+                                    <strong style="color: #5C1620; font-size: 14px;">${member.name}</strong>
                                     ${member.call_sign ? `<small class="text-muted" style="font-size: 12px;">(${member.call_sign})</small>` : ''}
                                 </div>
                             </div>
@@ -470,12 +470,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="modal-section-title">
                                 <i class="bi bi-shield-check"></i> Koordinator Utama Lapangan (On-Duty)
                             </div>
-                            <div class="d-flex align-items-center gap-3 p-3 rounded" style="background:#f7faf8; border:1px solid #e4ebe8;">
-                                <div style="width: 48px; height: 48px; border-radius: 50%; background:#073d36; color:#dfc28b; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700;">
+                            <div class="d-flex align-items-center gap-3 p-3 rounded" style="background:#FCF8F4; border:1px solid #E8D8CC;">
+                                <div style="width: 48px; height: 48px; border-radius: 50%; background:#7A1F2B; color:#dfc28b; display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700;">
                                     ${(info.lead_director_full || info.lead_director || 'KO').substring(0, 2).toUpperCase()}
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="fw-bold" style="color: #173b32; font-size: 16px;">
+                                    <div class="fw-bold" style="color: #5C1620; font-size: 16px;">
                                         ${info.lead_director_full || info.lead_director}
                                     </div>
                                     <small class="text-muted" style="font-size: 13px;">

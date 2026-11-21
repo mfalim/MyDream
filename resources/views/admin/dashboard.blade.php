@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 stops: [0, 90, 100]
             }
         },
-        colors: ['#073d36', '#dfc28b'],
+        colors: ['#7A1F2B', '#dfc28b'],
         labels: monthsData,
         xaxis: {
             type: 'category',
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         yaxis: [
             {
-                title: { text: 'Juta Rupiah', style: { color: '#073d36', fontSize: '11px', fontWeight: 600 } },
+                title: { text: 'Juta Rupiah', style: { color: '#7A1F2B', fontSize: '11px', fontWeight: 600 } },
                 labels: {
                     formatter: function (val) { return 'Rp ' + val + 'M'; },
                     style: { colors: '#7a948e', fontSize: '11px' }
@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', function () {
             height: 310,
             fontFamily: 'Plus Jakarta Sans, sans-serif'
         },
-        colors: ['#073d36', '#dfc28b', '#2b6e62', '#e5dfd5'],
+        colors: ['#7A1F2B', '#dfc28b', '#2b6e62', '#e5dfd5'],
         plotOptions: {
             pie: {
                 donut: {

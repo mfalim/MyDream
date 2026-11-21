@@ -41,7 +41,7 @@
             <div class="col-lg-7">
                 {{-- Card 1: Informasi Dasar --}}
                 <div class="cms-card p-4 mb-4">
-                    <h5 class="fw-bold mb-3" style="color: #073d36; font-size: 16px;">
+                    <h5 class="fw-bold mb-3" style="color: #7A1F2B; font-size: 16px;">
                         <i class="bi bi-info-circle me-2"></i> Informasi Paket
                     </h5>
 
@@ -88,7 +88,7 @@
                     <div class="form-check form-switch p-3 rounded-3 border bg-light">
                         <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" name="is_featured" value="1" id="is_featured"
                             @checked(old('is_featured', $package->is_featured)) style="width: 2.2em; height: 1.2em; cursor: pointer;">
-                        <label class="form-check-label fw-semibold" for="is_featured" style="cursor: pointer; color: #073d36;">
+                        <label class="form-check-label fw-semibold" for="is_featured" style="cursor: pointer; color: #7A1F2B;">
                             Tampilkan sebagai "Pilihan MyDream" di Website
                             <small class="d-block text-muted fw-normal">Paket unggulan akan ditampilkan di bagian teratas etalase paket wedding.</small>
                         </label>
@@ -97,7 +97,7 @@
 
                 {{-- Card 2: Foto & Deskripsi --}}
                 <div class="cms-card p-4">
-                    <h5 class="fw-bold mb-3" style="color: #073d36; font-size: 16px;">
+                    <h5 class="fw-bold mb-3" style="color: #7A1F2B; font-size: 16px;">
                         <i class="bi bi-image me-2"></i> Foto Sampul &amp; Deskripsi
                     </h5>
 
@@ -149,7 +149,7 @@
                 <div class="cms-card p-4">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <h5 class="fw-bold mb-1" style="color: #073d36; font-size: 16px;">
+                            <h5 class="fw-bold mb-1" style="color: #7A1F2B; font-size: 16px;">
                                 <i class="bi bi-shop me-2"></i> Vendor dalam Paket
                             </h5>
                             <small class="text-muted">Pilih vendor rekanan yang termasuk pada paket ini.</small>
@@ -164,7 +164,7 @@
                         </div>
                         <div class="text-end">
                             <small class="text-muted d-block" style="font-size: 11.5px;">TOTAL ESTIMASI PAKET</small>
-                            <strong id="totalPackagePrice" class="fs-5" style="color: #073d36;">Rp 0</strong>
+                            <strong id="totalPackagePrice" class="fs-5" style="color: #7A1F2B;">Rp 0</strong>
                         </div>
                     </div>
 
@@ -195,7 +195,7 @@
                                             <span class="badge bg-light text-dark border" style="font-size: 10.5px;">{{ $vendor->category?->name ?? 'Vendor' }}</span>
                                         </label>
                                     </div>
-                                    <span class="fw-semibold small text-nowrap" style="color: #073d36;">
+                                    <span class="fw-semibold small text-nowrap" style="color: #7A1F2B;">
                                         Rp {{ number_format($vendor->price, 0, ',', '.') }}
                                     </span>
                                 </div>

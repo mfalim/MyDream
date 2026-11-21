@@ -34,7 +34,7 @@
                 <small>TOTAL KATEGORI</small>
                 <strong>{{ ($divisionCount ?? 0) + ($positionCount ?? 0) + ($specializationCount ?? 0) }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #073d36;">
+            <div class="category-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #7A1F2B;">
                 <i class="bi bi-tags-fill"></i>
             </div>
         </div>
@@ -42,9 +42,9 @@
         <div class="category-stat-card">
             <div class="category-stat-info">
                 <small>DIVISI (DIVISION)</small>
-                <strong style="color: #073d36;">{{ $divisionCount ?? 0 }}</strong>
+                <strong style="color: #7A1F2B;">{{ $divisionCount ?? 0 }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: #edf5f2; color: #073d36;">
+            <div class="category-stat-icon" style="background: #edf5f2; color: #7A1F2B;">
                 <i class="bi bi-diagram-3-fill"></i>
             </div>
         </div>

@@ -42,7 +42,7 @@
                 <small>DIPROMOSIKAN DI WEB</small>
                 <strong>{{ $totalPromoted }}</strong>
             </div>
-            <div class="cms-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #073d36;">
+            <div class="cms-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #7A1F2B;">
                 <i class="bi bi-megaphone-fill"></i>
             </div>
         </div>
@@ -148,7 +148,7 @@
                                     </a>
 
                                     @if($event->originalEvent)
-                                        <div class="small mt-1" style="color: #073d36;">
+                                        <div class="small mt-1" style="color: #7A1F2B;">
                                             <i class="bi bi-link-45deg"></i> Terkait Acara: 
                                             <strong>{{ $event->originalEvent->name }}</strong>
                                             @if($event->originalEvent->booking?->client)

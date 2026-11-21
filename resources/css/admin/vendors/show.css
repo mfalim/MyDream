@@ -62,7 +62,7 @@
     gap: 24px;
 }
 .vendor-info-card {
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     background: #ffffff;
 }
@@ -73,7 +73,7 @@
 .vendor-main-photo {
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     background: #edf3f1;
 }
@@ -105,7 +105,7 @@
     min-width: 0;
     gap: 6px;
     padding: 16px;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     background: #ffffff;
 }

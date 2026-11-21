@@ -53,7 +53,7 @@
                 <small>Total Lunas Dicairkan</small>
                 <strong style="color: #0d6e4c;">Rp {{ number_format($totalPaidFee, 0, ',', '.') }}</strong>
             </div>
-            <div class="tracking-stat-icon" style="background: #edf4f1; color: #0d6e4c;">
+            <div class="tracking-stat-icon" style="background: #F4E4E6; color: #0d6e4c;">
                 <i class="bi bi-cash-stack"></i>
             </div>
         </div>
@@ -61,9 +61,9 @@
         <div class="tracking-stat-card">
             <div class="tracking-stat-info">
                 <small>Total Kru Terdaftar</small>
-                <strong style="color: #073d36;">{{ $totalMembersAssigned }} Orang</strong>
+                <strong style="color: #7A1F2B;">{{ $totalMembersAssigned }} Orang</strong>
             </div>
-            <div class="tracking-stat-icon" style="background: #e6f4ea; color: #073d36;">
+            <div class="tracking-stat-icon" style="background: #e6f4ea; color: #7A1F2B;">
                 <i class="bi bi-people-fill"></i>
             </div>
         </div>
@@ -162,7 +162,7 @@
                                         {{ strtoupper(substr($em->member?->name ?? 'M', 0, 2)) }}
                                     </div>
                                     <div>
-                                        <div class="fw-bold" style="color: #173b32;">
+                                        <div class="fw-bold" style="color: #5C1620;">
                                             {{ $em->member?->name ?? 'Member #' . $em->member_id }}
                                         </div>
                                         <div class="small text-muted mb-1">
@@ -213,7 +213,7 @@
                                 @endif
                             </td>
                             <td>
-                                <strong class="num-tabular" style="color: #073d36; font-size: 0.95rem;">
+                                <strong class="num-tabular" style="color: #7A1F2B; font-size: 0.95rem;">
                                     Rp {{ number_format((float) ($em->total_fee ?? 0), 0, ',', '.') }}
                                 </strong>
                             </td>
@@ -285,7 +285,7 @@
                                     <form action="{{ route('admin.payroll.update-status', $em->id) }}" method="POST" enctype="multipart/form-data">
                                         @csrf
                                         <input type="hidden" name="payment_status" value="paid">
-                                        <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                                        <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                                             <div>
                                                 <h6 class="modal-title fw-bold mb-0">
                                                     <i class="bi bi-cash-coin me-1"></i> Pencairan &amp; Bukti Transfer Honor Kru
@@ -364,7 +364,7 @@
 <div class="modal fade" id="proofPreviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-            <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+            <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                 <h6 class="modal-title fw-bold mb-0" id="proofPreviewTitle">Preview Bukti Transfer</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -385,7 +385,7 @@
 <div class="modal fade" id="batchActionModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header" style="background: #073d36; color: #fff;">
+            <div class="modal-header" style="background: #7A1F2B; color: #fff;">
                 <h6 class="modal-title fw-bold" id="batchModalTitle">Konfirmasi Aksi Massal</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

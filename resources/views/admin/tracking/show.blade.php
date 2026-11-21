@@ -178,7 +178,7 @@
                         </div>
                         <div class="col-md-6 mb-2">
                             <label class="text-muted small mb-1">Total Nilai Seluruh Booking</label>
-                            <div class="fw-bold" style="color: #073d36; font-size: 1.05rem;">
+                            <div class="fw-bold" style="color: #7A1F2B; font-size: 1.05rem;">
                                 Rp {{ number_format($event->booking?->total_price ?? 0, 0, ',', '.') }}
                                 @if(($event->booking?->all_packages?->count() ?? 0) > 1)
                                     <span class="badge bg-light text-dark border small" style="font-size: 0.75rem;">{{ $event->booking->all_packages->count() }} Paket Acara</span>
@@ -209,7 +209,7 @@
                 <div class="card-body">
                     <h6 class="wo-card-title mb-3">Progress Keseluruhan</h6>
                     <div class="text-center mb-3">
-                        <h2 class="display-4 fw-bold mb-0" style="color: #073d36;">{{ round($progress) }}%</h2>
+                        <h2 class="display-4 fw-bold mb-0" style="color: #7A1F2B;">{{ round($progress) }}%</h2>
                         <p class="text-muted small">Checklist Selesai</p>
                     </div>
                     <div class="progress mb-3" style="height: 25px;">
@@ -271,11 +271,11 @@
                         $eventTotalFee = (float) $event->eventMembers->sum('total_fee');
                     @endphp
                     @if($event->eventMembers->isNotEmpty())
-                        <div class="p-2 mb-3 rounded d-flex justify-content-between align-items-center" style="background: #edf4f1; border: 1px solid #cce1d8;">
-                            <span class="small fw-semibold" style="color: #073d36;">
+                        <div class="p-2 mb-3 rounded d-flex justify-content-between align-items-center" style="background: #F4E4E6; border: 1px solid #EAD3D6;">
+                            <span class="small fw-semibold" style="color: #7A1F2B;">
                                 <i class="bi bi-people-fill me-1"></i> {{ $event->eventMembers->count() }} Kru Bertugas
                             </span>
-                            <span class="small fw-bold" style="color: #073d36;">
+                            <span class="small fw-bold" style="color: #7A1F2B;">
                                 Total Honor: Rp {{ number_format($eventTotalFee, 0, ',', '.') }}
                             </span>
                         </div>
@@ -300,13 +300,13 @@
                             default => 'Menunggu ACC',
                         };
                     @endphp
-                    <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded border" style="background: #f7faf8; border-color: #e4ebe8 !important;">
+                    <div class="d-flex align-items-center gap-2 mb-2 p-2 rounded border" style="background: #FCF8F4; border-color: #E8D8CC !important;">
                         <div class="member-avatar-circle {{ $isCoord ? 'coord' : 'crew' }}">
                             {{ strtoupper(substr($eventMember->member?->name ?? 'M', 0, 2)) }}
                         </div>
                         <div class="flex-grow-1 min-w-0">
                             <div class="d-flex align-items-center gap-1 flex-wrap">
-                                <span class="fw-semibold" style="color: #173b32;">{{ $eventMember->member?->name ?? 'Member #' . $eventMember->member_id }}</span>
+                                <span class="fw-semibold" style="color: #5C1620;">{{ $eventMember->member?->name ?? 'Member #' . $eventMember->member_id }}</span>
                                 @if($isCoord)
                                     <span class="badge badge-wo-coord">Coordinator Utama</span>
                                 @endif
@@ -319,7 +319,7 @@
                                 <span class="badge bg-{{ $payBadgeClass }} member-pay-badge-{{ $eventMember->member_id }}" style="font-size: 11px;">
                                     {{ $payBadgeLabel }}
                                 </span>
-                                <strong class="small ms-auto" style="color: #073d36;">
+                                <strong class="small ms-auto" style="color: #7A1F2B;">
                                     Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}
                                 </strong>
                             </div>
@@ -347,7 +347,7 @@
                     </div>
 
                     <div class="collapse mb-3" id="memberAttendance{{ $eventMember->id }}">
-                        <div class="card card-body border member-fee-row" style="background: #fff; border-color: #e4ebe8 !important; border-radius: 12px;"
+                        <div class="card card-body border member-fee-row" style="background: #fff; border-color: #E8D8CC !important; border-radius: 12px;"
                             data-daily-fee="{{ $dailyFeeValue }}"
                             data-is-coord="{{ $isCoord ? '1' : '0' }}">
                             
@@ -390,7 +390,7 @@
                                 <div class="col-12 mt-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div class="small text-muted">
                                         Perhitungan: <span class="badge bg-light text-dark border">Tarif: Rp {{ number_format($dailyFeeValue, 0, ',', '.') }}/hari</span> &bull; 
-                                        Total Fee: <strong class="member-total-fee" style="color: #073d36;">Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}</strong>
+                                        Total Fee: <strong class="member-total-fee" style="color: #7A1F2B;">Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}</strong>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-wo-primary save-member-fee" data-event-id="{{ $event->id }}" data-member-id="{{ $eventMember->member_id }}">
                                         <i class="bi bi-check2-circle"></i> Simpan & Validasi

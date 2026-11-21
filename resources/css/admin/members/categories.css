@@ -19,7 +19,7 @@
     margin-bottom: 24px;
 }
 .member-category-header .eyebrow {
-    color: #55756d;
+    color: #7A6760;
     font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -54,14 +54,14 @@
     gap: 12px;
     padding: 16px 18px;
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 .category-stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(22, 48, 42, 0.06);
+    box-shadow: 0 6px 16px rgba(92, 22, 32, 0.06);
 }
 .category-stat-info small {
     display: block;
@@ -92,19 +92,19 @@
 /* Filter Card */
 .category-filter-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 12px;
     padding: 18px 20px;
-    box-shadow: 0 4px 12px rgba(22, 48, 42, 0.03);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
     margin-bottom: 22px;
 }
 
 /* Table Card */
 .category-table-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     overflow: hidden;
 }
 .member-category-table {
@@ -114,7 +114,7 @@
 .member-category-table thead th {
     background: #f7faf9;
     color: #4b6259;
-    border-bottom: 1px solid #e4ebe8;
+    border-bottom: 1px solid #E8D8CC;
     font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -137,8 +137,8 @@
 
 /* Badges Jenis Kategori */
 .category-badge-division {
-    background: #edf5f2;
-    color: #073d36;
+    background: #F4E4E6;
+    color: #7A1F2B;
     border: 1px solid #c2dbd0;
     font-size: 11.5px;
     font-weight: 600;
@@ -190,9 +190,9 @@
     cursor: pointer;
 }
 .btn-category-action:hover {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border-color: #073d36;
+    border-color: #7A1F2B;
 }
 .btn-category-action.delete:hover {
     background: #dc2626;
@@ -202,9 +202,9 @@
 
 /* Theme Button Emerald */
 .btn-emerald {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
     font-size: 13.5px;
     font-weight: 600;
     padding: 9px 18px;
@@ -217,17 +217,17 @@
 }
 .btn-emerald:hover {
     background: #052c27;
-    color: #dfc28b;
+    color: #E2BE82;
 }
 
 /* Modal Form Styles */
 .modal-header-emerald {
     background: #f7faf9;
-    border-bottom: 1px solid #e4ebe8;
+    border-bottom: 1px solid #E8D8CC;
     padding: 18px 24px;
 }
 .modal-header-emerald .modal-title {
-    color: #073d36;
+    color: #7A1F2B;
     font-weight: 700;
     font-size: 17px;
 }

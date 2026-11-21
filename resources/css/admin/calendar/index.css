@@ -19,7 +19,7 @@
     margin-bottom: 24px;
 }
 .calendar-header .eyebrow {
-    color: #55756d;
+    color: #7A6760;
     font-size: 11.5px;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -55,14 +55,14 @@
 }
 
 .btn-emerald {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border: 1px solid #073d36;
+    border: 1px solid #7A1F2B;
 }
 
 .btn-emerald:hover {
     background: #052c27;
-    color: #dfc28b;
+    color: #E2BE82;
 }
 
 .btn-outline-back {
@@ -72,16 +72,16 @@
 }
 
 .btn-outline-back:hover {
-    background: #f2f7f4;
+    background: #FBF3EC;
     color: #173f39;
 }
 
 /* Main Card */
 .calendar-main-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     overflow: hidden;
 }
 
@@ -112,7 +112,7 @@
     border-radius: 8px;
     border: 1px solid #d4dfda;
     background: #ffffff;
-    color: #073d36;
+    color: #7A1F2B;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -121,9 +121,9 @@
     transition: all 0.15s;
 }
 .calendar-nav-btn:hover {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
-    border-color: #073d36;
+    border-color: #7A1F2B;
 }
 
 .calendar-today-btn {
@@ -131,14 +131,14 @@
     border-radius: 8px;
     border: 1px solid #d4dfda;
     background: #ffffff;
-    color: #073d36;
+    color: #7A1F2B;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
 }
 .calendar-today-btn:hover {
-    background: #edf5f2;
+    background: #F4E4E6;
     border-color: #a4c4b7;
 }
 
@@ -159,7 +159,7 @@
     text-transform: uppercase;
     text-align: center;
     padding: 12px 6px;
-    border-bottom: 1px solid #e4ebe8;
+    border-bottom: 1px solid #E8D8CC;
 }
 
 .calendar-table td.calendar-day {
@@ -182,7 +182,7 @@
     background-color: #f0f8f5;
 }
 .calendar-table td.calendar-day.today .day-number {
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
     border-radius: 50%;
     width: 24px;
@@ -194,7 +194,7 @@
 
 .calendar-table td.calendar-day.selected {
     background-color: #edf7f3 !important;
-    outline: 2px solid #073d36;
+    outline: 2px solid #7A1F2B;
     outline-offset: -2px;
     z-index: 2;
 }
@@ -238,8 +238,8 @@
     opacity: 0.85;
 }
 .cal-badge-client {
-    background: #edf5f2;
-    color: #073d36;
+    background: #F4E4E6;
+    color: #7A1F2B;
     border: 1px solid #c2dbd0;
 }
 .cal-badge-org {
@@ -251,26 +251,26 @@
 /* Sidebar List Acara Tanggal Terpilih */
 .cal-sidebar-card {
     background: #ffffff;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(22, 48, 42, 0.04);
+    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
     padding: 20px;
 }
 
 .cal-event-item {
     border-radius: 10px;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     padding: 14px;
     margin-bottom: 12px;
     background: #ffffff;
     transition: all 0.2s;
 }
 .cal-event-item:hover {
-    border-color: #073d36;
-    box-shadow: 0 4px 12px rgba(7, 61, 54, 0.06);
+    border-color: #7A1F2B;
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.06);
 }
 .cal-event-item.client-border {
-    border-left: 4px solid #073d36;
+    border-left: 4px solid #7A1F2B;
 }
 .cal-event-item.org-border {
     border-left: 4px solid #b45309;

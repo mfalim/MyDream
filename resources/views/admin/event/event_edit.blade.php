@@ -50,13 +50,13 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <small class="text-muted d-block">Pasangan Mempelai</small>
-                                <span class="fw-bold" style="color:#173b32;">
+                                <span class="fw-bold" style="color:#5C1620;">
                                     {{ $event->booking?->client?->groom_name ?? 'N/A' }} & {{ $event->booking?->client?->bride_name ?? 'N/A' }}
                                 </span>
                             </div>
                             <div class="col-md-4">
                                 <small class="text-muted d-block">Lokasi Venue</small>
-                                <span class="fw-bold" style="color:#173b32;">{{ $event->booking?->venue_name ?? 'N/A' }}</span>
+                                <span class="fw-bold" style="color:#5C1620;">{{ $event->booking?->venue_name ?? 'N/A' }}</span>
                             </div>
                             <div class="col-md-4">
                                 <small class="text-muted d-block">Paket Booking</small>

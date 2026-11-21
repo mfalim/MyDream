@@ -6,14 +6,14 @@
 .member-form-section {
     margin-bottom: 18px;
     overflow: hidden;
-    border: 1px solid #e4ebe8;
+    border: 1px solid #E8D8CC;
     border-radius: 10px;
     background: #ffffff;
 }
 
 .section-header,
 .form-footer {
-    background: #f7faf8;
+    background: #FCF8F4;
     border-color: #edf1ef;
 }
 
@@ -106,7 +106,7 @@
 
 .btn-save {
     border: 0;
-    background: #073d36;
+    background: #7A1F2B;
     color: #ffffff;
 }
 

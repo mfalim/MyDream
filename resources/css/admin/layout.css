@@ -8,19 +8,19 @@
    MYDREAM ADMIN - THEME PALETTE (BOTANICAL EMERALD & CHAMPAGNE GOLD)
    ========================================================================== */
 :root {
-    --wo-emerald-900: #073d36;
-    --wo-emerald-800: #0d544b;
-    --wo-emerald-700: #166358;
-    --wo-emerald-100: #edf5f2;
-    --wo-emerald-50:  #f4f8f6;
-    --wo-gold:         #dfc28b;
-    --wo-gold-dark:    #b89758;
+    --wo-emerald-900: #7A1F2B;
+    --wo-emerald-800: #5C1620;
+    --wo-emerald-700: #922B39;
+    --wo-emerald-100: #F4E4E6;
+    --wo-emerald-50:  #FCF8F4;
+    --wo-gold:         #E2BE82;
+    --wo-gold-dark:    #B08D57;
     --wo-gold-light:   #f9f4eb;
-    --wo-surface-silk: #fcfbfa;
+    --wo-surface-silk: #FFFDFB;
     --wo-border-silk:  #e8e1d5;
-    --wo-text-dark:    #16302a;
-    --wo-text-muted:   #5b756e;
-    --wo-bg:           #f3f6f4;
+    --wo-text-dark:    #2B211C;
+    --wo-text-muted:   #7A6760;
+    --wo-bg:           #FBF3EC;
 }
 
 .admin-layout .dashboard-shell {
@@ -37,7 +37,7 @@
     height: 100vh;
     background: var(--wo-surface-silk);
     border-right: 1px solid var(--wo-border-silk);
-    box-shadow: 4px 0 20px rgba(7, 61, 54, 0.04);
+    box-shadow: 4px 0 20px rgba(92, 22, 32, 0.04);
     display: flex;
     flex-direction: column;
     padding: 24px 18px;
@@ -82,7 +82,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 4px 12px rgba(7, 61, 54, 0.18);
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.18);
     flex-shrink: 0;
     transition: transform 0.25s ease;
 }
@@ -96,7 +96,7 @@
 }
 
 .admin-layout .brand-name {
-    font-family: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+    font-family: "Fraunces", Georgia, serif;
     font-weight: 700;
     font-size: 1.22rem;
     color: var(--wo-emerald-900);
@@ -121,14 +121,14 @@
    ADMIN PROFILE CARD
    ========================================================================== */
 .admin-layout .client-card {
-    background: linear-gradient(135deg, #f2f7f4 0%, #eaf3ee 100%);
-    border: 1px solid #dbe6df;
+    background: linear-gradient(135deg, #FBF3EC 0%, #F4E4E6 100%);
+    border: 1px solid #EAD3D6;
     border-radius: 14px;
     padding: 12px 14px;
     display: flex;
     align-items: center;
     gap: 12px;
-    box-shadow: 0 2px 8px rgba(7, 61, 54, 0.03);
+    box-shadow: 0 2px 8px rgba(92, 22, 32, 0.03);
 }
 
 .admin-layout .client-avatar {
@@ -197,7 +197,7 @@
     font-size: 0.64rem;
     font-weight: 800;
     letter-spacing: 0.14em;
-    color: #7b948d;
+    color: #9A847B;
     text-transform: uppercase;
     padding: 6px 12px 4px;
     display: flex;
@@ -233,7 +233,7 @@
     width: 20px;
     text-align: center;
     flex-shrink: 0;
-    color: #6a857e;
+    color: #8C7870;
     transition: transform 0.2s ease, color 0.2s ease;
 }
 
@@ -245,9 +245,9 @@
 
 /* Hover State */
 .admin-layout .nav-item:hover {
-    background: #edf5f1;
+    background: #F4E4E6;
     color: var(--wo-emerald-900);
-    border-color: #d8e6df;
+    border-color: #EAD3D6;
     text-decoration: none;
     transform: translateX(2px);
 }
@@ -261,7 +261,7 @@
 .admin-layout .nav-item.active {
     background: linear-gradient(135deg, var(--wo-emerald-900) 0%, var(--wo-emerald-800) 100%);
     color: #ffffff;
-    box-shadow: 0 4px 14px rgba(7, 61, 54, 0.22);
+    box-shadow: 0 4px 14px rgba(92, 22, 32, 0.22);
     border-color: transparent;
 }
 
@@ -290,7 +290,7 @@
     border: 1px solid transparent;
     cursor: pointer;
     font-family: inherit;
-    color: #7a8f88;
+    color: #8C7870;
 }
 
 .admin-layout .nav-item-logout:hover {
@@ -311,7 +311,7 @@
     border: 1px solid var(--wo-border-silk);
     border-radius: 14px;
     padding: 16px;
-    box-shadow: 0 3px 12px rgba(7, 61, 54, 0.03);
+    box-shadow: 0 3px 12px rgba(92, 22, 32, 0.03);
     margin-top: auto;
 }
 
@@ -360,13 +360,13 @@
     gap: 8px;
     transition: all 0.25s ease;
     text-decoration: none;
-    box-shadow: 0 3px 10px rgba(7, 61, 54, 0.15);
+    box-shadow: 0 3px 10px rgba(92, 22, 32, 0.15);
 }
 
 .admin-layout .btn-director:hover {
     background: linear-gradient(135deg, var(--wo-emerald-800) 0%, var(--wo-emerald-700) 100%);
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(7, 61, 54, 0.24);
+    box-shadow: 0 6px 16px rgba(92, 22, 32, 0.24);
     transform: translateY(-1px);
 }
 

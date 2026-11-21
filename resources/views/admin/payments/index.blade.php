@@ -302,7 +302,7 @@
                                 <input type="hidden" name="redirect_vendor_status" value="{{ $vendorStatusFilter }}">
                                 <input type="hidden" name="redirect_booking_id" value="{{ $bookingFilter }}">
 
-                                <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                                <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                                     <div>
                                         <h5 class="modal-title fw-bold mb-0">Pencairan &amp; Bukti Transfer Vendor</h5>
                                         <small class="opacity-75">{{ $vendor?->name ?? $schedule->activity }} — {{ $event?->name }}</small>
@@ -597,7 +597,7 @@
                 <div class="modal fade" id="bookingHistoryModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered">
                         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                            <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                            <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                                 <div>
                                     <h5 class="modal-title fw-bold mb-0">Riwayat &amp; Bukti Transfer Klien — Booking #{{ $booking->id }}</h5>
                                     <small class="opacity-75">{{ $booking->client?->groom_name ?? '' }} &amp; {{ $booking->client?->bride_name ?? '' }} · Kontrak: {{ $rupiah($totalPrice) }}</small>
@@ -848,7 +848,7 @@
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
             <form action="{{ route('admin.payments.store-manual') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-                <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+                <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                     <div>
                         <h5 class="modal-title fw-bold mb-0">Catat Pembayaran Klien (Manual)</h5>
                         <small class="opacity-75">Untuk pembayaran tunai di kantor WO, EDC, atau bukti transfer via WhatsApp</small>
@@ -931,7 +931,7 @@
 <div class="modal fade" id="proofPreviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-            <div class="modal-header text-white" style="background: #073d36; border-radius: 16px 16px 0 0;">
+            <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
                 <h6 class="modal-title fw-bold mb-0" id="proofPreviewTitle">Preview Bukti Transfer</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
