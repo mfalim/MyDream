@@ -379,7 +379,7 @@ body {
 .auth-input-wrap input {
     width: 100%;
     height: 44px;
-    padding: 0 14px 0 38px;
+    padding: 0 42px 0 38px;
     border: 1px solid rgba(43, 33, 28, 0.16);
     border-radius: 12px;
     font-family: inherit;
@@ -503,7 +503,9 @@ body {
    ========================================================== */
 @media (max-width: 840px) {
     body {
-        padding: 16px;
+        padding: 16px 14px;
+        min-height: 100dvh;
+        align-items: flex-start;
     }
     .login-container {
         flex-direction: column;
@@ -512,28 +514,81 @@ body {
     }
     .image-section {
         width: 100%;
-        min-height: 230px;
-        padding: 30px 24px;
+        min-height: 185px;
+        padding: 24px 22px;
     }
     .image-content p,
     .hero-stats-row {
         display: none;
     }
-    .image-content h1 {
+    .brand-logo {
         font-size: 24px;
+        margin-bottom: 6px;
+    }
+    .image-content h1 {
+        font-size: 23px;
         margin-bottom: 0;
     }
     .login-section {
         width: 100%;
-        padding: 40px 24px;
+        padding: 22px 22px 32px;
+        align-items: stretch;
     }
     .back-home-link {
-        top: 16px;
-        right: 20px;
+        position: static;
+        align-self: flex-start;
+        margin-bottom: 16px;
+    }
+    .login-content {
+        margin: 0 auto;
     }
     .auth-field-row {
         grid-template-columns: 1fr;
         gap: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .auth-input-wrap input {
+        font-size: 16px;
+        height: 46px;
+    }
+    .auth-submit-btn,
+    .google-button {
+        height: 48px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 12px 10px;
+    }
+    .login-container {
+        border-radius: 20px;
+    }
+    .image-section {
+        min-height: 148px;
+        padding: 18px;
+    }
+    .hero-pill {
+        font-size: 10px;
+        padding: 5px 12px;
+    }
+    .brand-logo {
+        font-size: 21px;
+    }
+    .image-content h1 {
+        font-size: 20px;
+    }
+    .login-section {
+        padding: 18px 18px 26px;
+    }
+    .login-content h2 {
+        font-size: 25px;
+    }
+    .auth-tab-btn {
+        font-size: 12.5px;
+        padding: 9px 8px;
     }
 }
 

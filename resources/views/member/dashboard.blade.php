@@ -6,197 +6,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dashboard Member - {{ $member->name }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/member/shared.css', 'resources/css/member/dashboard.css'])
-    <style>
-        .coord-panel {
-            margin-top: 18px;
-            padding: 16px;
-            border: 1px solid #d5e3df;
-            border-radius: 12px;
-            background: #f4f9f7;
-        }
-        .coord-panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 12px;
-            color: var(--wo-primary);
-            font-weight: 700;
-        }
-        .coord-team-list {
-            display: grid;
-            gap: 10px;
-        }
-        .coord-team-row {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr 0.8fr 1fr auto;
-            gap: 10px;
-            align-items: center;
-            padding: 12px;
-            background: #fff;
-            border: 1px solid var(--wo-border);
-            border-radius: 10px;
-        }
-        .team-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-        .team-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
-            background: #fff;
-            border: 1px solid var(--wo-border);
-            border-radius: 999px;
-            font-size: 0.82rem;
-            color: var(--wo-ink);
-        }
-        .coord-input, .coord-select {
-            width: 100%;
-            padding: 7px 10px;
-            border: 1px solid var(--wo-border-strong);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            background: #fff;
-            color: var(--wo-ink);
-        }
-        .coord-save-btn {
-            padding: 8px 14px;
-            border: 0;
-            border-radius: 8px;
-            background: var(--wo-primary);
-            color: #fff;
-            font-size: 0.82rem;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-        .coord-save-btn:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-        }
-        .my-fee-strip {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 14px;
-            padding: 12px 14px;
-            border-radius: 10px;
-            background: #f8faf9;
-            border: 1px solid var(--wo-border);
-            font-size: 0.88rem;
-        }
-        .pill-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.74rem;
-            font-weight: 700;
-        }
-        .pill-badge.coord { background: var(--wo-gold-soft); color: #7d5b2b; border: 1px solid #ead2a6; }
-        .pill-badge.pic { background: #e7f1ea; color: var(--wo-primary); border: 1px solid #cfe0d6; }
-        .pill-badge.pay-pending { background: var(--wo-warning-soft); color: #92400e; }
-        .pill-badge.pay-approved { background: #e7f1ea; color: var(--wo-primary); }
-        .pill-badge.pay-paid { background: var(--wo-success-soft); color: #065f46; }
-        .pill-badge.status-rejected { background: var(--wo-danger-soft); color: #991b1b; }
-        .task-pic-select {
-            padding: 5px 8px;
-            border: 1px solid var(--wo-border-strong);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            background: #fff;
-            color: var(--wo-ink);
-            max-width: 220px;
-        }
-        .task-status-btns {
-            display: inline-flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .mini-status-btn {
-            padding: 4px 9px;
-            border-radius: 6px;
-            border: 1px solid var(--wo-border-strong);
-            background: #fff;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--wo-ink-soft);
-        }
-        .mini-status-btn.active-approved {
-            background: var(--wo-success);
-            border-color: var(--wo-success);
-            color: #fff;
-        }
-        .mini-status-btn.active-rejected {
-            background: var(--wo-danger);
-            border-color: var(--wo-danger);
-            color: #fff;
-        }
-        @media (max-width: 767px) {
-            .coord-team-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
+
+@php
+    $currentStatus = in_array($member->status, ['aktif', 'standby', 'inaktif'], true) ? $member->status : 'standby';
+    $statusMeta = [
+        'aktif' => [
+            'label' => 'Aktif',
+            'hint' => 'Anda tampil sebagai kru siap tugas di Tracking Admin.',
+        ],
+        'standby' => [
+            'label' => 'Standby',
+            'hint' => 'Anda tampil sebagai kru siaga (standby) di Tracking Admin.',
+        ],
+        'inaktif' => [
+            'label' => 'Tidak Aktif',
+            'hint' => 'Anda sedang off dan tidak muncul di penugasan event baru.',
+        ],
+    ];
+    $divisionLabel = $member->division ? ucwords(str_replace('-', ' ', $member->division)) : '-';
+@endphp
 
 <body>
     <div class="member-shell">
         <header class="member-topbar">
             <div class="member-brand">
-                <div class="member-brand-mark">◉</div>
+                <div class="member-brand-mark"><i class="bi bi-stars"></i></div>
                 <div>
-                    <span>Member Area</span>
-                    <strong>WO PROJECT</strong>
+                    <span>Member Workspace</span>
+                    <strong>MyDream Wedding</strong>
                 </div>
             </div>
 
-            <div class="member-userchip">
-                <span class="avatar-dot">{{ strtoupper(substr($member->call_sign ?? $member->name, 0, 1)) }}</span>
-                <span>{{ $member->name }}</span>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="logout-link btn btn-link p-0 border-0">
-                        <i class="bi bi-box-arrow-right"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
+            <div class="member-topbar-right">
+                <span class="status-dot-badge status-{{ $currentStatus }}" id="topbarStatusBadge">
+                    <span class="dot"></span>
+                    <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
+                </span>
+
+                <div class="member-userchip">
+                    <span class="avatar-dot">{{ strtoupper(substr($member->call_sign ?? $member->name, 0, 1)) }}</span>
+                    <span>{{ $member->name }}</span>
+                    <form action="{{ route('logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="logout-link btn btn-link p-0 border-0">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </header>
 
         <section class="member-hero">
-            <div class="member-hero-content">
-                <div class="member-avatar-large">
-                    {{ strtoupper(substr($member->call_sign ?? $member->name, 0, 2)) }}
+            <div class="member-hero-left">
+                <div class="member-hero-content">
+                    <div class="member-avatar-large">
+                        {{ strtoupper(substr($member->call_sign ?? $member->name, 0, 2)) }}
+                    </div>
+                    <div class="member-hero-copy">
+                        <div class="member-hero-eyebrow">
+                            <i class="bi bi-circle-fill" style="font-size: 0.42rem;"></i>
+                            Tim Operasional Wedding Organizer
+                        </div>
+                        <h1>{{ $member->name }}</h1>
+                        <p>
+                            {{ $member->call_sign }}
+                            <span class="sep">•</span>
+                            {{ $member->position }}
+                            <span class="sep">•</span>
+                            {{ $divisionLabel }}
+                        </p>
+                    </div>
                 </div>
-                <div class="member-hero-copy">
-                    <h1>{{ $member->name }}</h1>
-                    <p>{{ $member->call_sign }} • {{ $member->position }} • {{ $member->division }}</p>
+
+                <div class="member-hero-meta">
+                    <span class="hero-pill"><i class="bi bi-calendar-heart"></i> {{ $stats['total_events'] }} Event</span>
+                    @if(($stats['coordinator_events'] ?? 0) > 0)
+                        <span class="hero-pill"><i class="bi bi-shield-check"></i> {{ $stats['coordinator_events'] }} Lead Coordinator</span>
+                    @endif
+                    <span class="hero-pill"><i class="bi bi-list-check"></i> {{ $stats['total_schedules'] }} Tugas Saya</span>
                 </div>
             </div>
 
-            <div class="member-hero-meta">
-                <span class="hero-pill"><i class="bi bi-people"></i> {{ $stats['total_events'] }} Event</span>
-                @if(($stats['coordinator_events'] ?? 0) > 0)
-                    <span class="hero-pill"><i class="bi bi-shield-check"></i> {{ $stats['coordinator_events'] }} Coordinator</span>
-                @endif
-                <span class="hero-pill"><i class="bi bi-list-check"></i> {{ $stats['total_schedules'] }} Tugas Saya</span>
+            <div class="availability-card">
+                <div class="availability-card-head">
+                    <span class="availability-label">Status Ketersediaan</span>
+                    <span class="status-dot-badge status-{{ $currentStatus }}" id="heroStatusBadge">
+                        <span class="dot"></span>
+                        <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
+                    </span>
+                </div>
+
+                <div class="availability-switcher" role="group" aria-label="Ubah status ketersediaan member">
+                    <button type="button"
+                        class="availability-btn {{ $currentStatus === 'aktif' ? 'is-active' : '' }}"
+                        data-status="aktif"
+                        onclick="updateMemberStatus('aktif')">
+                        <i class="bi bi-check-circle-fill"></i> Aktif
+                    </button>
+                    <button type="button"
+                        class="availability-btn {{ $currentStatus === 'standby' ? 'is-active' : '' }}"
+                        data-status="standby"
+                        onclick="updateMemberStatus('standby')">
+                        <i class="bi bi-clock-fill"></i> Standby
+                    </button>
+                    <button type="button"
+                        class="availability-btn {{ $currentStatus === 'inaktif' ? 'is-active' : '' }}"
+                        data-status="inaktif"
+                        onclick="updateMemberStatus('inaktif')">
+                        <i class="bi bi-moon-fill"></i> Off
+                    </button>
+                </div>
+
+                <p class="availability-hint" id="availabilityHint">
+                    {{ $statusMeta[$currentStatus]['hint'] }}
+                </p>
             </div>
         </section>
 
         <div class="member-stats">
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:#e7f1ea; color:var(--wo-primary);">
+                <div class="stat-icon" style="background: var(--wo-primary-soft); color: var(--wo-primary-mid);">
                     <i class="bi bi-calendar-event"></i>
                 </div>
                 <div class="stat-label">Event Diikuti</div>
@@ -204,7 +139,7 @@
             </div>
 
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:var(--wo-gold-soft); color:#8a6a3b;">
+                <div class="stat-icon" style="background: var(--wo-gold-soft); color: var(--wo-gold-bg);">
                     <i class="bi bi-clock-history"></i>
                 </div>
                 <div class="stat-label">Tugas Saya</div>
@@ -212,7 +147,7 @@
             </div>
 
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:var(--wo-success-soft); color:var(--wo-success);">
+                <div class="stat-icon" style="background: var(--wo-success-soft); color: var(--wo-success);">
                     <i class="bi bi-check-circle"></i>
                 </div>
                 <div class="stat-label">Tugas Selesai</div>
@@ -220,12 +155,12 @@
             </div>
 
             <div class="member-stat-card">
-                <div class="stat-icon" style="background:var(--wo-warning-soft); color:#b77b0d;">
+                <div class="stat-icon" style="background: var(--wo-warning-soft); color: var(--wo-warning);">
                     <i class="bi bi-wallet2"></i>
                 </div>
                 <div class="stat-label">Daily Fee / ACC</div>
                 <p class="stat-value">Rp {{ number_format((float) ($member->daily_fee ?? 0), 0, ',', '.') }}</p>
-                <small style="color: var(--wo-text-muted); font-size: 0.78rem;">
+                <small class="stat-sub">
                     Tervalidasi Admin: <strong>Rp {{ number_format((float) ($stats['approved_fee'] ?? 0), 0, ',', '.') }}</strong>
                 </small>
             </div>
@@ -248,11 +183,17 @@
                     <span><i class="bi bi-person-badge"></i> Profil Team</span>
                 </div>
                 <ul class="summary-list">
-                    <li><span>Divisi</span><strong>{{ $member->division ?? '-' }}</strong></li>
+                    <li><span>Divisi</span><strong>{{ $divisionLabel }}</strong></li>
                     <li><span>Jabatan</span><strong>{{ $member->position ?? '-' }}</strong></li>
                     <li><span>Spesialisasi</span><strong>{{ $member->specialization ?? '-' }}</strong></li>
                     <li><span>Rekening Honor</span><strong>{{ $member->formatted_bank_account ?? 'Belum Diisi' }}</strong></li>
-                    <li><span>Status</span><strong>{{ ucfirst($member->status ?? 'aktif') }}</strong></li>
+                    <li>
+                        <span>Status</span>
+                        <span class="status-dot-badge status-{{ $currentStatus }}" id="profileStatusBadge">
+                            <span class="dot"></span>
+                            <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
+                        </span>
+                    </li>
                 </ul>
             </div>
 
@@ -274,7 +215,10 @@
                         @endforeach
                     </ul>
                 @else
-                    <div class="mini-empty-state">Tidak ada tugas hari ini.</div>
+                    <div class="mini-empty-state">
+                        <i class="bi bi-sun"></i>
+                        <span>Tidak ada tugas terjadwal hari ini.</span>
+                    </div>
                 @endif
             </div>
 
@@ -292,12 +236,19 @@
                         @endforeach
                     </ul>
                 @else
-                    <div class="mini-empty-state">Belum ada agenda mendatang.</div>
+                    <div class="mini-empty-state">
+                        <i class="bi bi-calendar2-week"></i>
+                        <span>Belum ada agenda event mendatang.</span>
+                    </div>
                 @endif
             </div>
         </section>
 
         <section>
+            <div class="wo-eyebrow">
+                <i class="bi bi-circle-fill" style="font-size: 0.42rem;"></i>
+                Penugasan & Checklist Lapangan
+            </div>
             <h2 class="section-heading"><i class="bi bi-calendar-check"></i>Event & Checklist Tugas Saya</h2>
 
             @forelse($eventMembers as $eventMember)
@@ -328,11 +279,11 @@
                     };
                 @endphp
 
-                <div class="member-event-list" style="margin-bottom: 22px;">
+                <div class="member-event-list">
                     <article class="member-event-card">
                         <div class="event-head">
                             <div>
-                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                                     <h3 class="event-title">{{ $eventMember->event->name }}</h3>
                                     @if($isCoordinator)
                                         <span class="pill-badge coord"><i class="bi bi-shield-check"></i> Coordinator Utama Event</span>
@@ -364,7 +315,7 @@
                                 <span>Total Fee: <strong>Rp {{ number_format((float) ($eventMember->total_fee ?? 0), 0, ',', '.') }}</strong></span>
                                 <span class="pill-badge {{ $myPayClass }}">{{ $myPayLabel }}</span>
                                 @if($eventMember->payout_proof_url)
-                                    <a href="{{ $eventMember->payout_proof_url }}" target="_blank" class="pill-badge pay-approved" style="text-decoration:none;">
+                                    <a href="{{ $eventMember->payout_proof_url }}" target="_blank" class="pill-badge pay-approved">
                                         <i class="bi bi-receipt"></i> Lihat Bukti Transfer
                                     </a>
                                 @endif
@@ -372,7 +323,7 @@
                         </div>
 
                         @if($eventMember->notes)
-                            <div class="schedule-notes mb-3">
+                            <div class="schedule-notes">
                                 <small><i class="bi bi-chat-left-text"></i> Catatan Penugasan</small>
                                 <div>{{ $eventMember->notes }}</div>
                             </div>
@@ -469,7 +420,7 @@
                             </div>
                         @endif
 
-                        {{-- Bagian 2: Tim Event (Coordinator: Kelola Presensi Tim | Member Biasa: Info Rekan Tim) --}}
+                        {{-- Bagian 2: Tim Event --}}
                         @if($isCoordinator)
                             <div class="coord-panel">
                                 <div class="coord-panel-header">
@@ -541,7 +492,7 @@
                                 </div>
                             </div>
                         @else
-                            <div class="coord-panel" style="background: #fafcfb;">
+                            <div class="coord-panel" style="background: var(--wo-surface-soft);">
                                 <div class="coord-panel-header" style="margin-bottom: 6px;">
                                     <span><i class="bi bi-people"></i> Rekan Tim di Event Ini</span>
                                 </div>
@@ -562,15 +513,87 @@
                 </div>
             @empty
                 <div class="empty-state">
-                    <i class="bi bi-calendar-x"></i>
-                    <p>Belum terdaftar di event manapun</p>
+                    <i class="bi bi-calendar-heart"></i>
+                    <h3>Belum Ada Penugasan Event</h3>
+                    <p>Pastikan status ketersediaan Anda <strong>Aktif</strong> atau <strong>Standby</strong> agar Admin dapat menugaskan Anda ke event mendatang.</p>
                 </div>
             @endforelse
         </section>
     </div>
 
+    <div class="member-toast" id="memberToast" role="status" aria-live="polite">
+        <i class="bi bi-check-circle-fill"></i>
+        <span id="memberToastText"></span>
+    </div>
+
     @vite('resources/js/app.js')
     <script>
+        let toastTimer = null;
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('memberToast');
+            const text = document.getElementById('memberToastText');
+            if (!toast || !text) return;
+
+            text.textContent = message;
+            toast.classList.toggle('is-error', isError);
+            toast.classList.add('is-visible');
+
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.remove('is-visible');
+            }, 3000);
+        }
+
+        function updateMemberStatus(status) {
+            const buttons = document.querySelectorAll('.availability-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            fetch('{{ route('member.status.update') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ status })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        showToast(data.message || 'Gagal memperbarui status.', true);
+                        return;
+                    }
+
+                    buttons.forEach(btn => {
+                        btn.classList.toggle('is-active', btn.dataset.status === data.status);
+                    });
+
+                    ['topbarStatusBadge', 'heroStatusBadge', 'profileStatusBadge'].forEach(id => {
+                        const badge = document.getElementById(id);
+                        if (!badge) return;
+                        badge.classList.remove('status-aktif', 'status-standby', 'status-inaktif');
+                        badge.classList.add(`status-${data.status}`);
+                        const textEl = badge.querySelector('.status-text');
+                        if (textEl) textEl.textContent = data.label;
+                    });
+
+                    const hint = document.getElementById('availabilityHint');
+                    if (hint && data.hint) {
+                        hint.textContent = data.hint;
+                    }
+
+                    showToast(data.message || 'Status ketersediaan diperbarui.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Terjadi kesalahan saat memperbarui status.', true);
+                })
+                .finally(() => {
+                    buttons.forEach(btn => btn.disabled = false);
+                });
+        }
+
         function toggleTask(scheduleId, currentStatus) {
             const newStatus = currentStatus === 'approved' ? 'pending' : 'approved';
             updateStatus(scheduleId, newStatus);
@@ -591,12 +614,12 @@
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert('Gagal update status: ' + (data.message || 'Tidak diizinkan'));
+                        showToast(data.message || 'Gagal update status tugas.', true);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat update status');
+                    showToast('Terjadi kesalahan saat update status.', true);
                 });
         }
 
@@ -615,12 +638,12 @@
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert(data.message || 'Gagal mengatur PIC tugas.');
+                        showToast(data.message || 'Gagal mengatur PIC tugas.', true);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat mengatur PIC tugas.');
+                    showToast('Terjadi kesalahan saat mengatur PIC tugas.', true);
                 });
         }
 
@@ -632,7 +655,7 @@
             const actualHours = parseFloat(row.querySelector('.team-actual-hours').value) || 0;
 
             if (actualHours < 0 || actualHours > 24) {
-                alert('Jam kerja aktual harus antara 0 hingga 24 jam.');
+                showToast('Jam kerja aktual harus antara 0 hingga 24 jam.', true);
                 return;
             }
 
@@ -653,15 +676,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        location.reload();
+                        showToast(data.message || 'Kehadiran tim berhasil disimpan.');
+                        setTimeout(() => location.reload(), 600);
                     } else {
-                        alert(data.message || 'Gagal menyimpan kehadiran tim.');
+                        showToast(data.message || 'Gagal menyimpan kehadiran tim.', true);
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan saat menyimpan kehadiran tim.');
+                    showToast('Terjadi kesalahan saat menyimpan kehadiran tim.', true);
                 })
                 .finally(() => {
                     button.disabled = false;

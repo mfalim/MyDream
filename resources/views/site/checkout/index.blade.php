@@ -92,13 +92,51 @@
 
             {{-- RINGKASAN --}}
             <aside class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
-                <h2 class="font-display text-lg font-semibold">Ringkasan Pesanan</h2>
+                <div class="flex items-center justify-between gap-2">
+                    <h2 class="font-display text-lg font-semibold">Ringkasan Pesanan</h2>
+                    <x-site.badge :variant="$isPackage ? 'gold' : 'neutral'">
+                        {{ $isPackage ? 'Paket' : 'Custom' }}
+                    </x-site.badge>
+                </div>
 
-                <div class="space-y-2 text-sm">
-                    <p class="font-medium">{{ $isPackage ? $package->name : 'Vendor pilihan sendiri' }}</p>
-                    @foreach ($vendors as $vendor)
-                        <p class="truncate text-ink/60">{{ $vendor->name }}</p>
-                    @endforeach
+                @if ($isPackage)
+                    <div class="rounded-2xl bg-cream/60 p-3.5 text-sm">
+                        <p class="font-display text-base font-semibold text-ink">{{ $package->name }}</p>
+                        <p class="mt-0.5 text-xs text-ink/60">
+                            {{ $package->guest_capacity ? 'Kapasitas maks. ' . number_format($package->guest_capacity, 0, ',', '.') . ' tamu' : 'Kapasitas fleksibel' }}
+                            @if ($package->event_period) · {{ $package->event_period }} @endif
+                            · {{ $vendors->count() }} vendor
+                        </p>
+                        @if ($package->description)
+                            <p class="mt-1.5 line-clamp-2 text-xs text-ink/60">{{ $package->description }}</p>
+                        @endif
+                    </div>
+                @endif
+
+                <div class="space-y-2.5">
+                    <p class="text-xs font-semibold uppercase tracking-wide text-ink/50">
+                        {{ $isPackage ? 'Vendor Termasuk Dalam Paket' : 'Vendor Pilihan (' . $vendors->count() . ')' }}
+                    </p>
+                    <ul class="divide-y divide-black/5">
+                        @foreach ($vendors as $vendor)
+                            @php
+                                $vPhoto = $vendor->photos->first()?->photo ?? $vendor->photo;
+                            @endphp
+                            <li class="flex items-center gap-3 py-2 text-sm">
+                                <img src="{{ \App\Support\Media::url($vPhoto) }}" alt="{{ $vendor->name }}" class="h-10 w-10 shrink-0 rounded-xl object-cover">
+                                <div class="min-w-0 flex-1">
+                                    <p class="truncate font-medium text-ink">{{ $vendor->name }}</p>
+                                    <p class="truncate text-xs text-ink/55">
+                                        {{ $vendor->category?->name ?? 'Vendor' }}
+                                        @if ($vendor->city) · {{ $vendor->city }} @endif
+                                        @if ($vendor->isCatering() && (int) $vendor->guest_capacity > 0)
+                                            · Maks. {{ number_format($vendor->guest_capacity, 0, ',', '.') }} tamu
+                                        @endif
+                                    </p>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
                 </div>
 
                 <div class="flex items-center justify-between border-t border-black/5 pt-3">

@@ -192,9 +192,9 @@
                             @foreach ($vendors as $vendor)
                                 <div class="cart-item">
                                     @php
-                                        $photo = $vendor->photos->where('is_cover', true)->first();
+                                        $photo = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
                                         $photoUrl = $photo
-                                            ? asset('storage/' . $photo->photo)
+                                            ? \App\Support\Media::url($photo->photo)
                                             : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=300&q=80';
                                     @endphp
                                     <img src="{{ $photoUrl }}" alt="{{ $vendor->name }}" class="cart-item-img">
@@ -217,9 +217,9 @@
                         @foreach ($vendors as $vendor)
                             <div class="cart-item">
                                 @php
-                                    $photo = $vendor->photos->where('is_cover', true)->first();
+                                    $photo = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
                                     $photoUrl = $photo
-                                        ? asset('storage/' . $photo->photo)
+                                        ? \App\Support\Media::url($photo->photo)
                                         : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=300&q=80';
                                 @endphp
                                 <img src="{{ $photoUrl }}" alt="{{ $vendor->name }}" class="cart-item-img">

@@ -1,26 +1,648 @@
-/* Dashboard client: memakai token warna dan komponen wo-shared.css. */
-.dashboard-home{min-height:100vh}
-.dh-hero{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:20px;padding:6px 0}
-.dh-hero-text{min-width:260px;flex:1}.dh-hero-text h1{font-size:2.1rem;margin:8px 0;color:var(--wo-green-900)}.dh-hero-text p{margin:0;color:var(--wo-text-muted);font-size:.9rem;line-height:1.7}.dh-hero-text p span{margin:0 6px;color:var(--wo-gold)}
-.dh-countdown{display:flex;align-items:center;gap:12px;min-width:215px;padding:14px 18px;background:var(--wo-surface);border:1px solid var(--wo-border);border-radius:18px;box-shadow:var(--wo-shadow)}.dh-countdown>i{font-size:1.35rem;color:var(--wo-gold)}.dh-countdown span,.dh-countdown strong,.dh-countdown small{display:block}.dh-countdown span{font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;color:var(--wo-text-muted)}.dh-countdown strong{font-family:"Cormorant Garamond",serif;font-size:1.25rem;color:var(--wo-green-900)}.dh-countdown small{font-size:.72rem;color:var(--wo-text-muted)}
-.dh-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:20px}.dh-stat-card{min-width:0;padding:20px}.dh-card-title{font-family:"Cormorant Garamond",serif;font-size:1.3rem;color:var(--wo-green-900);margin:12px 0 5px}.dh-card-sub{font-size:.8rem;color:var(--wo-text-muted);line-height:1.55;margin:0 0 15px}.dh-progress{display:block;width:100%;height:9px;appearance:none;border:0;border-radius:999px;overflow:hidden;background:var(--wo-border)}.dh-progress::-webkit-progress-bar{background:var(--wo-border);border-radius:999px}.dh-progress::-webkit-progress-value{background:var(--wo-green-900);border-radius:999px}.dh-progress::-moz-progress-bar{background:var(--wo-green-900);border-radius:999px}.dh-stat-foot{display:flex;justify-content:space-between;gap:8px;margin:9px 0 12px;font-size:.74rem;color:var(--wo-text-muted)}.dh-stat-foot strong{color:var(--wo-text)}.dh-stat-card>.wo-link{margin-top:5px}.dh-budget-amount{font-family:"Cormorant Garamond",serif;font-size:1.65rem;font-weight:700;color:var(--wo-green-900);margin:8px 0 11px;overflow-wrap:anywhere}.dh-event-summary{display:flex;align-items:flex-start;gap:9px;padding:7px 0;font-size:.82rem;color:var(--wo-text)}.dh-event-summary>i{color:var(--wo-gold);margin-top:2px}.dh-event-summary small{display:block;color:var(--wo-text-muted);font-size:.73rem;margin-top:2px}
-.dh-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:18px;align-items:start}.dh-main,.dh-sidebar{display:flex;flex-direction:column;gap:18px;min-width:0}.dh-content-card{padding:21px}.dh-content-card .wo-section-head{margin-bottom:12px}.dh-content-card .wo-section-head h2{font-size:1.35rem;margin-top:3px}
-.dh-event-list,.dh-vendor-list{display:flex;flex-direction:column}.dh-event-row,.dh-vendor-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--wo-border)}.dh-event-row:last-child,.dh-vendor-row:last-child{border-bottom:0}.dh-date-box{width:46px;height:50px;flex:0 0 46px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;background:var(--wo-green-100);color:var(--wo-green-900)}.dh-date-box strong{font-family:"Cormorant Garamond",serif;font-size:1.2rem;line-height:1}.dh-date-box small{font-size:.65rem;text-transform:uppercase}.dh-event-info,.dh-vendor-info{flex:1;min-width:0}.dh-event-info strong,.dh-vendor-info strong{display:block;color:var(--wo-green-900);font-size:.87rem}.dh-event-info span,.dh-vendor-info span{display:block;color:var(--wo-text-muted);font-size:.74rem;margin-top:3px}.dh-status{display:inline-flex;align-items:center;padding:4px 9px;border-radius:999px;background:var(--wo-surface-soft);color:var(--wo-text-muted);font-size:.68rem;font-weight:700;white-space:nowrap}.dh-status-approved,.dh-status-completed{background:var(--wo-green-100);color:var(--wo-green-700)}.dh-status-pending,.dh-status-scheduled,.dh-status-ongoing{background:var(--wo-amber-100);color:var(--wo-gold-bg)}.dh-status-rejected,.dh-status-cancelled{background:var(--wo-red-100);color:var(--wo-red-600)}.dh-vendor-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--wo-green-100);color:var(--wo-green-700);flex:0 0 38px}.dh-content-card>.wo-link{margin-top:12px}
-.dh-shortcuts{display:flex;flex-direction:column}.dh-shortcuts a{display:flex;align-items:center;gap:11px;padding:12px 3px;border-bottom:1px solid var(--wo-border);color:var(--wo-text);text-decoration:none;font-size:.82rem;font-weight:600}.dh-shortcuts a:last-child{border-bottom:0}.dh-shortcuts a>i:first-child{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:var(--wo-green-100);color:var(--wo-green-700);font-size:1rem}.dh-shortcuts a span{flex:1}.dh-shortcuts a>i:last-child{color:var(--wo-text-muted);font-size:.75rem}.dh-shortcuts a:hover{color:var(--wo-green-700)}
-.dh-booking-note{padding:18px 20px;background:var(--wo-green-900);border-radius:var(--wo-radius-lg);color:#f2ece0}.dh-booking-note strong{display:block;font-family:"Cormorant Garamond",serif;font-size:1.2rem;margin:10px 0 5px}.dh-booking-note p{font-size:.78rem;line-height:1.55;color:rgba(242,236,224,.78);margin:0}
-.dh-payment-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:18px 22px;margin-bottom:20px;border-radius:var(--wo-radius-lg);background:var(--wo-surface);border:1px solid var(--wo-border);box-shadow:var(--wo-shadow);border-left:5px solid var(--wo-gold)}
-.dh-payment-banner.is-overdue{border-left-color:var(--wo-red-600);background:#fff9f9}
-.dh-payment-banner.is-dp{border-left-color:var(--wo-green-700)}
-.dh-payment-banner-main{flex:1;min-width:260px}
-.dh-payment-banner-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
-.dh-payment-banner h2{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--wo-green-900);margin:0 0 4px}
-.dh-payment-banner p{margin:0;font-size:.82rem;color:var(--wo-text-muted);line-height:1.5}
-.dh-payment-deadline{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:5px 11px;border-radius:999px;font-size:.74rem;font-weight:700;background:var(--wo-amber-100);color:var(--wo-gold-bg)}
-.dh-payment-deadline.overdue{background:var(--wo-red-100);color:var(--wo-red-600)}
-.dh-payment-banner-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:200px}
-.dh-payment-progress-wrap{width:100%;max-width:230px}
-.dh-payment-progress-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--wo-text-muted);margin-bottom:4px}
-@media(max-width:720px){.dh-payment-banner-actions{width:100%;align-items:stretch}.dh-payment-progress-wrap{max-width:none}}.dh-empty-state{max-width:700px;margin:12px auto;padding:36px;text-align:center}.dh-empty-state h2{font-size:1.55rem;margin:0 0 7px}.dh-empty-state p{color:var(--wo-text-muted);font-size:.88rem;margin:0 auto 18px;max-width:480px}.dh-empty-icon{width:52px;height:52px;margin:0 auto 14px;display:grid;place-items:center;border-radius:50%;background:var(--wo-green-100);color:var(--wo-green-700);font-size:1.3rem}.dh-inline-empty{display:flex;align-items:center;gap:10px;padding:16px 4px;color:var(--wo-text-muted)}.dh-inline-empty i{color:var(--wo-gold);font-size:1.1rem}.dh-inline-empty p{margin:0;font-size:.83rem}
-@media(max-width:1050px){.dh-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dh-layout{grid-template-columns:minmax(0,1fr) 280px}}
-@media(max-width:820px){.dh-layout{grid-template-columns:1fr}.dh-sidebar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.dh-countdown{min-width:190px}}
-@media(max-width:620px){.dh-stat-grid{grid-template-columns:1fr}.dh-sidebar{display:flex}.dh-hero-text h1{font-size:1.8rem}.dh-countdown{width:100%}.dh-content-card,.dh-stat-card{padding:18px}.dh-event-row,.dh-vendor-row{gap:9px}.dh-status{font-size:.62rem;padding:4px 7px}.dh-empty-state{padding:28px 20px}}
+/* Dashboard client: tema selaras Landing Page MyDream (Maroon, Cream, Gold) & mobile-friendly */
+.dashboard-home {
+    min-height: 100vh;
+}
+
+.dh-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+    padding: 26px 28px;
+    border-radius: var(--wo-radius-lg);
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 54%, #922B39 100%);
+    border: 1px solid rgba(176, 141, 87, 0.35);
+    box-shadow: 0 16px 34px rgba(92, 22, 32, 0.18);
+    overflow: hidden;
+}
+
+.dh-hero::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: -50px;
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    border: 1px solid rgba(246, 233, 210, 0.16);
+    background: radial-gradient(circle, rgba(201, 166, 107, 0.22) 0%, rgba(201, 166, 107, 0) 70%);
+    pointer-events: none;
+}
+
+.dh-hero-text {
+    position: relative;
+    z-index: 1;
+    min-width: 240px;
+    flex: 1;
+}
+
+.dh-hero-text .wo-eyebrow {
+    color: #F1D7A8;
+}
+
+.dh-hero-text h1 {
+    font-size: clamp(1.75rem, 2.8vw, 2.35rem);
+    margin: 6px 0 8px;
+    color: #FFFFFF;
+    line-height: 1.12;
+}
+
+.dh-hero-text p {
+    margin: 0;
+    color: rgba(251, 243, 236, 0.86);
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+.dh-hero-text p span {
+    margin: 0 6px;
+    color: #E2BE82;
+}
+
+.dh-countdown {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 220px;
+    padding: 15px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(246, 233, 210, 0.26);
+    border-radius: 16px;
+    backdrop-filter: blur(8px);
+}
+
+.dh-countdown > i {
+    font-size: 1.4rem;
+    color: #F1D7A8;
+}
+
+.dh-countdown span,
+.dh-countdown strong,
+.dh-countdown small {
+    display: block;
+}
+
+.dh-countdown span {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #F1D7A8;
+    font-weight: 700;
+}
+
+.dh-countdown strong {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.3rem;
+    color: #FFFFFF;
+    line-height: 1.2;
+}
+
+.dh-countdown small {
+    font-size: 0.74rem;
+    color: rgba(251, 243, 236, 0.82);
+}
+
+/* Payment Reminder Banner */
+.dh-payment-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    border-radius: var(--wo-radius-lg);
+    background: var(--wo-surface);
+    border: 1px solid var(--wo-border);
+    box-shadow: var(--wo-shadow);
+    border-left: 5px solid var(--wo-gold);
+}
+
+.dh-payment-banner.is-overdue {
+    border-left-color: var(--wo-red-600);
+    background: #FFF9F8;
+}
+
+.dh-payment-banner.is-dp {
+    border-left-color: var(--wo-maroon);
+}
+
+.dh-payment-banner-main {
+    flex: 1;
+    min-width: 240px;
+}
+
+.dh-payment-banner-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.dh-payment-banner h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.32rem;
+    color: var(--wo-maroon);
+    margin: 0 0 4px;
+}
+
+.dh-payment-banner p {
+    margin: 0;
+    font-size: 0.83rem;
+    color: var(--wo-text-muted);
+    line-height: 1.55;
+}
+
+.dh-payment-deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 9px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    background: var(--wo-amber-100);
+    color: var(--wo-gold-bg);
+}
+
+.dh-payment-deadline.overdue {
+    background: var(--wo-red-100);
+    color: var(--wo-red-600);
+}
+
+.dh-payment-banner-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 205px;
+}
+
+.dh-payment-progress-wrap {
+    width: 100%;
+    max-width: 230px;
+}
+
+.dh-payment-progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.74rem;
+    color: var(--wo-text-muted);
+    margin-bottom: 5px;
+}
+
+/* Stat Grid */
+.dh-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.dh-stat-card {
+    min-width: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dh-card-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.25rem;
+    color: var(--wo-maroon);
+    margin: 12px 0 6px;
+    line-height: 1.25;
+}
+
+.dh-card-sub {
+    font-size: 0.82rem;
+    color: var(--wo-text-muted);
+    line-height: 1.55;
+    margin: 0 0 14px;
+}
+
+.dh-progress {
+    display: block;
+    width: 100%;
+    height: 9px;
+    appearance: none;
+    border: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: var(--wo-border);
+}
+
+.dh-progress::-webkit-progress-bar {
+    background: var(--wo-border);
+    border-radius: 999px;
+}
+
+.dh-progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--wo-maroon) 0%, var(--wo-gold) 100%);
+    border-radius: 999px;
+}
+
+.dh-progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--wo-maroon) 0%, var(--wo-gold) 100%);
+    border-radius: 999px;
+}
+
+.dh-stat-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 6px;
+    font-size: 0.78rem;
+    color: var(--wo-text-muted);
+}
+
+.dh-stat-foot strong {
+    color: var(--wo-text);
+}
+
+.dh-stat-card > .wo-link {
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.dh-budget-amount {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.58rem;
+    font-weight: 700;
+    color: var(--wo-maroon);
+    margin: 6px 0 10px;
+    overflow-wrap: anywhere;
+}
+
+.dh-event-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    padding: 6px 0;
+    font-size: 0.82rem;
+    color: var(--wo-text);
+}
+
+.dh-event-summary > i {
+    color: var(--wo-gold);
+    margin-top: 2px;
+}
+
+.dh-event-summary small {
+    display: block;
+    color: var(--wo-text-muted);
+    font-size: 0.74rem;
+    margin-top: 2px;
+}
+
+/* Main + Sidebar Layout */
+.dh-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 18px;
+    align-items: start;
+}
+
+.dh-main,
+.dh-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.dh-content-card {
+    padding: 22px;
+}
+
+.dh-content-card .wo-section-head {
+    margin-bottom: 12px;
+}
+
+.dh-content-card .wo-section-head h2 {
+    font-size: 1.32rem;
+    margin-top: 3px;
+}
+
+.dh-event-list,
+.dh-vendor-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.dh-event-row,
+.dh-vendor-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--wo-border);
+}
+
+.dh-event-row:last-child,
+.dh-vendor-row:last-child {
+    border-bottom: 0;
+}
+
+.dh-date-box {
+    width: 48px;
+    height: 52px;
+    flex: 0 0 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 13px;
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+    border: 1px solid #EBD3D7;
+}
+
+.dh-date-box strong {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.dh-date-box small {
+    font-size: 0.64rem;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.dh-event-info,
+.dh-vendor-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.dh-event-info strong,
+.dh-vendor-info strong {
+    display: block;
+    color: var(--wo-maroon);
+    font-size: 0.88rem;
+}
+
+.dh-event-info span,
+.dh-vendor-info span {
+    display: block;
+    color: var(--wo-text-muted);
+    font-size: 0.76rem;
+    margin-top: 3px;
+}
+
+.dh-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--wo-surface-soft);
+    color: var(--wo-text-muted);
+    font-size: 0.69rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.dh-status-approved,
+.dh-status-completed {
+    background: var(--wo-success-bg);
+    color: var(--wo-success-text);
+}
+
+.dh-status-pending,
+.dh-status-scheduled,
+.dh-status-ongoing {
+    background: var(--wo-amber-100);
+    color: var(--wo-gold-bg);
+}
+
+.dh-status-rejected,
+.dh-status-cancelled {
+    background: var(--wo-red-100);
+    color: var(--wo-red-600);
+}
+
+.dh-vendor-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+    flex: 0 0 38px;
+}
+
+.dh-content-card > .wo-link {
+    margin-top: 12px;
+}
+
+/* Shortcuts */
+.dh-shortcuts {
+    display: flex;
+    flex-direction: column;
+}
+
+.dh-shortcuts a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 12px 4px;
+    border-bottom: 1px solid var(--wo-border);
+    color: var(--wo-text);
+    text-decoration: none;
+    font-size: 0.84rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+}
+
+.dh-shortcuts a:last-child {
+    border-bottom: 0;
+}
+
+.dh-shortcuts a > i:first-child {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.dh-shortcuts a span {
+    flex: 1;
+}
+
+.dh-shortcuts a > i:last-child {
+    color: var(--wo-text-muted);
+    font-size: 0.75rem;
+}
+
+.dh-shortcuts a:hover {
+    color: var(--wo-maroon);
+}
+
+/* Booking Note Card */
+.dh-booking-note {
+    padding: 20px;
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 100%);
+    border: 1px solid rgba(176, 141, 87, 0.35);
+    border-radius: var(--wo-radius-lg);
+    color: #FBF3EC;
+    box-shadow: 0 12px 26px rgba(92, 22, 32, 0.16);
+}
+
+.dh-booking-note strong {
+    display: block;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.22rem;
+    margin: 10px 0 6px;
+    color: #FFFFFF;
+}
+
+.dh-booking-note p {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: rgba(251, 243, 236, 0.84);
+    margin: 0;
+}
+
+/* Empty states */
+.dh-empty-state {
+    max-width: 700px;
+    margin: 12px auto;
+    padding: 36px;
+    text-align: center;
+}
+
+.dh-empty-state h2 {
+    font-size: 1.55rem;
+    margin: 0 0 7px;
+}
+
+.dh-empty-state p {
+    color: var(--wo-text-muted);
+    font-size: 0.88rem;
+    margin: 0 auto 18px;
+    max-width: 480px;
+}
+
+.dh-empty-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+    font-size: 1.3rem;
+}
+
+.dh-inline-empty {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 4px;
+    color: var(--wo-text-muted);
+}
+
+.dh-inline-empty i {
+    color: var(--wo-gold);
+    font-size: 1.1rem;
+}
+
+.dh-inline-empty p {
+    margin: 0;
+    font-size: 0.84rem;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .dh-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dh-layout {
+        grid-template-columns: minmax(0, 1fr) 280px;
+    }
+}
+
+@media (max-width: 860px) {
+    .dh-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .dh-sidebar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dh-payment-banner-actions {
+        width: 100%;
+        align-items: stretch;
+    }
+
+    .dh-payment-progress-wrap {
+        max-width: none;
+    }
+
+    .dh-payment-banner-actions .wo-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .dh-hero {
+        padding: 20px 18px;
+        gap: 14px;
+    }
+
+    .dh-hero-text {
+        min-width: 0;
+    }
+
+    .dh-countdown {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .dh-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dh-sidebar {
+        display: flex;
+    }
+
+    .dh-content-card,
+    .dh-stat-card {
+        padding: 18px 16px;
+    }
+
+    .dh-payment-banner {
+        padding: 16px;
+    }
+
+    .dh-event-row,
+    .dh-vendor-row {
+        gap: 10px;
+    }
+
+    .dh-status {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+    }
+}

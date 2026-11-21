@@ -55,7 +55,7 @@
                     <a href="{{ route('user.package-overview', $package->id) }}" class="ev-card" data-cat="paket" data-name="{{ strtolower($package->name) }}">
                         <div class="ev-card-media">
                             @if ($package->photo)
-                                <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                                <img src="{{ \App\Support\Media::url($package->photo) }}" alt="{{ $package->name }}">
                             @else
                                 <div class="ev-package-no-photo" aria-label="Foto paket belum tersedia"><i class="bi bi-gem"></i></div>
                             @endif
@@ -94,9 +94,9 @@
                 <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="ev-card" data-cat="{{ $vendor->category->name ?? '' }}" data-name="{{ strtolower($vendor->name) }}">
                     <div class="ev-card-media">
                         @php
-                            $coverPhoto = $vendor->photos->where('is_cover', true)->first();
+                            $coverPhoto = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
                             $photoUrl = $coverPhoto
-                                ? asset('storage/' . $coverPhoto->photo)
+                                ? \App\Support\Media::url($coverPhoto->photo)
                                 : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85';
                         @endphp
                         <img src="{{ $photoUrl }}" alt="{{ $vendor->name }}">

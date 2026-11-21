@@ -31,8 +31,8 @@
 .vc-stat strong {
     display: block;
     margin-top: 4px;
-    color: var(--wo-green-900);
-    font-family: "Cormorant Garamond", serif;
+    color: var(--wo-maroon);
+    font-family: "Fraunces", Georgia, serif;
     font-size: 1.8rem;
     line-height: 1;
 }
@@ -94,8 +94,8 @@
 }
 
 .vc-search input:focus {
-    border-color: var(--wo-green-700);
-    box-shadow: 0 0 0 3px rgba(31, 75, 61, 0.1);
+    border-color: var(--wo-maroon);
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.12);
 }
 
 .vc-filters {

@@ -84,7 +84,7 @@
                                     @endphp
 
                                     @if ($coverPhoto)
-                                        <img src="{{ asset('storage/' . $coverPhoto->photo) }}" alt="{{ $vendor->name }}">
+                                        <img src="{{ \App\Support\Media::url($coverPhoto->photo) }}" alt="{{ $vendor->name }}">
                                     @else
                                         <div class="vendor-no-image">
                                             <span>📷</span>

@@ -12,20 +12,21 @@ class VendorConfirmationController extends Controller
     {
         $client = Client::where('users_id', Auth::id())->first();
 
-        $approvedBookings = $client
+        $activeBookings = $client
             ? $client->bookings()
-                ->where('status', 'approved')
+                ->whereIn('status', ['approved', 'pending'])
                 ->with([
                     'events' => fn ($query) => $query->orderBy('id'),
                     'events.package',
                     'events.schedules.vendor.category',
                     'events.schedules.vendor.photos',
                 ])
-                ->oldest('id')
+                ->orderByRaw("CASE WHEN status = 'approved' THEN 0 ELSE 1 END")
+                ->latest('id')
                 ->get()
             : collect();
 
-        $firstBooking = $approvedBookings->first(function ($booking) {
+        $firstBooking = $activeBookings->first(function ($booking) {
             $firstEvent = $booking->events->sortBy('id')->first();
 
             return ! $firstEvent || $firstEvent->status !== 'completed';

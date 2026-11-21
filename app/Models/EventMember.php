@@ -54,9 +54,11 @@ class EventMember extends Model
     {
         $role = strtolower(trim((string) $this->role));
 
-        return str_contains($role, 'coordinator')
-            || str_contains($role, 'director')
-            || str_contains($role, 'lead');
+        return in_array($role, [
+            'lead coordinator',
+            'coordinator',
+            'koordinator utama',
+        ], true);
     }
 
     public function calculateTotalFee(): float

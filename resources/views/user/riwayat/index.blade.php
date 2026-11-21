@@ -79,7 +79,7 @@
                     @empty
                         <p class="history-muted">Booking ini belum memiliki rincian acara.</p>
                     @endforelse
-                    <div class="history-card-bottom"><div><span>Total booking</span><strong>Rp {{ number_format((float) $booking->total_price, 0, ',', '.') }}</strong></div><div class="history-actions"><a class="wo-btn wo-btn-outline wo-btn-sm" href="{{ route('payment.index', $booking->id) }}">Invoice &amp; Pembayaran <i class="bi bi-receipt"></i></a><a class="wo-btn wo-btn-outline wo-btn-sm" href="{{ route('user.history.show', $booking) }}">Lihat Detail <i class="bi bi-arrow-right"></i></a></div></div>
+                    <div class="history-card-bottom"><div><span>Total booking</span><strong>Rp {{ number_format((float) $booking->total_price, 0, ',', '.') }}</strong></div><div class="history-actions"><a class="wo-btn {{ $isPaid ? 'wo-btn-outline' : 'wo-btn-dark' }} wo-btn-sm" href="{{ route('user.history.show', $booking) }}">{{ $isPaid ? 'Lihat Invoice' : 'Invoice & Bayar' }} <i class="bi bi-arrow-right"></i></a></div></div>
                 </article>
             @endforeach
         </div>

@@ -109,7 +109,7 @@
                     </div>
                     <progress class="dh-progress" max="100" value="{{ $paymentSummary['percent_paid'] }}"></progress>
                 </div>
-                <a href="{{ route('payment.index', $paymentBooking->id) }}" class="wo-btn wo-btn-dark">
+                <a href="{{ route('user.history.show', $paymentBooking->id) }}#bayar" class="wo-btn wo-btn-dark">
                     <i class="bi bi-credit-card"></i>
                     {{ $pStatus === 'dp_paid' ? 'Lunasi Sekarang' : 'Bayar DP / Lunas' }}
                 </a>
@@ -146,14 +146,14 @@
             <article class="wo-card dh-stat-card">
                 <span class="wo-badge wo-badge-green">Kesiapan Vendor</span>
                 @if($bookingSummary?->status === 'approved')
-                    <h2 class="dh-card-title">{{ $vendorReadiness['percent'] }}% terkonfirmasi</h2>
-                    <p class="dh-card-sub">{{ $vendorReadiness['confirmed'] }} dari {{ $vendorReadiness['total'] }} vendor pada acara ini sudah disetujui.</p>
+                    <h2 class="dh-card-title">{{ $vendorReadiness['percent'] }}% terjadwal</h2>
+                    <p class="dh-card-sub">{{ $vendorReadiness['confirmed'] }} dari {{ $vendorReadiness['total'] }} vendor pada acara ini telah dijadwalkan oleh Tim WO.</p>
                     <progress class="dh-progress" max="100" value="{{ $vendorReadiness['percent'] }}" aria-label="Kesiapan vendor {{ $vendorReadiness['percent'] }} persen"></progress>
-                    <div class="dh-stat-foot"><span>{{ $vendorReadiness['waiting'] }} menunggu</span><span>{{ $vendorReadiness['review'] }} ditolak</span></div>
+                    <div class="dh-stat-foot"><span>{{ $vendorReadiness['waiting'] }} menunggu</span><span>{{ $vendorReadiness['review'] }} terkendala</span></div>
                 @else
-                    <p class="dh-card-sub">Data vendor akan tampil setelah booking disetujui.</p>
+                    <p class="dh-card-sub">Data vendor akan tampil setelah booking disetujui Admin.</p>
                 @endif
-                <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Kelola vendor <i class="bi bi-arrow-right"></i></a>
+                <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Lihat status &amp; jadwal vendor <i class="bi bi-arrow-right"></i></a>
             </article>
 
             <article class="wo-card dh-stat-card">
@@ -224,7 +224,7 @@
                             @endforeach
                         </div>
                     @endif
-                    <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Lihat konfirmasi vendor <i class="bi bi-arrow-right"></i></a>
+                    <a href="{{ route('user.vendor-confirmation') }}" class="wo-link">Lihat status &amp; jadwal vendor <i class="bi bi-arrow-right"></i></a>
                 </article>
             </section>
 
@@ -233,7 +233,7 @@
                     <div class="wo-section-head"><div><span class="wo-eyebrow">Navigasi Cepat</span><h2>Kelola Acara</h2></div></div>
                     <nav class="dh-shortcuts">
                         <a href="{{ route('user.rundown') }}"><i class="bi bi-calendar3"></i><span>Rundown Timeline</span><i class="bi bi-chevron-right"></i></a>
-                        <a href="{{ route('user.vendor-confirmation') }}"><i class="bi bi-patch-check"></i><span>Konfirmasi Vendor</span><i class="bi bi-chevron-right"></i></a>
+                        <a href="{{ route('user.vendor-confirmation') }}"><i class="bi bi-patch-check"></i><span>Status &amp; Jadwal Vendor</span><i class="bi bi-chevron-right"></i></a>
                         <a href="{{ route('user.history.index') }}"><i class="bi bi-clock-history"></i><span>Riwayat Pembelian</span><i class="bi bi-chevron-right"></i></a>
                         <a href="{{ route('user.reviews.index') }}"><i class="bi bi-star"></i><span>Ulasan</span><i class="bi bi-chevron-right"></i></a>
                     </nav>

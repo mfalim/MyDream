@@ -44,9 +44,13 @@
                                 <x-site.badge variant="gold">Paket</x-site.badge>
                                 <a href="{{ route('catalog.show', $package->slug) }}" class="mt-2 block font-display text-xl font-semibold hover:text-maroon">{{ $package->name }}</a>
                                 <p class="mt-1 text-sm text-ink/60">
-                                    {{ $package->guest_capacity ? 'Kapasitas ' . $package->guest_capacity . ' tamu' : 'Kapasitas fleksibel' }}
+                                    {{ $package->guest_capacity ? 'Kapasitas ' . number_format($package->guest_capacity, 0, ',', '.') . ' tamu' : 'Kapasitas fleksibel' }}
+                                    @if ($package->event_period) · {{ $package->event_period }} @endif
                                     · {{ $package->vendors->count() }} vendor
                                 </p>
+                                @if ($package->description)
+                                    <p class="mt-2 line-clamp-2 text-xs text-ink/60">{{ $package->description }}</p>
+                                @endif
                             </div>
                             <form action="{{ route('user.cart.clear') }}" method="POST">
                                 @csrf
@@ -56,10 +60,20 @@
                         </div>
                         <ul class="divide-y divide-black/5 border-t border-black/5 bg-cream-dark/40">
                             @foreach ($vendors as $vendor)
-                                <li class="flex items-center gap-4 px-5 py-3 text-sm">
-                                    <div class="min-w-0">
+                                @php
+                                    $vPhoto = $vendor->photos->first()?->photo ?? $vendor->photo;
+                                @endphp
+                                <li class="flex items-center gap-3 px-5 py-3 text-sm">
+                                    <img src="{{ \App\Support\Media::url($vPhoto) }}" alt="{{ $vendor->name }}" class="h-11 w-11 shrink-0 rounded-xl object-cover">
+                                    <div class="min-w-0 flex-1">
                                         <span class="text-xs font-medium uppercase tracking-wide text-emerald">{{ $vendor->category?->name ?? 'Vendor' }}</span>
-                                        <p class="truncate font-medium">{{ $vendor->name }}</p>
+                                        <a href="{{ route('vendor.show', $vendor->slug) }}" class="block truncate font-medium hover:text-maroon">{{ $vendor->name }}</a>
+                                        <p class="truncate text-xs text-ink/50">
+                                            {{ $vendor->city ?: \Illuminate\Support\Str::limit((string) $vendor->address, 45) }}
+                                            @if ($vendor->isCatering() && (int) $vendor->guest_capacity > 0)
+                                                · Kapasitas s.d. {{ number_format($vendor->guest_capacity, 0, ',', '.') }} tamu
+                                            @endif
+                                        </p>
                                     </div>
                                 </li>
                             @endforeach
@@ -80,7 +94,15 @@
                             <div class="min-w-0 flex-1">
                                 <x-site.badge variant="category">{{ $vendor->category?->name ?? 'Vendor' }}</x-site.badge>
                                 <a href="{{ route('vendor.show', $vendor->slug) }}" class="mt-1.5 block truncate font-display text-base font-semibold hover:text-maroon">{{ $vendor->name }}</a>
-                                <p class="truncate text-xs text-ink/50">{{ $vendor->city ?: \Illuminate\Support\Str::limit((string) $vendor->address, 40) }}</p>
+                                <p class="truncate text-xs text-ink/50">
+                                    {{ $vendor->city ?: \Illuminate\Support\Str::limit((string) $vendor->address, 40) }}
+                                    @if ($vendor->isCatering() && (int) $vendor->guest_capacity > 0)
+                                        · Kapasitas s.d. {{ number_format($vendor->guest_capacity, 0, ',', '.') }} tamu
+                                    @endif
+                                </p>
+                                @if ($vendor->description)
+                                    <p class="mt-1 line-clamp-1 text-xs text-ink/55">{{ $vendor->description }}</p>
+                                @endif
                             </div>
                             <div class="shrink-0">
                                 <form action="{{ route('user.cart.remove', $vendor->id) }}" method="POST" class="mt-1">
@@ -116,10 +138,16 @@
                 <aside class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
                     <h2 class="font-display text-lg font-semibold">Ringkasan Biaya</h2>
                     <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-ink/60">{{ $isPackage ? 'Paket' : 'Vendor' }}</span>
-                            <span>{{ $isPackage ? '1 paket · ' . $vendors->count() . ' vendor' : $vendors->count() . ' vendor' }}</span>
+                        <div class="flex justify-between gap-2">
+                            <span class="text-ink/60">{{ $isPackage ? 'Paket dipilih' : 'Vendor dipilih' }}</span>
+                            <span class="text-right font-medium">{{ $isPackage ? $package->name . ' (' . $vendors->count() . ' vendor)' : $vendors->count() . ' vendor' }}</span>
                         </div>
+                        @if ($isPackage && $package->guest_capacity)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-ink/60">Kapasitas</span>
+                                <span>Maks. {{ number_format($package->guest_capacity, 0, ',', '.') }} tamu</span>
+                            </div>
+                        @endif
                         @if ($isPackage || $vendors->count() >= $minVendors)
                             <div class="flex items-center justify-between border-t border-black/5 pt-3">
                                 <span class="font-semibold">Total</span>

@@ -131,7 +131,7 @@
                 @php
                     $mainPhoto = $coverPhoto ?? $vendor->photos->first();
                     $photoUrl = $mainPhoto
-                        ? asset('storage/' . $mainPhoto->photo)
+                        ? \App\Support\Media::url($mainPhoto->photo)
                         : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1400&q=85';
                 @endphp
                 <img src="{{ $photoUrl }}" alt="{{ $vendor->name }}">
@@ -147,13 +147,13 @@
             <div class="gallery-small">
                 @foreach ($otherPhotos->take(3) as $photo)
                     <div>
-                        <img src="{{ asset('storage/' . $photo->photo) }}" alt="">
+                        <img src="{{ \App\Support\Media::url($photo->photo) }}" alt="">
                     </div>
                 @endforeach
 
                 @if ($otherPhotos->count() > 3)
                     <div>
-                        <img src="{{ asset('storage/' . $otherPhotos->skip(3)->first()->photo) }}" alt="">
+                        <img src="{{ \App\Support\Media::url($otherPhotos->skip(3)->first()->photo) }}" alt="">
                         <span class="gallery-more">
                             <i class="bi bi-images"></i>
                             Lihat Semua Foto ({{ $vendor->photos->count() }})

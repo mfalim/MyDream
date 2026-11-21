@@ -62,7 +62,8 @@ class RiwayatController extends Controller
     public function show(int $booking)
     {
         $client = Client::where('users_id', auth()->id())->firstOrFail();
-        $booking = $this->approvedBookings($client)
+        $booking = Booking::query()
+            ->where('client_id', $client->id)
             ->with([
                 'package',
                 'payments' => fn ($q) => $q->orderByDesc('created_at')->orderByDesc('id'),
@@ -79,6 +80,61 @@ class RiwayatController extends Controller
             'payments.events',
         ]);
 
-        return view('user.riwayat.show', compact('booking'));
+        $paymentSummary = $booking->paymentSummary();
+        $options = $booking->status === 'rejected' ? [] : $this->paymentOptions($booking);
+        $snapClientKey = config('services.midtrans.client_key');
+        $snapScriptUrl = config('services.midtrans.is_production')
+            ? 'https://app.midtrans.com/snap/snap.js'
+            : 'https://app.sandbox.midtrans.com/snap/snap.js';
+
+        return view('user.riwayat.show', compact(
+            'booking',
+            'paymentSummary',
+            'options',
+            'snapClientKey',
+            'snapScriptUrl'
+        ));
+    }
+
+    private function paymentOptions(Booking $booking): array
+    {
+        $total = (float) $booking->total_price;
+        $paid = (float) $booking->paid_amount;
+        $remaining = max(0, $total - $paid);
+        $percent = max(1, min(100, (int) config('mydream.dp_percent', 10)));
+
+        if ($total <= 0 || $remaining <= 0) {
+            return [];
+        }
+
+        if ($paid <= 0) {
+            $dpAmount = min((int) ceil($total * $percent / 100), (int) round($remaining));
+
+            $options = [
+                'dp' => [
+                    'label' => "DP {$percent}%",
+                    'amount' => $dpAmount,
+                    'note' => 'Kunci tanggal sekarang, sisanya dilunasi sebelum hari acara.',
+                ],
+            ];
+
+            if ($dpAmount < (int) round($remaining)) {
+                $options['full'] = [
+                    'label' => 'Bayar Lunas',
+                    'amount' => (int) round($remaining),
+                    'note' => 'Langsung lunasi seluruh tagihan dalam satu transaksi.',
+                ];
+            }
+
+            return $options;
+        }
+
+        return [
+            'remaining' => [
+                'label' => 'Pelunasan Sisa',
+                'amount' => (int) round($remaining),
+                'note' => 'Lunasi sisa tagihan agar seluruh jadwal vendor terkunci penuh.',
+            ],
+        ];
     }
 }

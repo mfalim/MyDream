@@ -33,6 +33,7 @@ Route::prefix('member')->name('member.')->middleware(['auth', EnsureUserRole::cl
     Route::get('/profile/complete', [MemberProfileController::class, 'showCompleteForm'])->name('profile.complete');
     Route::post('/profile/complete', [MemberProfileController::class, 'storeProfile'])->name('profile.store');
     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/status', [MemberDashboardController::class, 'updateAvailabilityStatus'])->name('status.update');
     Route::post('/dashboard/schedule/{id}/status', [MemberDashboardController::class, 'updateScheduleStatus'])->name('schedule.status');
     Route::post('/dashboard/schedule/{id}/assign', [MemberDashboardController::class, 'assignScheduleMember'])->name('schedule.assign');
     Route::post('/dashboard/event/{eventId}/member/{memberId}/attendance', [MemberDashboardController::class, 'updateTeamAttendance'])->name('event.attendance');

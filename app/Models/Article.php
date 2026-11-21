@@ -26,6 +26,12 @@ class Article extends Model
     protected $casts = [
         'published_at' => 'date',
         'is_published' => 'boolean',
+        'rating' => 'integer',
+    ];
+
+    protected $appends = [
+        'date_label',
+        'summary',
     ];
 
     protected static function booted(): void

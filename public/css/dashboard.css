@@ -1,18 +1,24 @@
 /* public/css/dashboard.css */
-/* Layout shell (sidebar + content) dipakai oleh SEMUA halaman user via user.layouts.app */
+/* Layout shell (sidebar + mobile drawer + content) selaras dengan tema Landing Page MyDream (Maroon, Cream, Gold) */
 
 :root {
-    --wo-green-900: #16302a;
-    --wo-green-700: #1f4b3d;
-    --wo-green-100: #e7f1ea;
-    --wo-gold: #8a6a3b;
-    --wo-gold-bg: #4b3621;
-    --wo-bg: #f2f6f3;
-    --wo-surface: #ffffff;
-    --wo-surface-cream: #fdfbf6;
-    --wo-text: #212a24;
-    --wo-text-muted: #6d7972;
-    --wo-border: #e7e0d6;
+    --wo-maroon: #7A1F2B;
+    --wo-maroon-dark: #5C1620;
+    --wo-maroon-light: #F4E4E6;
+    --wo-green-900: #7A1F2B;
+    --wo-green-700: #5C1620;
+    --wo-green-100: #F4E4E6;
+    --wo-gold: #B08D57;
+    --wo-gold-bg: #6B4E23;
+    --wo-bg: #FBF3EC;
+    --wo-bg-warm: #F3E6D8;
+    --wo-surface: #FFFFFF;
+    --wo-surface-cream: #FFFDFB;
+    --wo-text: #2B211C;
+    --wo-text-muted: #7A6760;
+    --wo-border: #E8D8CC;
+    --wo-font-display: "Fraunces", Georgia, serif;
+    --wo-font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
 }
 
 * {
@@ -21,20 +27,99 @@
 
 body {
     margin: 0;
-    font-family: "DM Sans", sans-serif;
+    font-family: var(--wo-font-sans);
     color: var(--wo-text);
     background: var(--wo-bg);
+    -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
 h3,
 h4 {
-    font-family: "Cormorant Garamond", serif;
+    font-family: var(--wo-font-display);
 }
 
 a {
     color: inherit;
+}
+
+/* ===== Mobile Topbar (hidden on desktop) ===== */
+.mobile-topbar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 35;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255, 253, 251, 0.94);
+    border-bottom: 1px solid var(--wo-border);
+    backdrop-filter: blur(10px);
+}
+
+.mobile-menu-btn,
+.mobile-home-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--wo-border);
+    background: var(--wo-surface);
+    color: var(--wo-maroon);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    text-decoration: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.mobile-menu-btn:hover,
+.mobile-home-btn:hover {
+    background: var(--wo-maroon-light);
+    border-color: #DFC0C5;
+    color: var(--wo-maroon-dark);
+}
+
+.mobile-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--wo-maroon);
+}
+
+.mobile-brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 100%);
+    color: #F6E9D2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.92rem;
+}
+
+.mobile-brand strong {
+    display: block;
+    font-family: var(--wo-font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--wo-maroon);
+}
+
+.mobile-brand small {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--wo-gold);
+    font-weight: 700;
 }
 
 /* ===== Shell ===== */
@@ -42,10 +127,11 @@ a {
     display: flex;
     align-items: stretch;
     min-height: 100vh;
-    background: var(--wo-bg);
+    background:
+        radial-gradient(circle at top right, rgba(244, 228, 230, 0.55) 0%, rgba(251, 243, 236, 0) 38%),
+        var(--wo-bg);
 }
 
-/* Setiap halaman konten (mis. <main class="wo-page">) jadi kolom kedua di sebelah sidebar */
 .dashboard-shell > main {
     flex: 1;
     min-width: 0;
@@ -55,8 +141,13 @@ a {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(22, 48, 42, 0.45);
-    z-index: 40;
+    background: rgba(43, 33, 28, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 45;
+}
+
+.sidebar-overlay.show {
+    display: block;
 }
 
 /* ===== Sidebar ===== */
@@ -65,10 +156,10 @@ a {
     flex-shrink: 0;
     background: var(--wo-surface-cream);
     border-right: 1px solid var(--wo-border);
-    padding: 26px 20px;
+    padding: 24px 18px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
     position: sticky;
     top: 0;
     height: 100vh;
@@ -80,43 +171,72 @@ a {
 .brand-block {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 18px;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--wo-border);
 }
 
+.brand-block-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .brand-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--wo-green-900);
-    color: #f0e6d2;
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 100%);
+    color: #F6E9D2;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1rem;
     flex-shrink: 0;
+    box-shadow: 0 8px 18px rgba(122, 31, 43, 0.2);
 }
 
 .brand-name {
-    font-family: "Cormorant Garamond", serif;
+    font-family: var(--wo-font-display);
     font-weight: 700;
-    font-size: 1.05rem;
-    color: var(--wo-green-900);
-    line-height: 1.2;
+    font-size: 1.3rem;
+    color: var(--wo-maroon);
+    line-height: 1.05;
 }
 
 .brand-subtitle {
     font-size: 0.66rem;
-    letter-spacing: 0.08em;
-    color: var(--wo-text-muted);
+    letter-spacing: 0.12em;
+    color: var(--wo-gold);
+    font-weight: 700;
     text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.sidebar-close-btn {
+    display: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid var(--wo-border);
+    background: var(--wo-surface);
+    color: var(--wo-text-muted);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.sidebar-close-btn:hover {
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
 }
 
 /* Client card */
 .client-card {
-    background: var(--wo-green-100);
-    border-radius: 14px;
+    background: linear-gradient(135deg, #FBF3EC 0%, #F4E4E6 100%);
+    border: 1px solid #EAD3D6;
+    border-radius: 16px;
     padding: 14px 16px;
 }
 
@@ -124,21 +244,33 @@ a {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     font-size: 0.7rem;
-    color: var(--wo-green-700);
-    margin-bottom: 6px;
+    color: var(--wo-gold-bg);
+    margin-bottom: 4px;
+}
+
+.client-card-top span {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
 }
 
 .client-card-top strong {
-    color: var(--wo-green-900);
+    color: var(--wo-maroon);
     font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .client-name {
-    font-family: "Cormorant Garamond", serif;
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--wo-green-900);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--wo-text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Navigation */
@@ -149,50 +281,69 @@ a {
     flex: 1;
 }
 
+.sidebar-divider {
+    height: 1px;
+    background: var(--wo-border);
+    margin: 8px 4px;
+}
+
 .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 11px 14px;
     border-radius: 12px;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 600;
     color: var(--wo-text-muted);
     text-decoration: none;
-    transition:
-        background 0.15s ease,
-        color 0.15s ease;
+    transition: background 0.16s ease, color 0.16s ease;
 }
 
 .nav-item i {
-    font-size: 1.05rem;
+    font-size: 1.02rem;
     width: 20px;
     text-align: center;
     flex-shrink: 0;
 }
 
 .nav-item:hover {
-    background: var(--wo-green-100);
-    color: var(--wo-green-900);
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
     text-decoration: none;
 }
 
 .nav-item.active {
-    background: var(--wo-green-900);
-    color: #fff;
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 100%);
+    color: #FFFFFF;
+    box-shadow: 0 8px 18px rgba(122, 31, 43, 0.18);
 }
 
-/* Wedding Director box */
+.nav-item-logout {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #A4352E;
+}
+
+.nav-item-logout:hover {
+    background: #FBE4E2;
+    color: #8A241E;
+}
+
+/* Wedding Concierge box */
 .sidebar-director {
-    background: var(--wo-surface);
+    background: var(--wo-bg);
     border: 1px solid var(--wo-border);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 16px;
 }
 
 .sidebar-director .eyebrow {
     font-size: 0.68rem;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--wo-gold);
     font-weight: 700;
@@ -200,42 +351,60 @@ a {
 }
 
 .sidebar-director p {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--wo-text-muted);
     margin: 0 0 12px;
-    line-height: 1.45;
+    line-height: 1.5;
 }
 
 .btn-director {
-    background: var(--wo-green-900);
-    color: #fff;
+    background: var(--wo-maroon);
+    color: #FFFFFF;
     border: none;
     border-radius: 999px;
     padding: 10px 14px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    text-decoration: none;
+    transition: background 0.16s ease;
 }
 
 .btn-director:hover {
-    background: var(--wo-green-700);
-    color: #fff;
+    background: var(--wo-maroon-dark);
+    color: #FFFFFF;
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive Mobile Drawer ===== */
 @media (max-width: 992px) {
+    .mobile-topbar {
+        display: flex;
+    }
+
     .dashboard-shell {
         flex-direction: column;
     }
 
     .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        border-right: none;
-        border-bottom: 1px solid var(--wo-border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: min(300px, 85vw);
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 20px 50px rgba(43, 33, 28, 0.24);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-close-btn {
+        display: inline-flex;
     }
 }

@@ -96,7 +96,7 @@
         <section class="overview-gallery">
             <div class="gallery-main">
                 @if ($package->photo)
-                    <img src="{{ asset('storage/' . $package->photo) }}" alt="{{ $package->name }}">
+                    <img src="{{ \App\Support\Media::url($package->photo) }}" alt="{{ $package->name }}">
                 @else
                     <div class="ev-package-no-photo" aria-label="Foto paket belum tersedia"><i class="bi bi-gem"></i></div>
                 @endif
@@ -110,9 +110,9 @@
             <div class="gallery-small">
                 @foreach ($package->vendors->take(4) as $vendor)
                     @php
-                        $vendorPhoto = $vendor->photos->where('is_cover', true)->first();
+                        $vendorPhoto = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
                         $vendorPhotoUrl = $vendorPhoto
-                            ? asset('storage/' . $vendorPhoto->photo)
+                            ? \App\Support\Media::url($vendorPhoto->photo)
                             : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=400&q=85';
                     @endphp
                     <div>
@@ -151,9 +151,9 @@
                         <a href="{{ route('user.vendor-overview', $vendor->id) }}" class="package-card" style="display: block; color: inherit; text-decoration: none;">
                             <div style="display: flex; gap: 20px; align-items: start;">
                                 @php
-                                    $vendorPhoto = $vendor->photos->where('is_cover', true)->first();
+                                    $vendorPhoto = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
                                     $vendorPhotoUrl = $vendorPhoto
-                                        ? asset('storage/' . $vendorPhoto->photo)
+                                        ? \App\Support\Media::url($vendorPhoto->photo)
                                         : 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=300&q=85';
                                 @endphp
                                 <img src="{{ $vendorPhotoUrl }}" alt="{{ $vendor->name }}" style="width: 120px; height: 120px; border-radius: 8px; object-fit: cover;">

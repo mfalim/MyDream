@@ -15,8 +15,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Plus Jakarta Sans", sans-serif;
-    color: #16302a;
-    background: #f3f6f4;
+    color: var(--wo-text, #2B211C);
+    background: var(--wo-bg, #FBF3EC);
 }
 
 body {
@@ -1240,21 +1240,327 @@ body {
    15. AKHIR CSS
 ===================================================== */
 
-/* Admin-aligned vendor theme */
+/* =====================================================
+   MyDream Landing-Page Theme (Maroon, Cream, Gold)
+   ===================================================== */
+.vendor-main-shell {
+    min-height: 100vh;
+}
+
+.vendor-topbar-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--wo-border);
+}
+
+.vendor-topbar-title {
+    display: block;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.2rem;
+    color: var(--wo-maroon);
+    margin-top: 2px;
+}
+
+.vendor-topbar-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--wo-surface);
+    border: 1px solid var(--wo-border);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--wo-text);
+}
+
+.vendor-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--wo-success-text, #2E7D4F);
+}
+
+.vendor-hero-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 26px 28px;
+    margin-bottom: 22px;
+    border-radius: var(--wo-radius-lg);
+    background: linear-gradient(135deg, #5C1620 0%, #7A1F2B 54%, #922B39 100%);
+    border: 1px solid rgba(176, 141, 87, 0.35);
+    box-shadow: 0 16px 34px rgba(92, 22, 32, 0.18);
+    overflow: hidden;
+}
+
+.vendor-hero-banner::before {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: -50px;
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    border: 1px solid rgba(246, 233, 210, 0.18);
+    background: radial-gradient(circle, rgba(201, 166, 107, 0.22) 0%, rgba(201, 166, 107, 0) 70%);
+    pointer-events: none;
+}
+
+.vendor-hero-copy {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    min-width: 230px;
+}
+
+.vendor-hero-copy .wo-eyebrow {
+    color: #F1D7A8;
+}
+
+.vendor-hero-copy h1 {
+    color: #FFFFFF;
+    font-size: clamp(1.7rem, 2.7vw, 2.25rem);
+    margin: 6px 0 8px;
+    line-height: 1.12;
+}
+
+.vendor-hero-copy p {
+    margin: 0;
+    color: rgba(251, 243, 236, 0.86);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.vendor-hero-actions {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.vendor-hero-btn-light {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #FBF3EC !important;
+    border: 1px solid rgba(246, 233, 210, 0.32) !important;
+}
+
+.vendor-hero-btn-light:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+    color: #FFFFFF !important;
+}
+
+.vendor-hero-btn-gold {
+    background: #F6E9D2 !important;
+    color: #5C1620 !important;
+}
+
+.vendor-hero-btn-gold:hover {
+    background: #FFFFFF !important;
+    color: #5C1620 !important;
+}
+
+.vendor-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.vendor-kpi-card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.vendor-kpi-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    margin-bottom: 6px;
+}
+
+.vendor-kpi-icon.is-success {
+    background: var(--wo-success-bg);
+    color: var(--wo-success-text);
+}
+
+.vendor-kpi-icon.is-gold {
+    background: var(--wo-amber-100);
+    color: var(--wo-gold-bg);
+}
+
+.vendor-kpi-icon.is-maroon {
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+}
+
+.vendor-kpi-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--wo-gold);
+}
+
+.vendor-kpi-value {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+    color: var(--wo-maroon);
+    line-height: 1.15;
+}
+
+.vendor-kpi-card small {
+    font-size: 0.78rem;
+    color: var(--wo-text-muted);
+}
+
+.vendor-bank-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #FBF3EC 100%);
+}
+
+.vendor-bank-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+}
+
+.vendor-bank-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.vendor-bank-info strong {
+    display: block;
+    color: var(--wo-maroon);
+    font-size: 0.96rem;
+    margin-top: 2px;
+}
+
+.vendor-bank-info small {
+    display: block;
+    color: var(--wo-text-muted);
+    font-size: 0.8rem;
+}
+
+.vendor-filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.vendor-filter-pill {
+    padding: 6px 13px;
+    border-radius: 999px;
+    border: 1px solid var(--wo-border);
+    background: var(--wo-surface-soft);
+    color: var(--wo-text-muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.vendor-filter-pill:hover {
+    border-color: var(--wo-maroon);
+    color: var(--wo-maroon);
+}
+
+.vendor-filter-pill.is-active {
+    background: var(--wo-maroon);
+    border-color: var(--wo-maroon);
+    color: #FFFFFF;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.stat-card h2 {
+    color: var(--wo-maroon);
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 2rem;
+    margin: 8px 0 6px;
+    line-height: 1.1;
+}
+
+.stat-card h2.stat-money {
+    font-size: 1.45rem;
+}
+
+.stat-card p {
+    margin: 0;
+    color: var(--wo-text-muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.stat-card .mini-stats {
+    margin-top: 10px;
+}
+
+.stat-card .mini-stats strong {
+    color: var(--wo-maroon);
+    font-family: "Fraunces", Georgia, serif;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Override legacy green colors on Kalender, Tracking, Profil & Edit views */
 .eyebrow,
 .calendar-header > div > span,
 .tracking-page > div:first-child span,
 .profile-page > div:first-child span,
 .stat-card > span {
-    color: #b89758;
+    color: var(--wo-gold);
 }
 
 .page-header h1,
 .calendar-header h1,
 .tracking-page > div:first-child h1,
-.profile-page > div:first-child h1 {
-    color: #073d36;
-    font-family: "Playfair Display", Georgia, serif;
+.profile-page > div:first-child h1,
+.panel h2,
+.panel h3 {
+    color: var(--wo-maroon);
+    font-family: "Fraunces", Georgia, serif;
 }
 
 .panel,
@@ -1262,9 +1568,10 @@ body {
 .event-detail,
 .tracking-page > div:nth-child(3),
 .profile-page .panel {
-    border-color: #e8e1d5;
-    border-radius: 14px;
-    box-shadow: 0 3px 12px rgba(7, 61, 54, 0.04);
+    background: var(--wo-surface);
+    border-color: var(--wo-border);
+    border-radius: var(--wo-radius-lg);
+    box-shadow: var(--wo-shadow);
 }
 
 .btn-primary,
@@ -1272,18 +1579,39 @@ body {
 .calendar-day > a:first-child:hover,
 .filter-pills > span.active,
 .profile-page > div:first-child a {
-    background: #073d36;
-    border-color: #073d36;
+    background: var(--wo-maroon) !important;
+    border-color: var(--wo-maroon) !important;
+    color: #FFFFFF !important;
 }
 
 .btn-primary:hover,
 .calendar-filter button:hover,
 .profile-page > div:first-child a:hover {
-    background: #166358 !important;
+    background: var(--wo-maroon-dark) !important;
+    border-color: var(--wo-maroon-dark) !important;
+}
+
+.calendar-day.today,
+.calendar-day.has-event {
+    border-color: var(--wo-maroon) !important;
+    background: var(--wo-maroon-light) !important;
+}
+
+@media (max-width: 1100px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .vendor-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 992px) {
-    .stats-grid,
+    .vendor-topbar-strip {
+        display: none;
+    }
+
     .tracking-page > div:nth-child(2) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -1293,30 +1621,36 @@ body {
     }
 }
 
-@media (max-width: 600px) {
-    .page-header,
-    .calendar-header {
-        align-items: flex-start;
-        flex-direction: column;
+@media (max-width: 640px) {
+    .vendor-hero-banner {
+        padding: 20px 18px;
     }
 
-    .header-actions {
-        justify-content: flex-start;
-        flex-wrap: wrap;
+    .vendor-hero-actions {
+        width: 100%;
+    }
+
+    .vendor-hero-actions .wo-btn {
+        flex: 1;
     }
 
     .stats-grid,
+    .vendor-kpi-grid,
     .tracking-page > div:nth-child(2) {
         grid-template-columns: minmax(0, 1fr);
     }
 
+    .page-header,
+    .calendar-header,
     .panel-header,
     .pipeline-panel .panel-header {
         align-items: flex-start;
         flex-direction: column;
     }
 
+    .header-actions,
     .filter-pills {
         justify-content: flex-start;
+        flex-wrap: wrap;
     }
 }

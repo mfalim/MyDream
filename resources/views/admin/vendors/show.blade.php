@@ -87,7 +87,7 @@
 
                     @if ($coverPhoto)
                         <img id="mainVendorPhoto"
-                            src="{{ asset('storage/' . $coverPhoto->photo) }}"
+                            src="{{ \App\Support\Media::url($coverPhoto->photo) }}"
                             alt="{{ $vendor->name }}">
                     @else
                         <div class="vendor-no-main-photo">
@@ -108,11 +108,11 @@
                             <button type="button"
                                 class="vendor-thumbnail {{ $coverPhoto?->id === $photo->id ? 'active' : '' }}"
                                 onclick="changeVendorPhoto(
-                                    '{{ asset('storage/' . $photo->photo) }}',
+                                    '{{ \App\Support\Media::url($photo->photo) }}',
                                     this
                                 )">
 
-                                <img src="{{ asset('storage/' . $photo->photo) }}"
+                                <img src="{{ \App\Support\Media::url($photo->photo) }}"
                                     alt="Foto {{ $vendor->name }}">
 
                             </button>

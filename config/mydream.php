@@ -13,6 +13,9 @@ return [
     // Persentase DP minimum (ubah lewat .env: MYDREAM_DP_PERCENT=30).
     'dp_percent' => (int) env('MYDREAM_DP_PERCENT', 10),
 
+    // Persentase komisi/diskon kemitraan vendor untuk WO (default 15%, sehingga agreed_fee = 85% dari harga katalog).
+    'vendor_commission_percent' => (int) env('MYDREAM_VENDOR_COMMISSION_PERCENT', 15),
+
     // Batas waktu pembayaran DP awal setelah booking dibuat (dalam jam).
     'dp_deadline_hours' => (int) env('MYDREAM_DP_DEADLINE_HOURS', 24),
 

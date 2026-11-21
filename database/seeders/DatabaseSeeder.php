@@ -477,7 +477,6 @@ class DatabaseSeeder extends Seeder
                 'start_time' => $sData['start_time'],
                 'end_time' => $sData['end_time'],
                 'price' => $sData['price'],
-                'agreed_fee' => $sData['price'],
                 'paid_amount' => 0,
                 'payment_status' => 'unpaid',
                 'status' => $sData['status'],

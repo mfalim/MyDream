@@ -10,7 +10,7 @@ class ArticleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Article::published()->latestFirst();
+        $query = Article::published()->with(['package.vendors.photos', 'event'])->latestFirst();
         if ($request->filled('category')) {
             $query->where('category', $request->query('category'));
         }
@@ -21,6 +21,7 @@ class ArticleController extends Controller
     public function show(string $slug)
     {
         $article = Article::published()
+            ->with(['package.vendors.photos', 'event'])
             ->where(function ($query) use ($slug) {
                 $query->where('slug', $slug);
                 if (is_numeric($slug)) {
@@ -28,6 +29,15 @@ class ArticleController extends Controller
                 }
             })
             ->firstOrFail();
+
+        $related = Article::published()
+            ->with(['package.vendors.photos', 'event'])
+            ->where('id', '!=', $article->id)
+            ->latestFirst()
+            ->take(3)
+            ->get();
+
+        $article->setAttribute('related', $related);
 
         return response()->json(['data' => $article]);
     }

@@ -31,6 +31,12 @@ class PublicEvent extends Model
         'is_published' => 'boolean',
     ];
 
+    protected $appends = [
+        'status',
+        'date_label',
+        'time_label',
+    ];
+
     protected static function booted(): void
     {
         // Slug dibuat otomatis dari judul bila kosong, dan dijamin unik.

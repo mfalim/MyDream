@@ -76,11 +76,11 @@
             @unless ($rejected)
                 <div class="mt-3">
                     @if ($booking->payment_status === 'unpaid')
-                        <a href="{{ route('payment.index', $booking->id) }}" class="wo-btn wo-btn-dark wo-btn-sm">Bayar Sekarang</a>
+                        <a href="{{ route('user.history.show', $booking->id) }}#bayar" class="wo-btn wo-btn-dark wo-btn-sm">Bayar Sekarang</a>
                     @elseif ($booking->payment_status === 'dp_paid')
-                        <a href="{{ route('payment.index', $booking->id) }}" class="wo-btn wo-btn-dark wo-btn-sm">Lunasi Sisa Pembayaran</a>
+                        <a href="{{ route('user.history.show', $booking->id) }}#bayar" class="wo-btn wo-btn-dark wo-btn-sm">Lunasi Sisa Pembayaran</a>
                     @else
-                        <a href="{{ route('payment.index', $booking->id) }}" class="wo-btn wo-btn-outline wo-btn-sm">Lihat Rincian</a>
+                        <a href="{{ route('user.history.show', $booking->id) }}" class="wo-btn wo-btn-outline wo-btn-sm">Lihat Invoice &amp; Rincian</a>
                     @endif
                 </div>
             @endunless

@@ -12,6 +12,7 @@ Route::prefix('vendor')
         Route::get('/dashboard', [VendorPortalController::class, 'dashboard'])->name('dashboard');
         Route::get('/kalender', [VendorPortalController::class, 'kalender'])->name('kalender');
         Route::get('/tracking', [VendorPortalController::class, 'tracking'])->name('tracking');
+        Route::get('/kas', [VendorPortalController::class, 'kas'])->name('kas');
 
         Route::get('/profil', [VendorProfileController::class, 'index'])->name('profil');
         Route::get('/profil/edit', [VendorProfileController::class, 'edit'])->name('profil.edit');

@@ -345,7 +345,7 @@
 
                                 <div class="edit-photo-card">
 
-                                    <img src="{{ asset('storage/' . $photo->photo) }}"
+                                    <img src="{{ \App\Support\Media::url($photo->photo) }}"
                                         alt="{{ $vendor->name }}">
 
                                     <div class="p-2">

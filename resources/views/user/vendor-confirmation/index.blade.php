@@ -1,6 +1,6 @@
 @extends('user.layouts.app')
 
-@section('title', 'Konfirmasi Vendor')
+@section('title', 'Status & Jadwal Vendor')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/wo-shared.css') }}">
@@ -12,9 +12,9 @@
 <main class="wo-page dashboard-home vendor-confirmation">
     <section class="dh-hero">
         <div class="dh-hero-text">
-            <span class="wo-eyebrow"><i class="bi bi-circle-fill"></i> Vendor untuk acara Anda</span>
-            <h1>Status Konfirmasi Ketersediaan Vendor</h1>
-            <p>Informasi acara dan konfirmasi vendor dari booking Anda.</p>
+            <span class="wo-eyebrow"><i class="bi bi-circle-fill"></i> Pengaturan Admin &amp; Tim WO</span>
+            <h1>Status &amp; Jadwal Vendor</h1>
+            <p>Pantau persetujuan booking dari Admin, jam operasional tiap vendor, dan status kesiapan layanan pada acara Anda.</p>
         </div>
     </section>
 
@@ -25,12 +25,12 @@
             <i class="bi bi-people-fill" aria-hidden="true"></i>
         </article>
         <article class="vc-stat vc-stat-ready">
-            <span class="vc-stat-label">Terkonfirmasi</span>
+            <span class="vc-stat-label">Siap / Terjadwal</span>
             <strong id="vcStatApproved">0</strong>
             <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
         </article>
         <article class="vc-stat vc-stat-pending">
-            <span class="vc-stat-label">Menunggu</span>
+            <span class="vc-stat-label">Menunggu Jadwal</span>
             <strong id="vcStatPending">0</strong>
             <i class="bi bi-hourglass-split" aria-hidden="true"></i>
         </article>
@@ -43,8 +43,8 @@
         </label>
         <div class="vc-filters" role="group" aria-label="Filter status vendor">
             <button type="button" class="vc-filter is-active" data-status-filter="all">Semua</button>
-            <button type="button" class="vc-filter" data-status-filter="approved">Terkonfirmasi</button>
-            <button type="button" class="vc-filter" data-status-filter="pending">Menunggu</button>
+            <button type="button" class="vc-filter" data-status-filter="approved">Siap / Terjadwal</button>
+            <button type="button" class="vc-filter" data-status-filter="pending">Menunggu Jadwal</button>
         </div>
     </div>
 
@@ -54,11 +54,17 @@
                 <article class="vc-event-card" data-event-name="{{ $event->name }}">
                     <div class="vc-event-heading">
                         <div>
-                            <span class="vc-event-kicker">Informasi Acara</span>
+                            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                                <span class="vc-event-kicker" style="margin:0;">Informasi Acara</span>
+                                <span class="wo-badge {{ $booking->status === 'approved' ? 'wo-badge-green' : 'wo-badge-gold' }}">
+                                    <i class="bi {{ $booking->status === 'approved' ? 'bi-check-circle-fill' : 'bi-hourglass-split' }}"></i>
+                                    {{ $booking->status === 'approved' ? 'Booking Disetujui Admin' : 'Menunggu Persetujuan Admin' }}
+                                </span>
+                            </div>
                             <h2>{{ $event->name }}</h2>
                         </div>
-                        <button type="button" class="vc-toggle" aria-expanded="false">
-                            <span>Detail vendor</span>
+                        <button type="button" class="vc-toggle" aria-expanded="true">
+                            <span>Daftar vendor</span>
                             <i class="bi bi-chevron-down" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -90,11 +96,11 @@
                         </table>
                     </div>
 
-                    <div class="vc-vendors" hidden>
+                    <div class="vc-vendors">
                         <div class="vc-vendors-heading">
                             <div>
                                 <span class="vc-event-kicker">Rincian layanan</span>
-                                <h3>Konfirmasi Vendor</h3>
+                                <h3>Daftar Vendor &amp; Jadwal</h3>
                             </div>
                         </div>
                         <div class="vc-event-table-wrap">
@@ -134,7 +140,7 @@
                                                 </td>
                                                 <td>
                                                     <span class="wo-badge {{ ['approved' => 'wo-badge-green', 'pending' => 'wo-badge-gold', 'rejected' => 'wo-badge-red'][$scheduleStatus] ?? 'wo-badge-neutral' }}">
-                                                        {{ ucfirst($scheduleStatus) }}
+                                                        {{ ['approved' => 'Siap / Terjadwal', 'pending' => 'Menunggu Jadwal', 'rejected' => 'Terkendala'][$scheduleStatus] ?? ucfirst($scheduleStatus) }}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -144,7 +150,7 @@
                                                         data-name="{{ $vendor->name }}"
                                                         data-category="{{ $vendor->category?->name ?? 'Tanpa kategori' }}"
                                                         data-description="{{ $description }}"
-                                                        data-photo="{{ $photo ? asset('storage/' . $photo->photo) : '' }}"
+                                                        data-photo="{{ $photo ? \App\Support\Media::url($photo->photo) : '' }}"
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#vendorDetailModal"
                                                     >Detail</button>

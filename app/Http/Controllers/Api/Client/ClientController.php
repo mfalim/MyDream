@@ -526,7 +526,6 @@ class ClientController extends Controller
                 $event->schedules()->create([
                     'vendor_id' => $vendor->id,
                     'price' => $vendorPrice,
-                    'agreed_fee' => $vendorPrice,
                     'paid_amount' => 0,
                     'payment_status' => 'unpaid',
                     'activity' => $vendor->name,

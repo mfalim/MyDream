@@ -1,12 +1,145 @@
-/* Gaya halaman riwayat, diselaraskan dengan dashboard client. */
-:root{--wo-green-900:#16302a;--wo-green-700:#1f4b3d;--wo-green-100:#e7f1ea;--wo-gold:#8a6a3b;--wo-bg:#f2f6f3;--wo-surface:#fff;--wo-text:#212a24;--wo-text-muted:#6d7972;--wo-border:#e7e0d6}
-.history-page{min-height:100vh}.history-heading{margin:4px 0 22px}.history-heading h1{font-size:2.35rem;margin:5px 0}.history-heading p,.history-muted{color:var(--wo-text-muted);margin:0}.history-heading p span{margin:0 5px}
-.history-filter-card{margin-bottom:20px}.history-filters{display:flex;align-items:end;gap:12px;flex-wrap:wrap}.history-field,.review-field{display:flex;flex-direction:column;gap:7px;color:var(--wo-text);font-size:.8rem;font-weight:700;flex:1;min-width:145px}.history-field span,.review-field span{color:var(--wo-text-muted)}.history-field input,.history-field select,.review-field select,.review-field textarea{width:100%;border:1px solid var(--wo-border);border-radius:10px;background:#fff;color:var(--wo-text);padding:10px 12px;font:500 .86rem "DM Sans",sans-serif;outline:none}.history-field input:focus,.history-field select:focus,.review-field select:focus,.review-field textarea:focus{border-color:var(--wo-green-700);box-shadow:0 0 0 3px rgba(31,75,61,.1)}.history-search{flex:1.4}.history-filter-actions{display:flex;gap:8px}
-.history-list{display:grid;gap:16px}.history-card{padding:21px 24px}.history-card-top,.history-card-bottom,.history-meta,.history-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.history-card-top h2{font-size:1.55rem;margin-top:3px}.history-meta{justify-content:flex-start;color:var(--wo-text-muted);font-size:.82rem;margin:12px 0}.history-meta i{color:var(--wo-green-700);margin-right:4px}.history-vendor-list{list-style:none;padding:0;margin:0 0 14px;border-top:1px solid var(--wo-border)}.history-vendor-list li{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--wo-border);font-size:.84rem}.history-vendor-list strong{color:var(--wo-green-900)}.history-card-bottom{padding-top:12px;border-top:1px solid var(--wo-border)}.history-card-bottom>div:first-child{display:grid;gap:2px}.history-card-bottom span,.history-venue-meta>span:first-child{color:var(--wo-text-muted);font-size:.75rem}.history-card-bottom strong{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--wo-green-900)}
-.history-empty,.review-empty{padding:48px 24px;text-align:center}.history-empty-icon{margin:0 auto 12px;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--wo-green-100);color:var(--wo-green-700);font-size:1.2rem}.history-empty h2,.review-empty h3{font-size:1.5rem;margin:0 0 5px}.history-empty p,.review-empty p{color:var(--wo-text-muted);margin:0}.history-pagination{margin-top:18px}.history-pagination .pagination{justify-content:center;gap:4px}.history-pagination .page-link{border:1px solid var(--wo-border);border-radius:9px!important;color:var(--wo-green-900)}.history-pagination .active .page-link{background:var(--wo-green-900);border-color:var(--wo-green-900)}
-.history-back{margin-bottom:18px}.history-detail-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,.8fr);gap:18px}.history-detail-vendor{display:flex;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--wo-border)}.history-detail-vendor>div{display:grid;gap:3px}.history-detail-vendor>div span{font-size:.78rem;color:var(--wo-text-muted)}.history-detail-vendor>strong,.history-total strong{color:var(--wo-green-900)}.history-total{display:flex;justify-content:space-between;align-items:center;padding-top:17px;margin-top:4px;font-weight:700}.history-venue h2{font-size:1.65rem;margin:7px 0}.history-venue p{line-height:1.7;color:var(--wo-text-muted);font-size:.87rem}.history-venue-meta{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--wo-border);align-items:center}.history-review-cta{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding:18px 22px;border-radius:16px;background:var(--wo-green-100)}.history-review-cta p{margin:0;color:var(--wo-green-900);font-weight:600}
-.history-booking-event{padding:14px 0;border-top:1px solid var(--wo-border)}.history-event-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.history-event-head strong{color:var(--wo-green-900)}.history-event-head>span,.history-event-head div>span{font-size:.78rem;color:var(--wo-text-muted)}.history-detail-event{padding:18px 0}.history-event-review{margin-top:10px}
-.history-payment-summary,.history-payment-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:13px 0;margin:12px 0;border-top:1px solid var(--wo-border);border-bottom:1px solid var(--wo-border)}.history-payment-summary>div,.history-payment-totals>div{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px}.history-payment-summary>div>span:first-child,.history-payment-totals>div>span{font-size:.75rem;color:var(--wo-text-muted)}.history-payment-summary strong,.history-payment-totals strong{font-size:.9rem;color:var(--wo-green-900)}.history-payments{grid-column:1/-1}.history-payments h2{font-size:1.45rem;margin:3px 0}.history-payment-totals{margin-top:16px}.history-payment-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-top:1px solid var(--wo-border)}.history-payment-row>div:first-child,.history-payment-amount{display:grid;gap:5px}.history-payment-row>div:first-child>span{font-size:.78rem;color:var(--wo-text-muted)}.history-payment-amount{justify-items:end}.history-payment-amount>strong{color:var(--wo-green-900)}.history-payment-empty{padding:12px 0}.wo-badge-yellow{background:#fff3cd;color:#7a5c00}
-.history-invoice{display:block;margin-top:5px;color:var(--wo-text-muted);font-size:.76rem}.history-invoice i{color:var(--wo-green-700);margin-right:4px}.history-payment-summary small{color:var(--wo-text-muted);font-size:.72rem}.history-payment-link{width:100%;margin-top:14px}.history-payment-row>div:first-child>small{color:var(--wo-text-muted);font-size:.72rem;overflow-wrap:anywhere}.history-payment-row{flex-wrap:wrap}.history-payment-timeline{flex:0 0 100%;display:grid;gap:7px;list-style:none;padding:11px 0 0;margin:0;border-top:1px dashed var(--wo-border)}.history-payment-timeline li{display:flex;justify-content:space-between;gap:14px;color:var(--wo-text-muted);font-size:.74rem}.history-payment-timeline time{white-space:nowrap;color:var(--wo-gold)}
-@media(max-width:760px){.history-detail-grid{grid-template-columns:1fr}.history-filters>*{min-width:calc(50% - 8px)}.history-filters .history-filter-actions{width:100%}.history-heading h1{font-size:2rem}}
-@media(max-width:480px){.history-filters>*{min-width:100%}.history-card{padding:18px}.history-card-bottom{align-items:flex-start}.history-actions{width:100%}.history-actions .wo-btn{flex:1}.history-review-cta{align-items:flex-start;flex-direction:column}.history-payment-summary,.history-payment-totals{grid-template-columns:1fr 1fr}.history-payment-row{align-items:flex-start}.history-payment-amount{justify-items:start;text-align:left}}
+/* Gaya halaman riwayat & invoice client — mewarisi palet Maroon, Cream, Gold dari wo-shared.css */
+.history-page { min-height: 100vh; }
+.history-top-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.history-heading { margin: 4px 0 22px; }
+.history-heading h1 { font-size: clamp(1.85rem, 2.8vw, 2.35rem); margin: 5px 0 8px; }
+.history-heading p, .history-muted { color: var(--wo-text-muted); margin: 0; font-size: 0.86rem; }
+.history-heading p span { margin: 0 5px; }
+
+.history-alert { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 14px; font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
+.history-alert-success { background: var(--wo-success-bg); color: var(--wo-success-text); border: 1px solid #C6E6D4; }
+.history-alert-error { background: var(--wo-red-100); color: var(--wo-red-600); border: 1px solid #F1C5C1; }
+
+.history-filter-card { margin-bottom: 20px; }
+.history-filters { display: flex; align-items: end; gap: 12px; flex-wrap: wrap; }
+.history-field, .review-field { display: flex; flex-direction: column; gap: 7px; color: var(--wo-text); font-size: .8rem; font-weight: 700; flex: 1; min-width: 145px; }
+.history-field span, .review-field span { color: var(--wo-text-muted); }
+.history-field input, .history-field select, .review-field select, .review-field textarea { width: 100%; border: 1px solid var(--wo-border); border-radius: 10px; background: #fff; color: var(--wo-text); padding: 10px 12px; font: 500 .86rem "Plus Jakarta Sans", sans-serif; outline: none; }
+.history-field input:focus, .history-field select:focus, .review-field select:focus, .review-field textarea:focus { border-color: var(--wo-maroon); box-shadow: 0 0 0 3px rgba(122, 31, 43, .1); }
+.history-search { flex: 1.4; }
+.history-filter-actions { display: flex; gap: 8px; }
+
+.history-list { display: grid; gap: 16px; }
+.history-card { padding: 21px 24px; }
+.history-card-top, .history-card-bottom, .history-meta, .history-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.history-card-top h2 { font-size: 1.5rem; margin-top: 3px; }
+.history-meta { justify-content: flex-start; color: var(--wo-text-muted); font-size: .82rem; margin: 12px 0; }
+.history-meta i { color: var(--wo-gold); margin-right: 4px; }
+.history-vendor-list { list-style: none; padding: 0; margin: 0 0 14px; border-top: 1px solid var(--wo-border); }
+.history-vendor-list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 2px; border-bottom: 1px solid var(--wo-border); font-size: .84rem; }
+.history-vendor-list strong { color: var(--wo-maroon); }
+.history-card-bottom { padding-top: 12px; border-top: 1px solid var(--wo-border); }
+.history-card-bottom > div:first-child { display: grid; gap: 2px; }
+.history-card-bottom span, .history-venue-meta > span:first-child { color: var(--wo-text-muted); font-size: .75rem; }
+.history-card-bottom strong { font-family: "Fraunces", Georgia, serif; font-size: 1.32rem; color: var(--wo-maroon); }
+
+.history-empty, .review-empty { padding: 48px 24px; text-align: center; }
+.history-empty-icon { margin: 0 auto 12px; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--wo-maroon-light); color: var(--wo-maroon); font-size: 1.2rem; }
+.history-empty h2, .review-empty h3 { font-size: 1.5rem; margin: 0 0 5px; }
+.history-empty p, .review-empty p { color: var(--wo-text-muted); margin: 0; }
+.history-pagination { margin-top: 18px; }
+.history-pagination .pagination { justify-content: center; gap: 4px; }
+.history-pagination .page-link { border: 1px solid var(--wo-border); border-radius: 9px !important; color: var(--wo-maroon); }
+.history-pagination .active .page-link { background: var(--wo-maroon); border-color: var(--wo-maroon); color: #fff; }
+
+.history-back { margin-bottom: 18px; }
+.history-detail-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, .85fr); gap: 18px; }
+.history-detail-vendor { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--wo-border); }
+.history-detail-vendor > div { display: grid; gap: 3px; }
+.history-detail-vendor > div span { font-size: .78rem; color: var(--wo-text-muted); }
+.history-detail-vendor > strong, .history-total strong { color: var(--wo-maroon); }
+.history-total { display: flex; justify-content: space-between; align-items: center; padding-top: 16px; margin-top: 4px; font-weight: 700; }
+.history-venue h2 { font-size: 1.55rem; margin: 7px 0; }
+.history-venue p { line-height: 1.65; color: var(--wo-text-muted); font-size: .86rem; }
+.history-venue-meta { display: flex; justify-content: space-between; gap: 10px; padding: 11px 0; border-top: 1px solid var(--wo-border); align-items: center; font-size: 0.85rem; }
+.history-review-cta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px; padding: 18px 22px; border-radius: 16px; background: var(--wo-maroon-light); }
+.history-review-cta p { margin: 0; color: var(--wo-maroon); font-weight: 600; }
+
+.history-booking-event { padding: 14px 0; border-top: 1px solid var(--wo-border); }
+.history-event-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.history-event-head strong { color: var(--wo-maroon); }
+.history-event-head > span, .history-event-head div > span { font-size: .78rem; color: var(--wo-text-muted); }
+.history-detail-event { padding: 16px 0; }
+.history-event-review { margin-top: 10px; }
+
+/* Embedded Midtrans Payment Panel */
+.history-pay-panel { grid-column: 1 / -1; border-left: 5px solid var(--wo-maroon); }
+.history-scheme-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.history-scheme-grid.is-single { grid-template-columns: 1fr; }
+.history-scheme-card { position: relative; display: block; cursor: pointer; margin: 0; }
+.history-scheme-card input { position: absolute; opacity: 0; pointer-events: none; }
+.history-scheme-body { padding: 16px 18px; border: 2px solid var(--wo-border); border-radius: 16px; background: var(--wo-surface-soft); transition: border-color 0.16s ease, background 0.16s ease; }
+.history-scheme-card input:checked + .history-scheme-body { border-color: var(--wo-maroon); background: var(--wo-maroon-light); }
+.history-scheme-title { display: block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--wo-gold-bg); }
+.history-scheme-amount { display: block; font-family: "Fraunces", Georgia, serif; font-size: 1.55rem; color: var(--wo-maroon); margin: 4px 0; }
+.history-scheme-body small { display: block; font-size: 0.78rem; color: var(--wo-text-muted); line-height: 1.45; }
+
+.history-pay-summary-bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 18px 20px; border-radius: 16px; background: var(--wo-bg); border: 1px solid var(--wo-border); }
+.history-pay-summary-info { display: grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap: 14px; flex: 1; min-width: 260px; }
+.history-pay-summary-info span { display: block; font-size: 0.72rem; color: var(--wo-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.history-pay-summary-info strong { display: block; font-size: 0.96rem; color: var(--wo-text); margin-top: 3px; }
+.history-pay-summary-info strong.is-highlight { font-family: "Fraunces", Georgia, serif; font-size: 1.25rem; color: var(--wo-maroon); }
+.history-pay-action-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; min-width: 240px; }
+.history-midtrans-btn { padding: 12px 24px; }
+.history-pay-action-wrap small { text-align: right; max-width: 300px; font-size: 0.73rem; }
+.history-inline-error { width: 100%; margin: 0 0 6px; padding: 10px 12px; border-radius: 10px; background: var(--wo-maroon-light); color: var(--wo-maroon); font-size: 0.8rem; font-weight: 600; }
+
+.history-proof-details { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--wo-border); }
+.history-proof-details summary { cursor: pointer; font-size: 0.82rem; font-weight: 700; color: var(--wo-maroon); list-style: none; display: inline-flex; align-items: center; gap: 6px; }
+.history-proof-details summary::-webkit-details-marker { display: none; }
+.history-proof-form { margin-top: 12px; padding: 14px; border-radius: 12px; background: var(--wo-surface-soft); border: 1px solid var(--wo-border); display: grid; gap: 10px; }
+.history-proof-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.history-proof-row input[type="file"] { flex: 1; min-width: 200px; }
+
+.history-payment-summary, .history-payment-totals { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 13px 0; margin: 12px 0; border-top: 1px solid var(--wo-border); border-bottom: 1px solid var(--wo-border); }
+.history-payment-summary > div, .history-payment-totals > div { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 5px; }
+.history-payment-summary > div > span:first-child, .history-payment-totals > div > span { font-size: .75rem; color: var(--wo-text-muted); }
+.history-payment-summary strong, .history-payment-totals strong { font-size: .92rem; color: var(--wo-maroon); }
+.history-payments { grid-column: 1 / -1; }
+.history-payments h2 { font-size: 1.4rem; margin: 3px 0; }
+.history-payment-totals { margin-top: 16px; }
+.history-payment-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid var(--wo-border); flex-wrap: wrap; }
+.history-payment-row > div:first-child, .history-payment-amount { display: grid; gap: 5px; }
+.history-payment-row > div:first-child > span { font-size: .78rem; color: var(--wo-text-muted); }
+.history-payment-amount { justify-items: end; }
+.history-payment-amount > strong { color: var(--wo-maroon); }
+.history-payment-empty { padding: 12px 0; }
+.wo-badge-yellow { background: var(--wo-amber-100); color: var(--wo-gold-bg); }
+.history-invoice { display: block; margin-top: 6px; color: var(--wo-text-muted); font-size: .78rem; }
+.history-invoice i { color: var(--wo-gold); margin-right: 4px; }
+.history-payment-summary small { color: var(--wo-text-muted); font-size: .72rem; }
+.history-payment-link { width: 100%; margin-top: 14px; }
+.history-payment-row > div:first-child > small { color: var(--wo-text-muted); font-size: .73rem; overflow-wrap: anywhere; }
+.history-payment-timeline { flex: 0 0 100%; display: grid; gap: 7px; list-style: none; padding: 11px 0 0; margin: 0; border-top: 1px dashed var(--wo-border); }
+.history-payment-timeline li { display: flex; justify-content: space-between; gap: 14px; color: var(--wo-text-muted); font-size: .74rem; }
+.history-payment-timeline time { white-space: nowrap; color: var(--wo-gold); }
+
+@media (max-width: 760px) {
+    .history-detail-grid { grid-template-columns: 1fr; }
+    .history-scheme-grid { grid-template-columns: 1fr; }
+    .history-pay-summary-info { grid-template-columns: 1fr; gap: 10px; }
+    .history-pay-action-wrap { width: 100%; align-items: stretch; min-width: 0; }
+    .history-pay-action-wrap small { text-align: left; max-width: none; }
+    .history-midtrans-btn { width: 100%; }
+    .history-filters > * { min-width: calc(50% - 8px); }
+    .history-filters .history-filter-actions { width: 100%; }
+}
+
+@media (max-width: 480px) {
+    .history-filters > * { min-width: 100%; }
+    .history-card { padding: 18px; }
+    .history-card-bottom { align-items: flex-start; }
+    .history-actions { width: 100%; }
+    .history-actions .wo-btn { flex: 1; }
+    .history-review-cta { align-items: flex-start; flex-direction: column; }
+    .history-payment-summary, .history-payment-totals { grid-template-columns: 1fr 1fr; }
+    .history-payment-row { align-items: flex-start; }
+    .history-payment-amount { justify-items: start; text-align: left; }
+}
+
+@media print {
+    .sidebar, .mobile-topbar, .sidebar-overlay, .no-print { display: none !important; }
+    .dashboard-shell { display: block !important; background: #fff !important; }
+    .wo-page { padding: 0 !important; }
+    .wo-card { box-shadow: none !important; break-inside: avoid; }
+}

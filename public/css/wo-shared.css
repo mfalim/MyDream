@@ -1,41 +1,46 @@
 /* public/css/wo-shared.css */
-/* Dipakai bersama oleh: dashboard, konfirmasi-vendor, explore-vendor, rundown-calendar, rundown-detail */
+/* Dipakai bersama oleh seluruh halaman Client Dashboard — selaras dengan Landing Page MyDream (Maroon, Cream, Gold) */
 
 :root {
-    --wo-bg: #f2f6f3;
-    --wo-bg-warm: #faf6ee;
-    --wo-surface: #ffffff;
-    --wo-surface-soft: #f6f9f6;
-    --wo-green-900: #16302a;
-    --wo-green-700: #1f4b3d;
-    --wo-green-100: #e7f1ea;
-    --wo-gold: #8a6a3b;
-    --wo-gold-bg: #4b3621;
-    --wo-amber-100: #f6e3c4;
-    --wo-amber-500: #e0a45a;
-    --wo-red-100: #fbe4e2;
-    --wo-red-600: #c1483f;
-    --wo-text: #212a24;
-    --wo-text-muted: #6d7972;
-    --wo-border: #e7e0d6;
+    --wo-bg: #FBF3EC;
+    --wo-bg-warm: #F3E6D8;
+    --wo-surface: #FFFFFF;
+    --wo-surface-soft: #FCF8F4;
+    --wo-maroon: #7A1F2B;
+    --wo-maroon-dark: #5C1620;
+    --wo-maroon-light: #F4E4E6;
+    --wo-green-900: #7A1F2B;
+    --wo-green-700: #5C1620;
+    --wo-green-100: #F4E4E6;
+    --wo-success-bg: #E5F3EB;
+    --wo-success-text: #2E7D4F;
+    --wo-gold: #B08D57;
+    --wo-gold-bg: #6B4E23;
+    --wo-amber-100: #F6E9D2;
+    --wo-amber-500: #C9A66B;
+    --wo-red-100: #FBE4E2;
+    --wo-red-600: #B3261E;
+    --wo-text: #2B211C;
+    --wo-text-muted: #7A6760;
+    --wo-border: #E8D8CC;
     --wo-radius-lg: 22px;
     --wo-radius-md: 16px;
     --wo-radius-sm: 10px;
-    --wo-shadow: 0 10px 28px rgba(22, 48, 42, 0.06);
+    --wo-shadow: 0 10px 28px rgba(92, 22, 32, 0.06);
 }
 
 .wo-page {
-    background: var(--wo-bg);
-    padding: 26px 36px 60px;
-    font-family: "DM Sans", sans-serif;
+    background: transparent;
+    padding: 28px 34px 60px;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     color: var(--wo-text);
 }
 
 .wo-page h1,
 .wo-page h2,
 .wo-page h3 {
-    font-family: "Cormorant Garamond", serif;
-    color: var(--wo-green-900);
+    font-family: "Fraunces", Georgia, serif;
+    color: var(--wo-maroon);
     margin: 0;
 }
 
@@ -43,15 +48,15 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.78rem;
-    letter-spacing: 0.06em;
+    font-size: 0.74rem;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--wo-gold);
     font-weight: 700;
 }
 
 .wo-eyebrow i {
-    font-size: 0.5rem;
+    font-size: 0.45rem;
 }
 
 .wo-card {
@@ -82,21 +87,25 @@
 }
 
 .wo-badge-green {
-    background: var(--wo-green-100);
-    color: var(--wo-green-700);
+    background: var(--wo-success-bg);
+    color: var(--wo-success-text);
 }
+
 .wo-badge-gold {
     background: var(--wo-amber-100);
     color: var(--wo-gold-bg);
 }
+
 .wo-badge-red {
     background: var(--wo-red-100);
     color: var(--wo-red-600);
 }
+
 .wo-badge-dark {
-    background: var(--wo-green-900);
-    color: #fff;
+    background: var(--wo-maroon);
+    color: #FFFFFF;
 }
+
 .wo-badge-neutral {
     background: var(--wo-surface-soft);
     color: var(--wo-text-muted);
@@ -109,7 +118,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
     border-radius: 999px;
     padding: 10px 20px;
@@ -117,25 +126,30 @@
     cursor: pointer;
     text-decoration: none;
     white-space: nowrap;
+    transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease;
 }
 
 .wo-btn-dark {
-    background: var(--wo-green-900);
-    color: #fff;
+    background: var(--wo-maroon);
+    color: #FFFFFF;
 }
+
 .wo-btn-dark:hover {
-    background: var(--wo-green-700);
-    color: #fff;
+    background: var(--wo-maroon-dark);
+    color: #FFFFFF;
+    transform: translateY(-1px);
 }
 
 .wo-btn-outline {
     background: var(--wo-surface);
-    color: var(--wo-green-900);
+    color: var(--wo-maroon);
     border: 1px solid var(--wo-border);
 }
+
 .wo-btn-outline:hover {
-    border-color: var(--wo-green-700);
-    color: var(--wo-green-900);
+    border-color: var(--wo-maroon);
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon-dark);
 }
 
 .wo-btn-sm {
@@ -153,7 +167,7 @@
     justify-content: center;
     flex-shrink: 0;
     background: conic-gradient(
-        var(--wo-green-900) calc(var(--pct, 75) * 1%),
+        var(--wo-maroon) calc(var(--pct, 75) * 1%),
         var(--wo-border) 0
     );
 }
@@ -168,7 +182,7 @@
     justify-content: center;
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--wo-green-900);
+    color: var(--wo-maroon);
 }
 
 /* progress bar */
@@ -178,10 +192,11 @@
     background: var(--wo-border);
     overflow: hidden;
 }
+
 .wo-bar > i {
     display: block;
     height: 100%;
-    background: var(--wo-gold-bg);
+    background: linear-gradient(90deg, var(--wo-maroon) 0%, var(--wo-gold) 100%);
     border-radius: 999px;
 }
 
@@ -190,6 +205,7 @@
     position: relative;
     padding-left: 30px;
 }
+
 .wo-timeline::before {
     content: "";
     position: absolute;
@@ -199,13 +215,16 @@
     width: 1.5px;
     background: var(--wo-border);
 }
+
 .wo-timeline-item {
     position: relative;
     padding-bottom: 22px;
 }
+
 .wo-timeline-item:last-child {
     padding-bottom: 0;
 }
+
 .wo-timeline-dot {
     position: absolute;
     left: -30px;
@@ -221,15 +240,17 @@
     font-size: 0.7rem;
     color: var(--wo-text-muted);
 }
+
 .wo-timeline-item.is-done .wo-timeline-dot {
-    background: var(--wo-green-900);
-    border-color: var(--wo-green-900);
-    color: #fff;
+    background: var(--wo-maroon);
+    border-color: var(--wo-maroon);
+    color: #FFFFFF;
 }
+
 .wo-timeline-item.is-active .wo-timeline-dot {
     background: var(--wo-amber-500);
     border-color: var(--wo-amber-500);
-    color: #fff;
+    color: #FFFFFF;
 }
 
 /* table */
@@ -239,6 +260,7 @@
     border-spacing: 0;
     font-size: 0.86rem;
 }
+
 .wo-table thead th {
     text-align: left;
     font-size: 0.72rem;
@@ -249,14 +271,17 @@
     padding: 10px 14px;
     border-bottom: 1px solid var(--wo-border);
 }
+
 .wo-table tbody td {
     padding: 14px;
     border-bottom: 1px solid var(--wo-border);
     vertical-align: top;
 }
+
 .wo-table tbody tr:last-child td {
     border-bottom: none;
 }
+
 .wo-table tbody tr.is-alert {
     background: var(--wo-red-100);
 }
@@ -272,18 +297,21 @@
     justify-content: space-between;
     gap: 10px;
 }
+
 .wo-stat-mini strong {
     display: block;
-    font-size: 1.6rem;
-    color: var(--wo-green-900);
-    font-family: "Cormorant Garamond", serif;
+    font-size: 1.55rem;
+    color: var(--wo-maroon);
+    font-family: "Fraunces", Georgia, serif;
 }
+
 .wo-stat-mini span {
     font-size: 0.74rem;
     color: var(--wo-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
+
 .wo-stat-mini .wo-stat-icon {
     width: 38px;
     height: 38px;
@@ -291,8 +319,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--wo-green-100);
-    color: var(--wo-green-700);
+    background: var(--wo-maroon-light);
+    color: var(--wo-maroon);
     flex-shrink: 0;
 }
 
@@ -305,20 +333,23 @@
     margin-bottom: 16px;
     flex-wrap: wrap;
 }
+
 .wo-section-head h2 {
-    font-size: 1.3rem;
+    font-size: 1.32rem;
 }
+
 .wo-link {
-    color: var(--wo-green-700);
+    color: var(--wo-maroon);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 6px;
 }
+
 .wo-link:hover {
-    color: var(--wo-green-900);
+    color: var(--wo-maroon-dark);
 }
 
 /* avatar initials */
@@ -331,13 +362,18 @@
     justify-content: center;
     font-weight: 700;
     font-size: 0.85rem;
-    color: #fff;
-    background: var(--wo-green-700);
+    color: #FFFFFF;
+    background: var(--wo-maroon);
     flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
     .wo-page {
-        padding: 20px 16px 40px;
+        padding: 18px 14px 44px;
+    }
+
+    .wo-card {
+        padding: 18px;
+        border-radius: 18px;
     }
 }

@@ -64,6 +64,12 @@ class VendorPortalController extends Controller
                 'events.event_date',
             ]);
 
+        $totalKasMasuk = (float) (clone $vendorSchedules)->sum('paid_amount');
+        $totalKontrak = (float) (clone $vendorSchedules)
+            ->selectRaw('COALESCE(SUM(CASE WHEN COALESCE(agreed_fee, 0) > 0 THEN agreed_fee ELSE COALESCE(price, 0) END), 0) as total')
+            ->value('total');
+        $sisaPiutang = max(0, $totalKontrak - $totalKasMasuk);
+
         return view('vendor.dashboard', compact(
             'vendor',
             'acaraHariIni',
@@ -72,7 +78,10 @@ class VendorPortalController extends Controller
             'disetujui',
             'menunggu',
             'ditolak',
-            'jadwalMendatang'
+            'jadwalMendatang',
+            'totalKasMasuk',
+            'totalKontrak',
+            'sisaPiutang'
         ));
     }
 
@@ -179,6 +188,72 @@ class VendorPortalController extends Controller
             'disetujui',
             'ditolak',
             'menunggu'
+        ));
+    }
+
+    /**
+     * HALAMAN KAS & PEMBAYARAN MASUK VENDOR
+     * Menggunakan data pencairan yang sudah ada di tabel schedules.
+     */
+    public function kas(Request $request)
+    {
+        $vendor = $request->user()->vendor()->firstOrFail();
+        $statusFilter = $request->query('status', 'all');
+
+        $allPayouts = DB::table('schedules')
+            ->leftJoin('events', 'schedules.event_id', '=', 'events.id')
+            ->leftJoin('bookings', 'events.booking_id', '=', 'bookings.id')
+            ->where('schedules.vendor_id', $vendor->id)
+            ->select(
+                'schedules.id',
+                'schedules.activity',
+                'schedules.price',
+                'schedules.agreed_fee',
+                'schedules.paid_amount',
+                'schedules.payment_status',
+                'schedules.paid_at',
+                'schedules.payment_notes',
+                'schedules.payout_proof_path',
+                'schedules.status as schedule_status',
+                'events.name as event_name',
+                'events.event_date',
+                'bookings.invoice_number'
+            )
+            ->orderByDesc('events.event_date')
+            ->orderByDesc('schedules.id')
+            ->get()
+            ->map(function ($row) {
+                $fee = (float) ($row->agreed_fee > 0 ? $row->agreed_fee : ($row->price ?? 0));
+                $paid = (float) ($row->paid_amount ?? 0);
+                $row->effective_fee = $fee;
+                $row->paid_value = $paid;
+                $row->remaining_value = max(0, $fee - $paid);
+                $row->effective_payment_status = $row->payment_status ?: ($fee > 0 && $paid >= $fee ? 'paid' : ($paid > 0 ? 'dp_paid' : 'unpaid'));
+
+                return $row;
+            });
+
+        $totalKontrak = (float) $allPayouts->sum('effective_fee');
+        $totalKasMasuk = (float) $allPayouts->sum('paid_value');
+        $sisaPiutang = max(0, $totalKontrak - $totalKasMasuk);
+        $countPaid = $allPayouts->where('effective_payment_status', 'paid')->count();
+        $countDp = $allPayouts->where('effective_payment_status', 'dp_paid')->count();
+        $countUnpaid = $allPayouts->where('effective_payment_status', 'unpaid')->count();
+
+        $payouts = in_array($statusFilter, ['paid', 'dp_paid', 'unpaid'], true)
+            ? $allPayouts->where('effective_payment_status', $statusFilter)->values()
+            : $allPayouts;
+
+        return view('vendor.kas', compact(
+            'vendor',
+            'payouts',
+            'statusFilter',
+            'totalKontrak',
+            'totalKasMasuk',
+            'sisaPiutang',
+            'countPaid',
+            'countDp',
+            'countUnpaid'
         ));
     }
 

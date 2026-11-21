@@ -77,6 +77,44 @@ class DashboardController extends Controller
         return view('member.dashboard', compact('member', 'schedules', 'eventMembers', 'stats'));
     }
 
+    public function updateAvailabilityStatus(Request $request)
+    {
+        $user = Auth::user();
+        $member = Member::where('user_id', $user->id)->first();
+
+        if (!$member) {
+            return response()->json(['success' => false, 'message' => 'Profil member tidak ditemukan.'], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:aktif,standby,inaktif',
+        ]);
+
+        $member->update([
+            'status' => $validated['status'],
+        ]);
+
+        $labels = [
+            'aktif' => 'Aktif',
+            'standby' => 'Standby',
+            'inaktif' => 'Tidak Aktif',
+        ];
+
+        $hints = [
+            'aktif' => 'Anda tampil sebagai kru siap tugas di Tracking Admin.',
+            'standby' => 'Anda tampil sebagai kru siaga (standby) di Tracking Admin.',
+            'inaktif' => 'Anda sedang off dan tidak muncul di penugasan event baru.',
+        ];
+
+        return response()->json([
+            'success' => true,
+            'status' => $member->status,
+            'label' => $labels[$member->status] ?? ucfirst($member->status),
+            'hint' => $hints[$member->status] ?? '',
+            'message' => 'Status ketersediaan berhasil diubah ke ' . ($labels[$member->status] ?? ucfirst($member->status)) . '.',
+        ]);
+    }
+
     public function updateScheduleStatus(Request $request, $id)
     {
         $schedule = Schedule::findOrFail($id);

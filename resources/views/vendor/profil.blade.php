@@ -54,7 +54,7 @@
                 @forelse($vendor->photos as $photo)
 
                     <img
-                        src="{{ asset('storage/' . $photo->photo) }}"
+                        src="{{ \App\Support\Media::url($photo->photo) }}"
                         alt="Foto Vendor"
                         style="width:180px;height:140px;object-fit:cover;border-radius:8px;"
                     >
