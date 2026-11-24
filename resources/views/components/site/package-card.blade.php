@@ -6,7 +6,7 @@
     $cities = $vendors->pluck('city')->filter()->unique()->implode(' · ');
 @endphp
 
-<a href="{{ route('catalog.show', $package->slug) }}" class="group block overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-shadow hover:shadow-lg">
+<a href="{{ route('catalog.show', $package->slug) }}" class="group block overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
     <div class="relative aspect-[4/3] overflow-hidden bg-cream-dark">
         <img src="{{ \App\Support\Media::url($photo) }}" alt="{{ $package->name }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
         @if ($package->is_featured)

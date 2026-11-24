@@ -1,6 +1,6 @@
 @props(['article']) {{-- App\Models\Article --}}
 
-<a href="{{ route('blog.show', $article->slug) }}" class="group block">
+<a href="{{ route('blog.show', $article->slug) }}" class="group block transition-transform duration-300 hover:-translate-y-1">
     <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-cream-dark">
         <img src="{{ \App\Support\Media::url($article->photo) }}" alt="{{ $article->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
     </div>

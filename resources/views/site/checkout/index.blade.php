@@ -75,18 +75,41 @@
                         <textarea id="venue_address" name="venue_address" rows="3" required class="{{ $field }}">{{ old('venue_address') }}</textarea>
                         @error('venue_address') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                     </div>
+                    @php
+                        $wilayah = \App\Support\Wilayah::all();
+                        $selectedProvince = old('venue_province', 'Jawa Timur');
+                        $selectedCity = old('venue_city');
+                        $cityOptions = \App\Support\Wilayah::cities($selectedProvince);
+                    @endphp
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div>
-                            <label for="venue_city" class="text-xs font-medium text-ink/60">Kota</label>
-                            <input id="venue_city" type="text" name="venue_city" value="{{ old('venue_city') }}" required class="{{ $field }}">
-                            @error('venue_city') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
                             <label for="venue_province" class="text-xs font-medium text-ink/60">Provinsi</label>
-                            <input id="venue_province" type="text" name="venue_province" value="{{ old('venue_province', 'Jawa Timur') }}" required class="{{ $field }}">
+                            <select id="venue_province" name="venue_province" required class="{{ $field }}">
+                                <option value="">Pilih provinsi</option>
+                                @foreach ($wilayah as $row)
+                                    <option value="{{ $row['name'] }}" @selected($selectedProvince === $row['name'])>{{ $row['name'] }}</option>
+                                @endforeach
+                            </select>
                             @error('venue_province') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                         </div>
+                        <div>
+                            <label for="venue_city" class="text-xs font-medium text-ink/60">Kota / Kabupaten</label>
+                            <select id="venue_city" name="venue_city" required class="{{ $field }}" @disabled(empty($cityOptions))>
+                                <option value="">Pilih kota / kabupaten</option>
+                                @foreach ($cityOptions as $city)
+                                    <option value="{{ $city }}" @selected($selectedCity === $city)>{{ $city }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-ink/40" id="city-hint">{{ count($cityOptions) ? count($cityOptions) . ' kota / kabupaten di ' . $selectedProvince : 'Pilih provinsi terlebih dahulu' }}</p>
+                            @error('venue_city') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
+                        </div>
                     </div>
+                    <div class="flex flex-wrap items-center gap-2 text-xs text-ink/50">
+                        <span>Wilayah layanan kami:</span>
+                        <button type="button" data-wilayah-quick="Jawa Timur|Kabupaten Jember" class="rounded-full border border-maroon/30 px-3 py-1 font-semibold text-maroon transition-colors hover:bg-maroon-light">Jember</button>
+                        <button type="button" data-wilayah-quick="Jawa Timur|Kota Surabaya" class="rounded-full border border-maroon/30 px-3 py-1 font-semibold text-maroon transition-colors hover:bg-maroon-light">Surabaya</button>
+                    </div>
+                    <script type="application/json" id="wilayah-data">{!! json_encode($wilayah, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) !!}</script>
                 </div>
             </form>
 
@@ -159,6 +182,52 @@
             </aside>
         </div>
     </section>
+
+@push('scripts')
+    <script>
+        // Provinsi -> Kota/Kabupaten bertingkat. Data tertanam di halaman, tidak memanggil layanan luar.
+        (function () {
+            var holder = document.getElementById('wilayah-data');
+            var prov = document.getElementById('venue_province');
+            var city = document.getElementById('venue_city');
+            var hint = document.getElementById('city-hint');
+            if (!holder || !prov || !city) { return; }
+            var data = JSON.parse(holder.textContent);
+
+            function fill(province, selected) {
+                var row = data.filter(function (r) { return r.name === province; })[0];
+                var list = row ? row.cities : [];
+                city.innerHTML = '';
+                var first = document.createElement('option');
+                first.value = '';
+                first.textContent = 'Pilih kota / kabupaten';
+                city.appendChild(first);
+                list.forEach(function (name) {
+                    var o = document.createElement('option');
+                    o.value = name;
+                    o.textContent = name;
+                    city.appendChild(o);
+                });
+                city.disabled = list.length === 0;
+                if (selected && list.indexOf(selected) > -1) { city.value = selected; }
+                if (hint) { hint.textContent = list.length ? list.length + ' kota / kabupaten di ' + province : 'Pilih provinsi terlebih dahulu'; }
+            }
+
+            prov.addEventListener('change', function () {
+                fill(prov.value, '');
+                if (!city.disabled) { city.focus(); }
+            });
+
+            Array.prototype.forEach.call(document.querySelectorAll('[data-wilayah-quick]'), function (btn) {
+                btn.addEventListener('click', function () {
+                    var parts = btn.getAttribute('data-wilayah-quick').split('|');
+                    prov.value = parts[0];
+                    fill(parts[0], parts[1]);
+                });
+            });
+        })();
+    </script>
+@endpush
 
 @endsection
 

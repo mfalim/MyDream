@@ -141,7 +141,8 @@
 
                                 <div>
                                     <label for="proof" class="text-xs font-medium text-ink/60">File foto/struk bukti pembayaran (JPG/PNG/PDF, maks. 4 MB)</label>
-                                    <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" required class="{{ $field }}">
+                                    <input id="proof" type="file" name="proof" accept=".jpg,.jpeg,.png,.pdf" data-preview="#proof-preview" required class="{{ $field }}">
+                                    <div id="proof-preview" class="mt-3 flex flex-wrap gap-3"></div>
                                     @error('proof') <p class="mt-1 text-xs text-maroon">{{ $message }}</p> @enderror
                                 </div>
 

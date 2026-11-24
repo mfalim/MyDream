@@ -13,14 +13,14 @@
     ];
 @endphp
 
-<header class="sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur">
-    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+<header class="site-header sticky top-0 z-50 border-b border-black/5 bg-cream/95 backdrop-blur">
+    <div class="nav-inner mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 transition-[height] duration-300 sm:px-6 lg:px-8">
 
         <a href="{{ route('home') }}" class="shrink-0 font-display text-2xl font-semibold text-maroon">MyDream</a>
 
         <nav class="hidden items-center gap-6 text-sm font-medium lg:flex">
             @foreach ($links as [$label, $url, $active])
-                <a href="{{ $url }}" class="transition-colors hover:text-maroon {{ $active ? 'text-maroon' : 'text-ink/80' }}">{{ $label }}</a>
+                <a href="{{ $url }}" class="nav-link transition-colors hover:text-maroon {{ $active ? 'is-active text-maroon' : 'text-ink/80' }}">{{ $label }}</a>
             @endforeach
         </nav>
 
@@ -32,7 +32,7 @@
                 </button>
             </form>
 
-            <a href="{{ route('cart.index') }}" aria-label="Keranjang" class="relative p-2 text-ink/70 hover:text-maroon">
+            <a href="{{ route('cart.index') }}" aria-label="Keranjang" data-cart-target class="relative p-2 text-ink/70 hover:text-maroon">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.25-4.59 3.375-6.885a1.125 1.125 0 00-1.007-1.615H5.106M7.5 14.25L5.106 5.653M7.5 14.25L4.5 4.395" /></svg>
                 @if ($cartCount > 0)
                     <span class="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-maroon text-[10px] font-semibold text-white">{{ $cartCount }}</span>
@@ -64,9 +64,9 @@
         </div>
     </div>
 
-    {{-- Menu mobile: checkbox murni CSS, tanpa JavaScript --}}
+    {{-- Menu mobile: checkbox murni CSS (membuka dengan animasi lewat site.css) --}}
     <input type="checkbox" id="site-menu-toggle" class="peer hidden">
-    <nav class="hidden flex-col gap-1 border-t border-black/5 bg-cream px-4 py-4 peer-checked:flex lg:hidden">
+    <nav class="mobile-nav flex flex-col gap-1 border-t border-black/5 bg-cream px-4 lg:hidden">
         @foreach ($links as [$label, $url, $active])
             <a href="{{ $url }}" class="rounded-lg px-3 py-2 hover:bg-maroon-light {{ $active ? 'font-semibold text-maroon' : '' }}">{{ $label }}</a>
         @endforeach

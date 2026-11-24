@@ -19,11 +19,12 @@
             <div class="space-y-8 lg:col-span-2">
                 {{-- GALERI --}}
                 @php $main = $gallery->first(); @endphp
-                <div class="aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
-                    <img src="{{ \App\Support\Media::url($main) }}" alt="{{ $package->name }}" class="h-full w-full object-cover">
+                <div data-gallery="g" data-reveal="mask" style="--mr: 1.5rem" class="group relative aspect-[16/10] overflow-hidden rounded-3xl bg-cream-dark">
+                    <img src="{{ \App\Support\Media::url($main) }}" alt="{{ $package->name }}" class="h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-105">
+                    <span class="pointer-events-none absolute bottom-4 right-4 rounded-full bg-ink/60 px-3 py-1.5 text-xs font-medium text-white opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100">Klik untuk perbesar</span>
                 </div>
                 @if ($gallery->count() > 1)
-                    <div class="grid grid-cols-4 gap-3">
+                    <div data-gallery="g" class="grid grid-cols-4 gap-3">
                         @foreach ($gallery->slice(1) as $photo)
                             <div class="aspect-square overflow-hidden rounded-xl bg-cream-dark">
                                 <img src="{{ \App\Support\Media::url($photo) }}" alt="Galeri {{ $package->name }}" loading="lazy" class="h-full w-full object-cover">
@@ -43,10 +44,10 @@
                 </div>
 
                 {{-- FAKTA --}}
-                <div class="grid gap-4 rounded-2xl bg-cream-dark/60 p-6 sm:grid-cols-4">
+                <div data-reveal class="grid gap-4 rounded-2xl bg-cream-dark/60 p-6 sm:grid-cols-4">
                     <div>
                         <p class="text-xs uppercase tracking-wide text-ink/40">Kapasitas</p>
-                        <p class="mt-1 font-display text-base font-semibold">{{ $package->guest_capacity ? $package->guest_capacity . ' tamu' : 'Hubungi kami' }}</p>
+                        <p class="mt-1 font-display text-base font-semibold">@if ($package->guest_capacity)<span data-count="{{ $package->guest_capacity }}">{{ $package->guest_capacity }}</span> tamu @else Hubungi kami @endif</p>
                     </div>
                     <div>
                         <p class="text-xs uppercase tracking-wide text-ink/40">Periode</p>
@@ -68,7 +69,7 @@
                     @if ($package->vendors->isNotEmpty())
                         <ul class="mt-4 divide-y divide-black/5 rounded-2xl bg-white ring-1 ring-black/5">
                             @foreach ($package->vendors as $vendor)
-                                <li class="flex items-center gap-4 p-4">
+                                <li data-reveal="left" style="--d: {{ $loop->index * 0.1 }}s" class="flex items-center justify-between gap-4 p-4 transition-colors duration-300 hover:bg-cream-dark/60">
                                     <div class="min-w-0">
                                         <p class="text-xs font-medium uppercase tracking-wide text-emerald">{{ $vendor->category?->name ?? 'Vendor' }}</p>
                                         <a href="{{ route('vendor.show', $vendor->slug) }}" class="font-display text-base font-semibold hover:text-maroon">{{ $vendor->name }}</a>
@@ -83,14 +84,14 @@
             </div>
 
             {{-- PANEL PEMESANAN --}}
-            <aside class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
-                <x-site.price :amount="$total" prefix="Total paket" />
+            <aside data-reveal="right" style="--d: .25s" class="h-fit space-y-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:sticky lg:top-24">
+                <x-site.price :amount="$total" prefix="Total paket" :animate="true" />
                 <p class="text-xs text-ink/50">Harga paket adalah jumlah harga seluruh vendor di dalamnya. Opsi pembayaran tersedia setelah checkout.</p>
 
                 @auth
-                    <form action="{{ route('user.cart.add-package', $package->id) }}" method="POST">
+                    <form action="{{ route('user.cart.add-package', $package->id) }}" method="POST" data-fly-cart>
                         @csrf
-                        <x-site.button type="submit" size="lg" class="w-full">Masukkan Keranjang</x-site.button>
+                        <x-site.button type="submit" size="lg" class="btn-shine w-full">Masukkan Keranjang</x-site.button>
                     </form>
                     <form action="{{ route('user.cart.add-package', $package->id) }}" method="POST">
                         @csrf
