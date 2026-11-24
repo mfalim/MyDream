@@ -20,10 +20,10 @@ class CatalogController extends Controller
         return response()->json([
             'data' => [
                 'categories' => Category::orderBy('name')->get(),
-                'packages' => Package::with(['vendors.category', 'vendors.photos'])
+                'packages' => Package::availableForBooking()->with(['vendors.category', 'vendors.photos'])
                     ->when($filters['q'] ?? null, fn ($query, $q) => $query->where('name', 'like', "%{$q}%"))
                     ->latest()->paginate($filters['per_page'] ?? 15),
-                'vendors' => Vendor::with(['category', 'photos'])
+                'vendors' => Vendor::availableForBooking()->with(['category', 'photos'])
                     ->when($filters['q'] ?? null, fn ($query, $q) => $query->where('name', 'like', "%{$q}%"))
                     ->latest()->paginate($filters['per_page'] ?? 15),
             ],

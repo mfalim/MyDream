@@ -46,7 +46,7 @@ class CatalogController extends Controller
 
         $packages = collect();
         if ($type !== 'vendor') {
-            $packages = Package::query()
+            $packages = Package::availableForBooking()
                 ->with(['vendors.category', 'vendors.photos'])
                 ->when($q !== '', fn ($query) => $query->where(
                     fn ($w) => $w->where('name', 'like', "%{$q}%")->orWhere('description', 'like', "%{$q}%")
@@ -61,7 +61,7 @@ class CatalogController extends Controller
 
         $vendors = collect();
         if ($type !== 'package') {
-            $vendors = Vendor::query()
+            $vendors = Vendor::availableForBooking()
                 ->with(['category', 'photos'])
                 ->when($q !== '', fn ($query) => $query->where(
                     fn ($w) => $w->where('name', 'like', "%{$q}%")

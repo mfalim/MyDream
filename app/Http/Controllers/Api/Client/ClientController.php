@@ -468,16 +468,23 @@ class ClientController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
         if (isset($data['package_id'])) {
-            $capacity = Package::findOrFail($data['package_id'])->guest_capacity;
+            $package = Package::availableForBooking()->findOrFail($data['package_id']);
+            $capacity = $package->guest_capacity;
             abort_if($capacity && $data['guest_count'] > $capacity, 422, 'Guest count exceeds package capacity.');
+        } else {
+            $availableVendors = Vendor::availableForBooking()
+                ->whereIn('id', $data['vendor_ids'] ?? [])
+                ->count();
+            abort_if($availableVendors !== count($data['vendor_ids'] ?? []), 409, 'One or more vendors are not currently available.');
         }
 
         $booking = DB::transaction(function () use ($data, $client) {
             $isPackage = isset($data['package_id']);
-            $package = $isPackage ? Package::with('vendors')->findOrFail($data['package_id']) : null;
+            $package = $isPackage ? Package::availableForBooking()->with('vendors')->findOrFail($data['package_id']) : null;
             $vendors = $package
                 ? $package->vendors
-                : Vendor::with('category')->whereIn('id', $data['vendor_ids'] ?? [])->get();
+                : Vendor::availableForBooking()->with('category')->whereIn('id', $data['vendor_ids'] ?? [])->get();
+            abort_if(! $isPackage && $vendors->count() !== count($data['vendor_ids'] ?? []), 409, 'One or more vendors are not currently available.');
 
             $guestCount = (int) $data['guest_count'];
             if (! $isPackage) {

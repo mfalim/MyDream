@@ -64,7 +64,10 @@ class CartController extends Controller
 
     public function addPackage(Request $request, $packageId)
     {
-        $package = Package::findOrFail($packageId);
+        $package = Package::availableForBooking()->find($packageId);
+        if (! $package) {
+            return redirect()->back()->with('error', 'Paket tidak tersedia karena ada vendor yang sedang menutup sesi.');
+        }
 
         session()->put('cart', [
             'type' => 'package',
@@ -85,7 +88,10 @@ class CartController extends Controller
 
     public function addVendor($vendorId)
     {
-        $vendor = Vendor::findOrFail($vendorId);
+        $vendor = Vendor::availableForBooking()->find($vendorId);
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor sedang menutup sesi dan belum bisa dipesan.');
+        }
 
         $cart = session()->get('cart', [
             'type' => 'custom',

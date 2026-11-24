@@ -16,9 +16,9 @@ class HomeController extends Controller
     public function index(): View
     {
         return view('site.home', [
-            'vendors' => Vendor::with(['category', 'photos'])->latest()->take(4)->get(),
+            'vendors' => Vendor::availableForBooking()->with(['category', 'photos'])->latest()->take(4)->get(),
 
-            'packages' => Package::with(['vendors.photos'])
+            'packages' => Package::availableForBooking()->with(['vendors.photos'])
                 ->orderByDesc('is_featured')
                 ->latest()
                 ->take(4)
@@ -50,10 +50,10 @@ class HomeController extends Controller
                     ?? Booking::where('status', 'approved')->count(),
 
                 'vendors' => config('mydream.stats.vendors')
-                    ?? Vendor::count(),
+                    ?? Vendor::availableForBooking()->count(),
 
                 'packages' => config('mydream.stats.packages')
-                    ?? Package::count(),
+                    ?? Package::availableForBooking()->count(),
             ],
         ]);
     }

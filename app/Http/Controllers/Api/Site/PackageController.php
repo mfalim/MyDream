@@ -15,14 +15,14 @@ class PackageController extends Controller
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
         ]);
 
-        return response()->json(Package::with(['vendors.category', 'vendors.photos'])
+        return response()->json(Package::availableForBooking()->with(['vendors.category', 'vendors.photos'])
             ->when($filters['q'] ?? null, fn ($query, $q) => $query->where('name', 'like', "%{$q}%"))
             ->latest()->paginate($filters['per_page'] ?? 15));
     }
 
     public function show(string $slug)
     {
-        $package = Package::with(['vendors.category', 'vendors.photos'])
+        $package = Package::availableForBooking()->with(['vendors.category', 'vendors.photos'])
             ->where(function ($query) use ($slug) {
                 $query->where('slug', $slug);
                 if (is_numeric($slug)) {

@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class VendorPortalController extends Controller
 {
@@ -83,6 +83,22 @@ class VendorPortalController extends Controller
             'totalKontrak',
             'sisaPiutang'
         ));
+    }
+
+    public function updateAvailability(Request $request)
+    {
+        $validated = $request->validate([
+            'is_open' => ['required', 'boolean'],
+        ]);
+
+        $vendor = $request->user()->vendor()->firstOrFail();
+        $vendor->update(['is_open' => $validated['is_open']]);
+
+        return redirect()
+            ->route('vendor.dashboard')
+            ->with('success', $vendor->is_open
+                ? 'Sesi dibuka. Vendor dan paket yang memuat vendor Anda kini dapat dipesan.'
+                : 'Sesi ditutup. Vendor dan paket yang memuat vendor Anda tidak dapat dipesan.');
     }
 
     /**

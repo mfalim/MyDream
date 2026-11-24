@@ -283,6 +283,7 @@ class DatabaseSeeder extends Seeder
                     'bank_account_holder' => $vData['bank_account_holder'],
                     'instagram' => $vData['instagram'],
                     'description' => $vData['description'],
+                    'is_open' => true,
                 ]
             );
 

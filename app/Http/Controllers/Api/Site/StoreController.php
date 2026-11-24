@@ -14,8 +14,8 @@ class StoreController extends Controller
         return response()->json([
             'data' => [
                 'categories' => Category::orderBy('name')->get(),
-                'packages' => Package::with(['vendors.photos'])->orderByDesc('is_featured')->latest()->limit(6)->get(),
-                'vendors' => Vendor::with(['category', 'photos'])->latest()->limit(8)->get(),
+                'packages' => Package::availableForBooking()->with(['vendors.photos'])->orderByDesc('is_featured')->latest()->limit(6)->get(),
+                'vendors' => Vendor::availableForBooking()->with(['category', 'photos'])->latest()->limit(8)->get(),
             ],
         ]);
     }

@@ -51,6 +51,7 @@ class ApiCoverageTest extends TestCase
             'name' => 'Vendor Cart',
             'slug' => 'vendor-cart',
             'price' => 125000,
+            'is_open' => true,
             'phone' => '08123456789',
             'address' => 'Jakarta',
         ]);
@@ -84,6 +85,7 @@ class ApiCoverageTest extends TestCase
             'name' => 'Vendor Bundle',
             'slug' => 'vendor-bundle',
             'price' => 250000,
+            'is_open' => true,
             'phone' => '08123456789',
             'address' => 'Jakarta',
         ]);
@@ -141,6 +143,7 @@ class ApiCoverageTest extends TestCase
             'slug' => "vendor-{$i}",
             'category_id' => $category->id,
             'price' => 100000 * $i,
+            'is_open' => true,
             'phone' => '08123456789',
             'address' => 'Jakarta',
         ]));

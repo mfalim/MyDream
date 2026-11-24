@@ -17,8 +17,8 @@ class StoreController extends Controller
     {
         return view('site.store', [
             'categories' => Category::orderBy('name')->get(),
-            'packages' => Package::with(['vendors.photos'])->orderByDesc('is_featured')->latest()->take(6)->get(),
-            'vendors' => Vendor::with(['category', 'photos'])->latest()->take(8)->get(),
+            'packages' => Package::availableForBooking()->with(['vendors.photos'])->orderByDesc('is_featured')->latest()->take(6)->get(),
+            'vendors' => Vendor::availableForBooking()->with(['category', 'photos'])->latest()->take(8)->get(),
         ]);
     }
 }

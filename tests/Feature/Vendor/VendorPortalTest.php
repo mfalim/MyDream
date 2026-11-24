@@ -12,6 +12,7 @@ use App\Models\Vendor;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class VendorPortalTest extends TestCase
@@ -19,6 +20,12 @@ class VendorPortalTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        config([
+            'database.default' => 'sqlite',
+            'database.connections.sqlite.database' => ':memory:',
+        ]);
+        DB::purge('sqlite');
 
         foreach (['schedules', 'events', 'bookings', 'clients', 'vendor_photos', 'vendors', 'categories', 'users'] as $table) {
             Schema::dropIfExists($table);
@@ -50,6 +57,7 @@ class VendorPortalTest extends TestCase
             $table->foreignId('category_id')->nullable();
             $table->string('name')->unique();
             $table->string('slug')->nullable()->unique();
+            $table->boolean('is_open')->default(false);
             $table->decimal('price', 15, 2)->nullable();
             $table->unsignedInteger('guest_capacity')->nullable();
             $table->string('phone')->nullable();
@@ -124,6 +132,9 @@ class VendorPortalTest extends TestCase
             $table->time('end_time')->nullable();
             $table->text('notes')->nullable();
             $table->string('status')->default('pending');
+            $table->decimal('price', 15, 2)->nullable();
+            $table->decimal('agreed_fee', 15, 2)->nullable();
+            $table->decimal('paid_amount', 15, 2)->default(0);
             $table->timestamps();
         });
     }

@@ -16,8 +16,8 @@ class HomeController extends Controller
         return response()->json([
             'data' => [
                 'categories' => Category::orderBy('name')->get(),
-                'featured_packages' => Package::with('vendors')->latest()->limit(6)->get(),
-                'featured_vendors' => Vendor::with(['category', 'photos'])->latest()->limit(6)->get(),
+                'featured_packages' => Package::availableForBooking()->with('vendors')->latest()->limit(6)->get(),
+                'featured_vendors' => Vendor::availableForBooking()->with(['category', 'photos'])->latest()->limit(6)->get(),
                 'articles' => Article::published()->latestFirst()->limit(3)->get(),
                 'events' => PublicEvent::published()->orderBy('starts_on')->limit(3)->get(),
             ],

@@ -10,7 +10,10 @@ class VendorController extends Controller
 {
     public function show(string $slug): View
     {
-        $vendor = Vendor::with(['category', 'photos', 'packages.vendors.photos'])->where('slug', $slug)->firstOrFail();
+        $vendor = Vendor::availableForBooking()
+            ->with(['category', 'photos', 'packages' => fn ($query) => $query->availableForBooking()->with('vendors.photos')])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $cover = $vendor->photos->firstWhere('is_cover', true) ?? $vendor->photos->first();
 

@@ -10,7 +10,10 @@ class PackageController extends Controller
 {
     public function show(string $slug): View
     {
-        $package = Package::with(['vendors.category', 'vendors.photos'])->where('slug', $slug)->firstOrFail();
+        $package = Package::availableForBooking()
+            ->with(['vendors.category', 'vendors.photos'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $gallery = collect([$package->photo])
             ->merge($package->vendors->flatMap(fn ($vendor) => $vendor->photos->pluck('photo')))
@@ -19,7 +22,7 @@ class PackageController extends Controller
             ->values()
             ->take(5);
 
-        $related = Package::with(['vendors.photos'])
+        $related = Package::availableForBooking()->with(['vendors.photos'])
             ->where('id', '!=', $package->id)
             ->latest()
             ->take(3)
