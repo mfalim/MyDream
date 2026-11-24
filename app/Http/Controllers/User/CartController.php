@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
 use App\Models\Package;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function index(Request $request)
     {
-        $cart = session()->get('cart', [
-            'type' => null,
-            'package_id' => null,
-            'vendor_ids' => [],
-        ]);
+        $cart = Cart::forCurrentUser();
 
         $package = null;
         $vendors = collect();
@@ -34,7 +33,7 @@ class CartController extends Controller
             }
         }
 
-        if ($cart['type'] === 'custom' && !empty($cart['vendor_ids'])) {
+        if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
             $vendors = Vendor::with(['category', 'photos'])
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
@@ -66,11 +65,16 @@ class CartController extends Controller
     {
         $package = Package::findOrFail($packageId);
 
-        session()->put('cart', [
-            'type' => 'package',
-            'package_id' => $package->id,
-            'vendor_ids' => [],
-        ]);
+        DB::transaction(function () use ($package) {
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+            $cart->update([
+                'type' => 'package',
+                'package_id' => $package->id,
+            ]);
+            $cart->vendors()->sync([]);
+        });
+
+        Cart::forCurrentUser();
 
         if ($request->input('redirect') === 'checkout') {
             return redirect()
@@ -86,14 +90,9 @@ class CartController extends Controller
     public function addVendor($vendorId)
     {
         $vendor = Vendor::findOrFail($vendorId);
+        $current = Cart::forCurrentUser();
 
-        $cart = session()->get('cart', [
-            'type' => 'custom',
-            'package_id' => null,
-            'vendor_ids' => [],
-        ]);
-
-        if ($cart['type'] === 'package') {
+        if ($current['type'] === 'package') {
             return redirect()
                 ->back()
                 ->with(
@@ -102,13 +101,16 @@ class CartController extends Controller
                 );
         }
 
-        $cart['type'] = 'custom';
+        DB::transaction(function () use ($vendor) {
+            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+            $cart->update([
+                'type' => 'custom',
+                'package_id' => null,
+            ]);
+            $cart->vendors()->syncWithoutDetaching([$vendor->id]);
+        });
 
-        if (!in_array($vendorId, $cart['vendor_ids'])) {
-            $cart['vendor_ids'][] = $vendorId;
-        }
-
-        session()->put('cart', $cart);
+        Cart::forCurrentUser();
 
         return redirect()
             ->route('user.cart')
@@ -117,24 +119,15 @@ class CartController extends Controller
 
     public function remove($vendorId)
     {
-        $cart = session()->get('cart', [
-            'type' => 'custom',
-            'package_id' => null,
-            'vendor_ids' => [],
-        ]);
-
-        $cart['vendor_ids'] = array_values(
-            array_filter(
-                $cart['vendor_ids'],
-                fn ($id) => $id != $vendorId
-            )
-        );
-
-        if (empty($cart['vendor_ids'])) {
-            $cart['type'] = null;
+        $cart = Cart::where('user_id', Auth::id())->first();
+        if ($cart) {
+            $cart->vendors()->detach($vendorId);
+            if ($cart->type === 'custom' && ! $cart->vendors()->exists()) {
+                $cart->update(['type' => null]);
+            }
         }
 
-        session()->put('cart', $cart);
+        Cart::forCurrentUser();
 
         return redirect()
             ->route('user.cart')
@@ -143,7 +136,7 @@ class CartController extends Controller
 
     public function clear()
     {
-        session()->forget('cart');
+        Cart::clearForCurrentUser();
 
         return redirect()
             ->route('user.cart')

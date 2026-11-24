@@ -132,10 +132,24 @@ class GoogleAuthController extends Controller
             return $this->handleMobileCallback(substr($state, 7));
         }
 
+        if ($request->filled('error') || ! $request->filled('code')) {
+            return redirect()->route('login')->with(
+                'error',
+                'Proses masuk menggunakan Google dibatalkan.'
+            );
+        }
+
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $e) {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            try {
+                $googleUser = Socialite::driver('google')->stateless()->user();
+            } catch (\Throwable $fallbackException) {
+                return redirect()->route('login')->with(
+                    'error',
+                    'Sesi autentikasi Google tidak valid atau telah berakhir. Silakan coba lagi.'
+                );
+            }
         }
 
         // Pendekatan 1 (Strict Auth Separation):

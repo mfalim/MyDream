@@ -1,28 +1,37 @@
+@keyframes member-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
 .membership-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 32px 18px;
-    background: linear-gradient(135deg, rgba(17, 63, 58, 0.98) 0%, rgba(38, 91, 82, 0.94) 40%, rgba(19, 127, 106, 0.86) 100%);
+    background:
+        radial-gradient(circle at top right, rgba(244, 228, 230, 0.8) 0%, rgba(251, 243, 236, 0) 42%),
+        radial-gradient(circle at bottom left, rgba(243, 230, 216, 0.85) 0%, rgba(251, 243, 236, 0) 45%),
+        var(--wo-bg);
 }
 
 .profile-shell {
     width: min(760px, 100%);
+    animation: member-fade-up 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .profile-card {
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--wo-border);
     border-radius: 24px;
-    background: rgba(255, 255, 255, 0.97);
-    box-shadow: 0 28px 70px rgba(7, 34, 31, 0.28);
+    background: var(--wo-surface);
+    box-shadow: 0 22px 54px rgba(92, 22, 32, 0.12);
 }
 
 .profile-card .card-header {
-    padding: 1.1rem 1.35rem;
+    padding: 1.25rem 1.5rem;
     border: 0;
-    background: linear-gradient(135deg, var(--wo-primary) 0%, #1d4f49 100%);
+    background: var(--wo-gradient);
     color: #fff;
 }
 
@@ -31,21 +40,27 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 1.2rem;
+    font-family: var(--wo-font-display);
+    font-size: 1.35rem;
     font-weight: 700;
 }
 
+.profile-card .card-header h4 i {
+    color: #F1D7A8;
+}
+
 .profile-card .card-body {
-    padding: clamp(1.2rem, 2vw, 2rem);
+    padding: clamp(1.25rem, 2.2vw, 2rem);
 }
 
 .profile-banner {
-    margin-bottom: 1.25rem;
-    padding: 0.9rem 1rem;
-    border: 1px solid #dfeef1;
-    border-radius: 12px;
-    background: linear-gradient(135deg, rgba(111, 170, 153, 0.12), rgba(198, 154, 76, 0.08));
+    margin-bottom: 1.3rem;
+    padding: 0.95rem 1.1rem;
+    border: 1px solid #EAD3D6;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--wo-bg) 0%, var(--wo-primary-soft) 100%);
     color: var(--wo-ink-soft);
+    font-size: 0.9rem;
 }
 
 .profile-banner strong {
@@ -57,30 +72,31 @@
 }
 
 .form-label {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
     color: var(--wo-primary);
-    font-size: 0.85rem;
+    font-size: 0.83rem;
     font-weight: 700;
 }
 
 .form-control,
 .form-select {
-    min-height: 48px;
+    min-height: 46px;
     border: 1px solid var(--wo-border-strong);
     border-radius: 12px;
     background: #fff;
     color: var(--wo-ink);
     box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-control:focus,
 .form-select:focus {
-    border-color: rgba(18, 91, 82, 0.6);
-    box-shadow: 0 0 0 0.2rem rgba(18, 91, 82, 0.12);
+    border-color: var(--wo-primary);
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.12);
 }
 
 .form-control:disabled {
-    background: #f3f7f6;
+    background: var(--wo-surface-soft);
     color: var(--wo-text-muted);
 }
 
@@ -100,26 +116,45 @@
 }
 
 .profile-submit {
+    position: relative;
+    overflow: hidden;
     display: flex;
+    align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 52px;
+    min-height: 50px;
     border: 0;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--wo-primary) 0%, #1a6b5b 100%);
+    border-radius: 999px;
+    background: var(--wo-gradient);
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.96rem;
     font-weight: 700;
-    box-shadow: 0 18px 26px rgba(17, 63, 58, 0.14);
+    box-shadow: 0 12px 24px rgba(122, 31, 43, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-submit::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.26) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
 }
 
 .profile-submit:hover {
     color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 16px 28px rgba(122, 31, 43, 0.28);
+}
+
+.profile-submit:hover::after {
+    transform: translateX(120%);
 }
 
 @media (max-width: 575px) {
     .membership-page {
-        padding: 24px 14px;
+        padding: 20px 14px;
     }
 
     .info-meta {
@@ -127,6 +162,6 @@
     }
 
     .profile-card .card-header h4 {
-        font-size: 1.04rem;
+        font-size: 1.15rem;
     }
 }

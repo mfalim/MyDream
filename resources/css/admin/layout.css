@@ -479,3 +479,49 @@
         padding: 20px 16px;
     }
 }
+
+/* ==========================================================================
+   SUBTLE MICRO-ANIMATIONS (Selaras dengan Landing Page, Ringan untuk Kerja)
+   ========================================================================== */
+@keyframes admin-fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+}
+
+.admin-content {
+    animation: admin-fade-up 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.admin-layout .btn-director {
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-layout .btn-director::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.24) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.admin-layout .btn-director:hover::after {
+    transform: translateX(120%);
+}
+
+.admin-content table tbody tr {
+    transition: background-color 0.18s ease;
+}
+
+.admin-content table.table-hover tbody tr:hover {
+    --bs-table-hover-bg: #FCF6F4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-content,
+    .admin-layout .btn-director::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

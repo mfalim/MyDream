@@ -17,9 +17,24 @@
 
     <div class="login-container">
 
+        @php
+            $u = fn (string $id) => "https://images.unsplash.com/{$id}?w=1200&q=80&auto=format&fit=crop";
+            $loginSlides = [
+                \App\Support\Media::home('hero-1', $u('photo-1519741497674-611481863552')),
+                \App\Support\Media::home('hero-2', $u('photo-1522673607200-164d1b6ce486')),
+                \App\Support\Media::home('hero-3', $u('photo-1465495976277-4387d4b0b4c6')),
+            ];
+        @endphp
+
         <!-- LEFT HERO (LANDING PAGE STYLE) -->
-        <div class="image-section">
+        <div class="image-section" data-hero>
+            <div class="login-hero-slides" aria-hidden="true">
+                @foreach ($loginSlides as $i => $slideUrl)
+                    <img src="{{ $slideUrl }}" alt="" class="login-hero-slide" style="animation-delay: {{ $i * 6 }}s">
+                @endforeach
+            </div>
             <div class="image-overlay"></div>
+            <div class="hero-glow" aria-hidden="true"></div>
 
             <div class="image-top">
                 <div class="hero-pill">
@@ -166,7 +181,7 @@
                     </div>
 
                     <!-- GOOGLE LOGIN -->
-                    <a href="{{ url('/auth/google') }}" class="google-button">
+                    <a href="{{ url('/auth/google') }}" class="google-button" data-no-transition>
                         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#4285F4" d="M21.35 12.27c0-.68-.06-1.35-.17-1.98H12v3.75h5.22a4.47 4.47 0 0 1-1.94 2.93v2.44h3.14c1.84-1.69 2.93-4.18 2.93-7.14z"/>
                             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.34l-3.14-2.44c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"/>
@@ -180,7 +195,7 @@
                 <!-- TAB 2: REGISTER FORM (CLIENT) -->
                 <div id="auth-panel-register" class="auth-panel {{ $activeTab === 'register' ? 'active' : '' }}">
                     <!-- GOOGLE INSTANT REGISTRATION -->
-                    <a href="{{ url('/auth/google') }}" class="google-button">
+                    <a href="{{ url('/auth/google') }}" class="google-button" data-no-transition>
                         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#4285F4" d="M21.35 12.27c0-.68-.06-1.35-.17-1.98H12v3.75h5.22a4.47 4.47 0 0 1-1.94 2.93v2.44h3.14c1.84-1.69 2.93-4.18 2.93-7.14z"/>
                             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.34l-3.14-2.44c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"/>
@@ -293,6 +308,8 @@
 
     </div>
 
+    <!-- Landing Page Pointer & Magnetic FX -->
+    <script src="{{ asset('js/site.js') }}" defer></script>
     <!-- Snowfall & Golden Shimmer Effect Script -->
     <script src="{{ asset('js/wedding-snowfall.js') }}"></script>
     <script>

@@ -447,7 +447,7 @@
 
 .badge-approved {
     background: #edf7f2;
-    color: #922B39;
+    color: #1f6f54;
     border: 1px solid #cce5da;
 }
 
@@ -477,6 +477,41 @@
     .dashboard-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+/* Micro-animations Dashboard Admin */
+.btn-dash-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-dash-primary::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.25) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.btn-dash-primary:hover::after {
+    transform: translateX(120%);
+}
+
+.stats-grid-4 .stat-card-luxury {
+    animation: admin-fade-up 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.stats-grid-4 .stat-card-luxury:nth-child(2) { animation-delay: 0.05s; }
+.stats-grid-4 .stat-card-luxury:nth-child(3) { animation-delay: 0.1s; }
+.stats-grid-4 .stat-card-luxury:nth-child(4) { animation-delay: 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+    .stats-grid-4 .stat-card-luxury,
+    .btn-dash-primary::after {
+        animation: none !important;
+        transition: none !important;
     }
 }
 

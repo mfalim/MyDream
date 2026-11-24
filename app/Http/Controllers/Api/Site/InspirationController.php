@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers\Api\Site;
 
-use App\Data\Site\InspirationData;
 use App\Http\Controllers\Controller;
-use App\Models\Package;
+use App\Models\Inspiration;
 use Illuminate\Http\Request;
 
 class InspirationController extends Controller
 {
     public function index(Request $request)
     {
-        $themes = InspirationData::themes();
-        $theme = in_array($request->query('theme'), $themes, true) ? $request->query('theme') : null;
+        $themes = Inspiration::approved()->distinct()->orderBy('theme')->pluck('theme');
+        $theme = $themes->contains($request->query('theme')) ? $request->query('theme') : null;
+
+        $items = Inspiration::approved()
+            ->with('photos')
+            ->when($theme, fn ($q) => $q->where('theme', $theme))
+            ->orderByDesc('reviewed_at')
+            ->orderByDesc('id')
+            ->get();
 
         return response()->json([
-            'data' => collect(InspirationData::all())->when($theme, fn ($items) => $items->where('theme', $theme))->values(),
+            'data' => $items,
             'themes' => $themes,
             'active_theme' => $theme,
         ]);
@@ -23,14 +29,22 @@ class InspirationController extends Controller
 
     public function show(string $slug)
     {
-        $item = InspirationData::find($slug);
-        abort_if(! $item, 404);
-        $package = ! empty($item['package_slug']) ? Package::where('slug', $item['package_slug'])->first() : null;
+        $item = Inspiration::approved()
+            ->with(['photos', 'package'])
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $related = Inspiration::approved()
+            ->with('photos')
+            ->where('id', '!=', $item->id)
+            ->latest('id')
+            ->take(3)
+            ->get();
 
         return response()->json([
             'data' => $item,
-            'package' => $package,
-            'related' => collect(InspirationData::all())->where('slug', '!=', $slug)->take(3)->values(),
+            'package' => $item->package,
+            'related' => $related,
         ]);
     }
 }

@@ -535,6 +535,8 @@ class ClientController extends Controller
                 ]);
             }
 
+            \App\Models\Cart::where('user_id', $client->users_id)->delete();
+
             return $booking;
         });
 

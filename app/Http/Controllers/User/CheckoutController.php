@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Cart;
 use App\Models\Client;
 use App\Models\Event;
 use App\Models\Package;
@@ -16,11 +17,7 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        $cart = session()->get('cart', [
-            'type' => null,
-            'package_id' => null,
-            'vendor_ids' => [],
-        ]);
+        $cart = Cart::forCurrentUser();
 
         if (empty($cart['type'])) {
             return redirect()
@@ -94,7 +91,7 @@ class CheckoutController extends Controller
 
     public function quote(Request $request)
     {
-        $cart = session()->get('cart');
+        $cart = Cart::forCurrentUser();
         if (($cart['type'] ?? null) !== 'custom' || empty($cart['vendor_ids'])) {
             return response()->json(['message' => 'Keranjang vendor custom tidak ditemukan.'], 422);
         }
@@ -132,7 +129,7 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $cart = session()->get('cart');
+        $cart = Cart::forCurrentUser();
         if (empty($cart['type'])) {
             return redirect()
                 ->route('cart.index')
@@ -290,7 +287,7 @@ class CheckoutController extends Controller
             }
 
             session()->put('booking_id', $booking->id);
-            session()->forget('cart');
+            Cart::clearForCurrentUser();
 
             DB::commit();
 

@@ -816,3 +816,71 @@
         font-size: 0.74rem;
     }
 }
+
+/* ==========================================================================
+   SUBTLE MICRO-ANIMATIONS (Selaras dengan Landing Page & Admin)
+   ========================================================================== */
+@keyframes member-fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+.member-hero {
+    animation: member-fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.member-stats .member-stat-card {
+    animation: member-fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.member-stats .member-stat-card:nth-child(1) { animation-delay: 0.04s; }
+.member-stats .member-stat-card:nth-child(2) { animation-delay: 0.08s; }
+.member-stats .member-stat-card:nth-child(3) { animation-delay: 0.12s; }
+.member-stats .member-stat-card:nth-child(4) { animation-delay: 0.16s; }
+
+.member-summary-grid .member-summary-panel {
+    animation: member-fade-up 0.48s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.member-summary-grid .member-summary-panel:nth-child(1) { animation-delay: 0.12s; }
+.member-summary-grid .member-summary-panel:nth-child(2) { animation-delay: 0.16s; }
+.member-summary-grid .member-summary-panel:nth-child(3) { animation-delay: 0.2s; }
+
+.member-summary-grid .member-summary-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(92, 22, 32, 0.1);
+}
+
+.member-event-card {
+    animation: member-fade-up 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.18s both;
+}
+
+.coord-save-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.coord-save-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.26) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.coord-save-btn:hover:not(:disabled)::after {
+    transform: translateX(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .member-hero,
+    .member-stats .member-stat-card,
+    .member-summary-grid .member-summary-panel,
+    .member-event-card,
+    .coord-save-btn::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

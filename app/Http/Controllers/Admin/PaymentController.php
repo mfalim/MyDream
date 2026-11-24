@@ -27,13 +27,18 @@ class PaymentController extends Controller
 
     public function index(Request $request): View
     {
-        // Sinkronkan transaksi Midtrans yang masih aktif sebelum menampilkan daftar
-        $activeMidtrans = Payment::where('method', 'midtrans')
-            ->whereIn('status', ['initiated', 'pending'])
-            ->get();
-        foreach ($activeMidtrans as $mp) {
-            if ($mp->syncWithMidtrans()) {
-                $mp->booking?->syncPaymentStatus();
+        // Sinkronkan transaksi Midtrans aktif (maks. 1x per 60 detik & tidak saat hanya pindah tab AJAX)
+        if (! $request->ajax() && \Illuminate\Support\Facades\Cache::add('admin_payments_midtrans_sync', 1, 60)) {
+            $activeMidtrans = Payment::where('method', 'midtrans')
+                ->whereIn('status', ['initiated', 'pending'])
+                ->where('created_at', '>=', now()->subDay())
+                ->latest('id')
+                ->limit(5)
+                ->get();
+            foreach ($activeMidtrans as $mp) {
+                if ($mp->syncWithMidtrans()) {
+                    $mp->booking?->syncPaymentStatus();
+                }
             }
         }
 

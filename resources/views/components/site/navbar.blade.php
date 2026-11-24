@@ -1,5 +1,5 @@
 @php
-    $cart = session('cart', []);
+    $cart = \App\Models\Cart::forCurrentUser();
     $cartCount = ($cart['type'] ?? null) === 'package' ? 1 : count($cart['vendor_ids'] ?? []);
 
     $links = [
