@@ -7,26 +7,26 @@
     margin-bottom: 18px;
     overflow: hidden;
     border: 1px solid #E8D8CC;
-    border-radius: 10px;
-    background: #ffffff;
+    border-radius: 14px;
+    background: #FFFDFB;
 }
 
 .section-header,
 .form-footer {
     background: #FCF8F4;
-    border-color: #edf1ef;
+    border-color: #E8D8CC;
 }
 
 .section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid #edf1ef;
+    padding: 16px 22px;
+    border-bottom: 1px solid #E8D8CC;
 }
 
 .section-body {
-    padding: 20px;
+    padding: 22px;
 }
 
 .personal-grid,
@@ -56,8 +56,8 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    border-radius: 9px;
-    background: #f1f6f3;
+    border-radius: 12px;
+    background: #FCF8F4;
     text-align: center;
 }
 
@@ -67,7 +67,7 @@
     margin-bottom: 12px;
     overflow: hidden;
     border-radius: 50%;
-    background: #dfe1e0;
+    background: #F4E4E6;
 }
 
 .photo-preview img {
@@ -79,25 +79,25 @@
 .form-control-custom,
 .form-select-custom {
     width: 100%;
-    border: 1px solid #e0e7e4;
-    border-radius: 7px;
-    background: #ffffff;
-    padding: 10px 11px;
-    color: #354a44;
-    font-size: 12px;
+    border: 1px solid #E2D4C6;
+    border-radius: 10px;
+    background: #FFFFFF;
+    padding: 10px 12px;
+    color: #2B211C;
+    font-size: 13.5px;
 }
 
 .form-footer {
     display: flex;
     justify-content: flex-end;
-    gap: 8px;
-    padding: 16px 20px;
-    border-top: 1px solid #edf1ef;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid #E8D8CC;
 }
 
 .btn-save,
 .btn-cancel {
-    border-radius: 7px;
+    border-radius: 10px;
     padding: 10px 18px;
     font-size: 13.5px;
     font-weight: 600;
@@ -107,7 +107,7 @@
 .btn-save {
     border: 0;
     background: #7A1F2B;
-    color: #ffffff;
+    color: #FFFFFF;
 }
 
 @media (max-width: 850px) {

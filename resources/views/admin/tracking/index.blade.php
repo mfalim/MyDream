@@ -227,141 +227,6 @@
                         </div>
                     </td>
                 </tr>
-
-                <!-- Modal Approve -->
-                <div class="modal fade" id="approveModal{{ $booking->id }}" tabindex="-1">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Kelola Booking #{{ $booking->id }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Client</label>
-                                    <p class="mb-0">{{ $booking->client->groom_name ?? 'N/A' }} & {{ $booking->client->bride_name ?? 'N/A' }}</p>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Venue</label>
-                                    <p class="mb-0">{{ $booking->venue_name }}</p>
-                                </div>
-                                <div class="p-3 rounded-3 border bg-light mb-3">
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="small fw-bold text-uppercase text-muted">Status Kas Klien</span>
-                                        <span class="badge bg-{{ $payBadgeClass }}">{{ $payLabel }}</span>
-                                    </div>
-                                    <div class="fw-bold">Kontrak: Rp {{ number_format($totalAmt, 0, ',', '.') }}</div>
-                                    <div class="small text-muted">
-                                        Dana Masuk: <strong class="text-success">Rp {{ number_format($paidAmt, 0, ',', '.') }}</strong>
-                                        · Sisa Piutang: <strong class="text-danger">Rp {{ number_format($remAmt, 0, ',', '.') }}</strong>
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">Status Booking <span class="text-danger">*</span></label>
-                                    <select class="form-select" id="status{{ $booking->id }}">
-                                        <option value="pending" {{ $booking->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="approved" {{ $booking->status === 'approved' ? 'selected' : '' }}>Approved</option>
-                                        <option value="rejected" {{ $booking->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3" id="coordinatorSection{{ $booking->id }}" style="display: {{ $booking->status === 'approved' ? 'block' : 'none' }};">
-                                    <div class="border rounded-3 p-3 bg-light-subtle">
-                                        <div class="d-flex align-items-center gap-2 mb-3">
-                                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
-                                                <i class="bi bi-person-badge"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold">Coordinator Utama</div>
-                                                <small class="text-muted">Penanggung jawab utama event</small>
-                                            </div>
-                                        </div>
-
-                                        <div class="row g-2">
-                                            <div class="col-md-7">
-                                                <label class="form-label small fw-semibold mb-1">Pilih Member</label>
-                                                <select class="form-select" id="coordinator{{ $booking->id }}">
-                                                    <option value="">Pilih coordinator utama</option>
-                                                    @foreach($members as $member)
-                                                        <option value="{{ $member->id }}" {{ $leadCoordinator && $leadCoordinator->id == $member->id ? 'selected' : '' }}>
-                                                            {{ $member->name }} ({{ $member->call_sign }})
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="col-md-5">
-                                                <label class="form-label small fw-semibold mb-1">Role</label>
-                                                <select class="form-select form-select-sm" id="coordinatorRole{{ $booking->id }}">
-                                                    <option value="Lead Coordinator" {{ ($leadCoordinator && $leadCoordinator->id == ($firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')?->member_id ?? null)) ? 'selected' : '' }}>
-                                                        Lead Coordinator
-                                                    </option>
-                                                    <option value="Coordinator" {{ !($leadCoordinator && $leadCoordinator->id == ($firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')?->member_id ?? null)) ? 'selected' : '' }}>
-                                                        Coordinator
-                                                    </option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="mt-3">
-                                            <label class="form-label small fw-semibold mb-1">Catatan Coordinator</label>
-                                            <textarea class="form-control form-control-sm" id="coordinatorNotes{{ $booking->id }}" rows="2" placeholder="Catatan khusus untuk coordinator..."></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="mb-3" id="teamSection{{ $booking->id }}" style="display: {{ $booking->status === 'approved' ? 'block' : 'none' }};">
-                                    <div class="border rounded-3 p-3 bg-white">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
-                                                    <i class="bi bi-people-fill"></i>
-                                                </div>
-                                                <div>
-                                                    <div class="fw-semibold">Anggota Tim Event</div>
-                                                    <small class="text-muted">Personel yang membantu pelaksanaan event</small>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-warning add-team-member-btn" data-booking-id="{{ $booking->id }}">+ Tambah Tim</button>
-                                        </div>
-
-                                        <div class="team-list" id="teamList{{ $booking->id }}">
-                                            <div class="row g-2 mb-2 team-item align-items-end">
-                                                <div class="col-md-5">
-                                                    <label class="form-label small fw-semibold mb-1">Pilih Member</label>
-                                                    <select class="form-select form-select-sm team-member-select" data-booking-id="{{ $booking->id }}">
-                                                        <option value="">Pilih Member</option>
-                                                        @foreach($members as $member)
-                                                            <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
-                                                                {{ $member->name }} ({{ $member->call_sign }})
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small fw-semibold mb-1">Role</label>
-                                                    <input type="text" class="form-control form-control-sm team-member-role" placeholder="Contoh: Team Member" value="Team Member">
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <label class="form-label small fw-semibold mb-1">Catatan</label>
-                                                    <input type="text" class="form-control form-control-sm team-member-notes" placeholder="Catatan">
-                                                </div>
-                                                <div class="col-md-1 d-flex align-items-end">
-                                                    <button type="button" class="btn btn-outline-danger btn-sm remove-team-btn w-100" title="Hapus">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                <button type="button" class="btn btn-primary save-booking-btn" data-booking-id="{{ $booking->id }}">Simpan</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 @empty
                 <tr>
                     <td colspan="10" class="text-center py-4">
@@ -372,6 +237,171 @@
             </tbody>
         </table>
     </div>
+
+    {{-- Modal Approve / Kelola Booking (di luar <table> agar HTML valid) --}}
+    @foreach($bookings as $booking)
+        @php
+            $payStatus = $booking->payment_status ?: 'unpaid';
+            $payBadgeClass = match($payStatus) {
+                'paid' => 'success',
+                'dp_paid' => 'info',
+                'awaiting_verification' => 'warning',
+                default => 'danger'
+            };
+            $payLabel = match($payStatus) {
+                'paid' => 'Lunas',
+                'dp_paid' => 'DP Terbayar',
+                'awaiting_verification' => 'Cek Bukti Transfer',
+                default => 'Belum Bayar'
+            };
+            $paidAmt = (float) ($booking->paid_amount ?? 0);
+            $totalAmt = (float) ($booking->total_price ?? 0);
+            $remAmt = max(0, $totalAmt - $paidAmt);
+
+            $eventData = $eventsByBooking->get($booking->id);
+            $events = $eventData ? $eventData['events'] : collect();
+            $firstEvent = $events->first();
+            $leadCoordinator = null;
+            if ($firstEvent) {
+                $leadMember = $firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')
+                    ?? $firstEvent->eventMembers->firstWhere('role', 'Coordinator');
+                $leadCoordinator = $leadMember?->member;
+            }
+        @endphp
+        <div class="modal fade" id="approveModal{{ $booking->id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Kelola Booking #{{ $booking->id }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Client</label>
+                            <p class="mb-0">{{ $booking->client->groom_name ?? 'N/A' }} &amp; {{ $booking->client->bride_name ?? 'N/A' }}</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Venue</label>
+                            <p class="mb-0">{{ $booking->venue_name }}</p>
+                        </div>
+                        <div class="p-3 rounded-3 border bg-light mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small fw-bold text-uppercase text-muted">Status Kas Klien</span>
+                                <span class="badge bg-{{ $payBadgeClass }}">{{ $payLabel }}</span>
+                            </div>
+                            <div class="fw-bold">Kontrak: Rp {{ number_format($totalAmt, 0, ',', '.') }}</div>
+                            <div class="small text-muted">
+                                Dana Masuk: <strong class="text-success">Rp {{ number_format($paidAmt, 0, ',', '.') }}</strong>
+                                · Sisa Piutang: <strong class="text-danger">Rp {{ number_format($remAmt, 0, ',', '.') }}</strong>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Status Booking <span class="text-danger">*</span></label>
+                            <select class="form-select" id="status{{ $booking->id }}">
+                                <option value="pending" {{ $booking->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="approved" {{ $booking->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                <option value="rejected" {{ $booking->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="coordinatorSection{{ $booking->id }}" style="display: {{ $booking->status === 'approved' ? 'block' : 'none' }};">
+                            <div class="border rounded-3 p-3 bg-light-subtle">
+                                <div class="d-flex align-items-center gap-2 mb-3">
+                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">Coordinator Utama</div>
+                                        <small class="text-muted">Penanggung jawab utama event</small>
+                                    </div>
+                                </div>
+
+                                <div class="row g-2">
+                                    <div class="col-md-7">
+                                        <label class="form-label small fw-semibold mb-1">Pilih Member</label>
+                                        <select class="form-select" id="coordinator{{ $booking->id }}">
+                                            <option value="">Pilih coordinator utama</option>
+                                            @foreach($members as $member)
+                                                <option value="{{ $member->id }}" {{ $leadCoordinator && $leadCoordinator->id == $member->id ? 'selected' : '' }}>
+                                                    {{ $member->name }} ({{ $member->call_sign }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <label class="form-label small fw-semibold mb-1">Role</label>
+                                        <select class="form-select form-select-sm" id="coordinatorRole{{ $booking->id }}">
+                                            <option value="Lead Coordinator" {{ ($leadCoordinator && $firstEvent && $leadCoordinator->id == ($firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')?->member_id ?? null)) ? 'selected' : '' }}>
+                                                Lead Coordinator
+                                            </option>
+                                            <option value="Coordinator" {{ !($leadCoordinator && $firstEvent && $leadCoordinator->id == ($firstEvent->eventMembers->firstWhere('role', 'Lead Coordinator')?->member_id ?? null)) ? 'selected' : '' }}>
+                                                Coordinator
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="form-label small fw-semibold mb-1">Catatan Coordinator</label>
+                                    <textarea class="form-control form-control-sm" id="coordinatorNotes{{ $booking->id }}" rows="2" placeholder="Catatan khusus untuk coordinator..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" id="teamSection{{ $booking->id }}" style="display: {{ $booking->status === 'approved' ? 'block' : 'none' }};">
+                            <div class="border rounded-3 p-3 bg-white">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 28px; height: 28px; font-size: 12px;">
+                                            <i class="bi bi-people-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">Anggota Tim Event</div>
+                                            <small class="text-muted">Personel yang membantu pelaksanaan event</small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-warning add-team-member-btn" data-booking-id="{{ $booking->id }}">+ Tambah Tim</button>
+                                </div>
+
+                                <div class="team-list" id="teamList{{ $booking->id }}">
+                                    <div class="row g-2 mb-2 team-item align-items-end">
+                                        <div class="col-md-5">
+                                            <label class="form-label small fw-semibold mb-1">Pilih Member</label>
+                                            <select class="form-select form-select-sm team-member-select" data-booking-id="{{ $booking->id }}">
+                                                <option value="">Pilih Member</option>
+                                                @foreach($members as $member)
+                                                    <option value="{{ $member->id }}" data-default-role="{{ $member->position ?? 'Team Member' }}">
+                                                        {{ $member->name }} ({{ $member->call_sign }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold mb-1">Role</label>
+                                            <input type="text" class="form-control form-control-sm team-member-role" placeholder="Contoh: Team Member" value="Team Member">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="form-label small fw-semibold mb-1">Catatan</label>
+                                            <input type="text" class="form-control form-control-sm team-member-notes" placeholder="Catatan">
+                                        </div>
+                                        <div class="col-md-1 d-flex align-items-end">
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-team-btn w-100" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-primary save-booking-btn" data-booking-id="{{ $booking->id }}">Simpan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
 </div>
 
 <script>

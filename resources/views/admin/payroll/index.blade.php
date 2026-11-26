@@ -277,69 +277,6 @@
                                 </div>
                             </td>
                         </tr>
-
-                        {{-- Modal Pencairan Dana + Rekening + Bukti Transfer per Kru --}}
-                        <div class="modal fade" id="disburseModal{{ $em->id }}" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-                                    <form action="{{ route('admin.payroll.update-status', $em->id) }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <input type="hidden" name="payment_status" value="paid">
-                                        <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
-                                            <div>
-                                                <h6 class="modal-title fw-bold mb-0">
-                                                    <i class="bi bi-cash-coin me-1"></i> Pencairan &amp; Bukti Transfer Honor Kru
-                                                </h6>
-                                                <small class="opacity-75">{{ $em->member?->name }} — Rp {{ number_format((float) $em->total_fee, 0, ',', '.') }}</small>
-                                            </div>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                        </div>
-                                        <div class="modal-body p-4">
-                                            <div class="p-3 rounded-3 border bg-light mb-3">
-                                                <div class="small fw-bold text-uppercase text-muted mb-2">
-                                                    <i class="bi bi-bank me-1"></i> Rekening Bank Tujuan Kru
-                                                </div>
-                                                <div class="row g-2">
-                                                    <div class="col-4">
-                                                        <input type="text" name="bank_name" class="form-control form-control-sm"
-                                                               value="{{ $em->member?->bank_name }}" placeholder="Bank (BCA/BRI)">
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <input type="text" name="bank_account_number" class="form-control form-control-sm"
-                                                               value="{{ $em->member?->bank_account_number }}" placeholder="No. Rekening">
-                                                    </div>
-                                                    <div class="col-4">
-                                                        <input type="text" name="bank_account_holder" class="form-control form-control-sm"
-                                                               value="{{ $em->member?->bank_account_holder ?? $em->member?->name }}" placeholder="Atas Nama">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-3">
-                                                <label class="form-label small fw-bold text-uppercase">Upload Struk Bukti Transfer (JPG/PNG/PDF)</label>
-                                                <input type="file" name="payout_proof" accept=".jpg,.jpeg,.png,.pdf" class="form-control form-control-sm">
-                                                @if($em->payout_proof_url)
-                                                    <div class="form-text text-success">
-                                                        <i class="bi bi-check-circle-fill"></i> Struk sudah diunggah (terlihat juga di Dashboard Member).
-                                                    </div>
-                                                @endif
-                                            </div>
-
-                                            <div class="mb-0">
-                                                <label class="form-label small fw-bold text-uppercase">Catatan Transaksi / Referensi Transfer</label>
-                                                <textarea name="notes" class="form-control form-control-sm" rows="2" placeholder="Contoh: Transfer BCA No. Ref 9823412 a.n {{ $em->member?->name }}"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
-                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                            <button type="submit" class="btn-fin-primary">
-                                                <i class="bi bi-check2-circle"></i> Simpan Bukti &amp; Tandai Lunas
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
                     @empty
                         <tr>
                             <td colspan="8" class="text-center py-5 text-muted">
@@ -351,6 +288,71 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Modal Pencairan Dana + Rekening + Bukti Transfer per Kru (di luar <table> agar HTML valid) --}}
+        @foreach($eventMembers as $em)
+            <div class="modal fade" id="disburseModal{{ $em->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                        <form action="{{ route('admin.payroll.update-status', $em->id) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="payment_status" value="paid">
+                            <div class="modal-header text-white" style="background: #7A1F2B; border-radius: 16px 16px 0 0;">
+                                <div>
+                                    <h6 class="modal-title fw-bold mb-0">
+                                        <i class="bi bi-cash-coin me-1"></i> Pencairan &amp; Bukti Transfer Honor Kru
+                                    </h6>
+                                    <small class="opacity-75">{{ $em->member?->name }} — Rp {{ number_format((float) $em->total_fee, 0, ',', '.') }}</small>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="p-3 rounded-3 border bg-light mb-3">
+                                    <div class="small fw-bold text-uppercase text-muted mb-2">
+                                        <i class="bi bi-bank me-1"></i> Rekening Bank Tujuan Kru
+                                    </div>
+                                    <div class="row g-2">
+                                        <div class="col-4">
+                                            <input type="text" name="bank_name" class="form-control form-control-sm"
+                                                   value="{{ $em->member?->bank_name }}" placeholder="Bank (BCA/BRI)">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="bank_account_number" class="form-control form-control-sm"
+                                                   value="{{ $em->member?->bank_account_number }}" placeholder="No. Rekening">
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="bank_account_holder" class="form-control form-control-sm"
+                                                   value="{{ $em->member?->bank_account_holder ?? $em->member?->name }}" placeholder="Atas Nama">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-uppercase">Upload Struk Bukti Transfer (JPG/PNG/PDF)</label>
+                                    <input type="file" name="payout_proof" accept=".jpg,.jpeg,.png,.pdf" class="form-control form-control-sm">
+                                    @if($em->payout_proof_url)
+                                        <div class="form-text text-success">
+                                            <i class="bi bi-check-circle-fill"></i> Struk sudah diunggah (terlihat juga di Dashboard Member).
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label small fw-bold text-uppercase">Catatan Transaksi / Referensi Transfer</label>
+                                    <textarea name="notes" class="form-control form-control-sm" rows="2" placeholder="Contoh: Transfer BCA No. Ref 9823412 a.n {{ $em->member?->name }}"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-light" style="border-radius: 0 0 16px 16px;">
+                                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn-fin-primary">
+                                    <i class="bi bi-check2-circle"></i> Simpan Bukti &amp; Tandai Lunas
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endforeach
 
         @if($eventMembers->hasPages())
             <div class="card-footer bg-white py-3">
@@ -411,7 +413,9 @@
 @push('scripts')
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-const batchModal = new bootstrap.Modal(document.getElementById('batchActionModal'));
+function getBatchModal() {
+    return bootstrap.Modal.getOrCreateInstance(document.getElementById('batchActionModal'));
+}
 
 function openProofPreview(url, title) {
     const modalEl = document.getElementById('proofPreviewModal');
@@ -500,7 +504,7 @@ function handleBatchAction(action) {
         document.getElementById('batchModalDesc').textContent = `Anda akan menandai lunas dicairkan untuk ${ids.length} kru terpilih.`;
     }
 
-    batchModal.show();
+    getBatchModal().show();
 }
 
 async function confirmBatchAction() {
@@ -508,7 +512,7 @@ async function confirmBatchAction() {
     const action = document.getElementById('batchActionType').value;
     const notes = document.getElementById('batchNotes').value;
 
-    batchModal.hide();
+    getBatchModal().hide();
 
     try {
         const response = await fetch('/admin/payroll/batch-update', {

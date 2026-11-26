@@ -7,43 +7,47 @@
 .member-stat,
 .member-toolbar,
 .member-empty {
-    border: 1px solid #e3ebe8;
-    border-radius: 10px;
-    background: #ffffff;
+    border: 1px solid #E8D8CC;
+    border-radius: 14px;
+    background: #FFFDFB;
 }
 
 .member-card {
     overflow: hidden;
+    box-shadow: 0 4px 14px rgba(92, 22, 32, 0.04);
     transition:
-        transform 0.2s,
-        box-shadow 0.2s;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .member-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(19, 56, 49, 0.08);
+    border-color: rgba(176, 141, 87, 0.55);
+    box-shadow: 0 10px 24px rgba(92, 22, 32, 0.08);
 }
 
 .member-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 16px;
 }
 
 .member-card-body {
-    padding: 12px;
+    padding: 16px;
 }
 
 .member-avatar {
     display: flex;
-    width: 43px;
-    height: 43px;
+    width: 44px;
+    height: 44px;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     overflow: hidden;
-    border-radius: 8px;
-    background: #edf3f1;
+    border-radius: 10px;
+    background: #F4E4E6;
+    color: #7A1F2B;
 }
 
 .member-avatar img {
@@ -66,13 +70,13 @@
 }
 
 .member-profile {
-    gap: 9px;
+    gap: 10px;
 }
 
 .member-actions {
     display: grid;
     grid-template-columns: 1fr 38px 38px;
-    gap: 5px;
+    gap: 6px;
 }
 
 .member-action,
@@ -84,17 +88,18 @@
 }
 
 .member-action {
-    min-height: 32px;
-    border: 0;
-    border-radius: 6px;
-    background: #eff3f1;
-    color: #415852;
-    font-size: 12px;
+    min-height: 34px;
+    border: 1px solid #E8D8CC;
+    border-radius: 8px;
+    background: #FCF8F4;
+    color: #5C4B44;
+    font-size: 12.5px;
     font-weight: 600;
 }
 
 .member-action.dark,
 .member-tab.active {
+    border-color: #7A1F2B;
     background: #7A1F2B;
     color: #ffffff;
 }
@@ -120,11 +125,5 @@
 @media (max-width: 600px) {
     .member-grid {
         grid-template-columns: 1fr;
-    }
-
-    .member-bottom {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 10px;
     }
 }

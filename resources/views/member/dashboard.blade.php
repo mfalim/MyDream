@@ -8,7 +8,7 @@
     <title>Dashboard Member - {{ $member->name }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/member/shared.css', 'resources/css/member/dashboard.css'])
 </head>
 
@@ -31,36 +31,48 @@
     $divisionLabel = $member->division ? ucwords(str_replace('-', ' ', $member->division)) : '-';
 @endphp
 
-<body>
-    <div class="member-shell">
-        <header class="member-topbar">
-            <div class="member-brand">
-                <div class="member-brand-mark"><i class="bi bi-stars"></i></div>
-                <div>
-                    <span>Member Workspace</span>
-                    <strong>MyDream Wedding</strong>
-                </div>
-            </div>
+<body class="member-portal">
+    <x-login-curtain subtitle="Crew Workspace" />
 
-            <div class="member-topbar-right">
+    {{-- STICKY TOP NAVBAR (Seragam dengan gaya Landing Page MyDream, tanpa sidebar kosong) --}}
+    <header class="member-navbar">
+        <div class="member-navbar-inner">
+            <a href="{{ route('member.dashboard') }}" class="member-navbar-brand">
+                <span class="member-navbar-mark"><i class="bi bi-stars"></i></span>
+                <span class="member-navbar-title">
+                    <strong>MyDream</strong>
+                    <small>Crew Workspace</small>
+                </span>
+            </a>
+
+            <div class="member-navbar-actions">
                 <span class="status-dot-badge status-{{ $currentStatus }}" id="topbarStatusBadge">
                     <span class="dot"></span>
                     <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
                 </span>
 
-                <div class="member-userchip">
-                    <span class="avatar-dot">{{ strtoupper(substr($member->call_sign ?? $member->name, 0, 1)) }}</span>
-                    <span>{{ $member->name }}</span>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="logout-link btn btn-link p-0 border-0">
-                            <i class="bi bi-box-arrow-right"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
+                <a href="{{ route('home') }}" target="_blank" rel="noopener" class="member-nav-link" title="Kunjungi Website">
+                    <i class="bi bi-house"></i>
+                    <span>Website</span>
+                </a>
+
+                <div class="member-nav-user">
+                    <span class="member-nav-avatar">{{ strtoupper(substr($member->call_sign ?? $member->name, 0, 1)) }}</span>
+                    <span class="member-nav-name">{{ $member->name }}</span>
                 </div>
+
+                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="member-nav-logout" title="Keluar Sistem">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Keluar</span>
+                    </button>
+                </form>
             </div>
-        </header>
+        </div>
+    </header>
+
+    <main class="member-workspace">
 
         <section class="member-hero">
             <div class="member-hero-left">
@@ -177,79 +189,13 @@
             });
         @endphp
 
-        <section class="member-summary-grid">
-            <div class="member-summary-panel">
-                <div class="summary-panel-header">
-                    <span><i class="bi bi-person-badge"></i> Profil Team</span>
+        <div class="member-content-grid">
+            <section class="member-primary-col" id="penugasan-event">
+                <div class="wo-eyebrow">
+                    <i class="bi bi-circle-fill" style="font-size: 0.42rem;"></i>
+                    Penugasan &amp; Checklist Lapangan
                 </div>
-                <ul class="summary-list">
-                    <li><span>Divisi</span><strong>{{ $divisionLabel }}</strong></li>
-                    <li><span>Jabatan</span><strong>{{ $member->position ?? '-' }}</strong></li>
-                    <li><span>Spesialisasi</span><strong>{{ $member->specialization ?? '-' }}</strong></li>
-                    <li><span>Rekening Honor</span><strong>{{ $member->formatted_bank_account ?? 'Belum Diisi' }}</strong></li>
-                    <li>
-                        <span>Status</span>
-                        <span class="status-dot-badge status-{{ $currentStatus }}" id="profileStatusBadge">
-                            <span class="dot"></span>
-                            <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
-                        </span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="member-summary-panel">
-                <div class="summary-panel-header">
-                    <span><i class="bi bi-clock-fill"></i> Tugas Hari Ini</span>
-                </div>
-                @if($todaySchedules->isNotEmpty())
-                    <ul class="summary-list compact-list">
-                        @foreach($todaySchedules as $todaySchedule)
-                            <li>
-                                <span>{{ $todaySchedule->activity }} ({{ $todaySchedule->event?->name }})</span>
-                                <strong>
-                                    {{ $todaySchedule->start_time ? \Carbon\Carbon::parse($todaySchedule->start_time)->format('H:i') : '-' }}
-                                    -
-                                    {{ $todaySchedule->end_time ? \Carbon\Carbon::parse($todaySchedule->end_time)->format('H:i') : '-' }}
-                                </strong>
-                            </li>
-                        @endforeach
-                    </ul>
-                @else
-                    <div class="mini-empty-state">
-                        <i class="bi bi-sun"></i>
-                        <span>Tidak ada tugas terjadwal hari ini.</span>
-                    </div>
-                @endif
-            </div>
-
-            <div class="member-summary-panel">
-                <div class="summary-panel-header">
-                    <span><i class="bi bi-flag-fill"></i> Agenda Event Terdekat</span>
-                </div>
-                @if($upcomingEvents->isNotEmpty())
-                    <ul class="summary-list compact-list">
-                        @foreach($upcomingEvents->take(3) as $upcomingEm)
-                            <li>
-                                <span>{{ $upcomingEm->event?->name }} ({{ $upcomingEm->role }})</span>
-                                <strong>{{ $upcomingEm->event?->event_date ? \Carbon\Carbon::parse($upcomingEm->event->event_date)->format('d M Y') : '-' }}</strong>
-                            </li>
-                        @endforeach
-                    </ul>
-                @else
-                    <div class="mini-empty-state">
-                        <i class="bi bi-calendar2-week"></i>
-                        <span>Belum ada agenda event mendatang.</span>
-                    </div>
-                @endif
-            </div>
-        </section>
-
-        <section>
-            <div class="wo-eyebrow">
-                <i class="bi bi-circle-fill" style="font-size: 0.42rem;"></i>
-                Penugasan & Checklist Lapangan
-            </div>
-            <h2 class="section-heading"><i class="bi bi-calendar-check"></i>Event & Checklist Tugas Saya</h2>
+                <h2 class="section-heading"><i class="bi bi-calendar-check"></i>Event &amp; Checklist Tugas Saya</h2>
 
             @forelse($eventMembers as $eventMember)
                 @php
@@ -518,8 +464,77 @@
                     <p>Pastikan status ketersediaan Anda <strong>Aktif</strong> atau <strong>Standby</strong> agar Admin dapat menugaskan Anda ke event mendatang.</p>
                 </div>
             @endforelse
-        </section>
-    </div>
+            </section>
+
+            {{-- KOLOM KANAN: Panel Info Sticky (Tugas Hari Ini, Agenda Terdekat, Profil & Honor) --}}
+            <aside class="member-side-col" id="profil-agenda">
+                <div class="member-summary-panel">
+                    <div class="summary-panel-header">
+                        <span><i class="bi bi-clock-fill"></i> Tugas Hari Ini</span>
+                    </div>
+                    @if($todaySchedules->isNotEmpty())
+                        <ul class="summary-list compact-list">
+                            @foreach($todaySchedules as $todaySchedule)
+                                <li>
+                                    <span>{{ $todaySchedule->activity }} ({{ $todaySchedule->event?->name }})</span>
+                                    <strong>
+                                        {{ $todaySchedule->start_time ? \Carbon\Carbon::parse($todaySchedule->start_time)->format('H:i') : '-' }}
+                                        -
+                                        {{ $todaySchedule->end_time ? \Carbon\Carbon::parse($todaySchedule->end_time)->format('H:i') : '-' }}
+                                    </strong>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="mini-empty-state">
+                            <i class="bi bi-sun"></i>
+                            <span>Tidak ada tugas terjadwal hari ini.</span>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="member-summary-panel">
+                    <div class="summary-panel-header">
+                        <span><i class="bi bi-flag-fill"></i> Agenda Event Terdekat</span>
+                    </div>
+                    @if($upcomingEvents->isNotEmpty())
+                        <ul class="summary-list compact-list">
+                            @foreach($upcomingEvents->take(3) as $upcomingEm)
+                                <li>
+                                    <span>{{ $upcomingEm->event?->name }} ({{ $upcomingEm->role }})</span>
+                                    <strong>{{ $upcomingEm->event?->event_date ? \Carbon\Carbon::parse($upcomingEm->event->event_date)->format('d M Y') : '-' }}</strong>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <div class="mini-empty-state">
+                            <i class="bi bi-calendar2-week"></i>
+                            <span>Belum ada agenda event mendatang.</span>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="member-summary-panel">
+                    <div class="summary-panel-header">
+                        <span><i class="bi bi-person-badge"></i> Profil &amp; Rekening Honor</span>
+                    </div>
+                    <ul class="summary-list">
+                        <li><span>Divisi</span><strong>{{ $divisionLabel }}</strong></li>
+                        <li><span>Jabatan</span><strong>{{ $member->position ?? '-' }}</strong></li>
+                        <li><span>Spesialisasi</span><strong>{{ $member->specialization ?? '-' }}</strong></li>
+                        <li><span>Rekening Honor</span><strong>{{ $member->formatted_bank_account ?? 'Belum Diisi' }}</strong></li>
+                        <li>
+                            <span>Status</span>
+                            <span class="status-dot-badge status-{{ $currentStatus }}" id="profileStatusBadge">
+                                <span class="dot"></span>
+                                <span class="status-text">{{ $statusMeta[$currentStatus]['label'] }}</span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </main>
 
     <div class="member-toast" id="memberToast" role="status" aria-live="polite">
         <i class="bi bi-check-circle-fill"></i>

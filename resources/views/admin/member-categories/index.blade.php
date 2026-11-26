@@ -34,7 +34,7 @@
                 <small>TOTAL KATEGORI</small>
                 <strong>{{ ($divisionCount ?? 0) + ($positionCount ?? 0) + ($specializationCount ?? 0) }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: rgba(7, 61, 54, 0.08); color: #7A1F2B;">
+            <div class="category-stat-icon is-plum">
                 <i class="bi bi-tags-fill"></i>
             </div>
         </div>
@@ -42,9 +42,9 @@
         <div class="category-stat-card">
             <div class="category-stat-info">
                 <small>DIVISI (DIVISION)</small>
-                <strong style="color: #7A1F2B;">{{ $divisionCount ?? 0 }}</strong>
+                <strong class="is-maroon">{{ $divisionCount ?? 0 }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: #edf5f2; color: #7A1F2B;">
+            <div class="category-stat-icon is-maroon">
                 <i class="bi bi-diagram-3-fill"></i>
             </div>
         </div>
@@ -52,9 +52,9 @@
         <div class="category-stat-card">
             <div class="category-stat-info">
                 <small>POSISI (POSITION)</small>
-                <strong style="color: #92530c;">{{ $positionCount ?? 0 }}</strong>
+                <strong class="is-gold">{{ $positionCount ?? 0 }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: #fdf6ec; color: #92530c;">
+            <div class="category-stat-icon is-gold">
                 <i class="bi bi-person-badge-fill"></i>
             </div>
         </div>
@@ -62,9 +62,9 @@
         <div class="category-stat-card">
             <div class="category-stat-info">
                 <small>SPESIALISASI</small>
-                <strong style="color: #1e40af;">{{ $specializationCount ?? 0 }}</strong>
+                <strong class="is-emerald">{{ $specializationCount ?? 0 }}</strong>
             </div>
-            <div class="category-stat-icon" style="background: #eff6ff; color: #1e40af;">
+            <div class="category-stat-icon is-emerald">
                 <i class="bi bi-award-fill"></i>
             </div>
         </div>
@@ -74,9 +74,9 @@
     <div class="category-filter-card">
         <form action="{{ route('admin.member-categories.index') }}" method="GET" class="row g-3 align-items-end">
             <div class="col-lg-6 col-md-5">
-                <label for="categorySearch" class="form-label small fw-bold text-muted mb-1">CARI KATEGORI</label>
+                <label for="categorySearch" class="form-label small fw-bold mb-1">CARI KATEGORI</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-search"></i></span>
+                    <span class="input-group-text border-end-0"><i class="bi bi-search"></i></span>
                     <input
                         id="categorySearch"
                         type="search"
@@ -89,7 +89,7 @@
             </div>
 
             <div class="col-lg-4 col-md-4">
-                <label for="categoryType" class="form-label small fw-bold text-muted mb-1">FILTER JENIS</label>
+                <label for="categoryType" class="form-label small fw-bold mb-1">FILTER JENIS</label>
                 <select id="categoryType" name="type" class="form-select">
                     <option value="all" @selected($typeFilter === 'all')>Semua Jenis Kategori</option>
                     <option value="division" @selected($typeFilter === 'division')>Division (Divisi)</option>
@@ -99,11 +99,11 @@
             </div>
 
             <div class="col-lg-2 col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-outline-secondary w-100 py-2">
+                <button type="submit" class="btn btn-category-filter w-100 py-2">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
                 @if(request()->filled('q') || (request('type') && request('type') !== 'all'))
-                    <a href="{{ route('admin.member-categories.index') }}" class="btn btn-light border py-2 text-muted" title="Reset filter">
+                    <a href="{{ route('admin.member-categories.index') }}" class="btn btn-category-filter py-2 px-3" title="Reset filter">
                         <i class="bi bi-arrow-counterclockwise"></i>
                     </a>
                 @endif
@@ -128,7 +128,7 @@
                         <tr>
                             <td class="text-muted small">{{ $loop->iteration + ($items->firstItem() - 1) }}</td>
                             <td>
-                                <strong class="d-block" style="color: #173f39; font-size: 14.5px;">{{ $item['name'] }}</strong>
+                                <strong class="category-name-title d-block">{{ $item['name'] }}</strong>
                             </td>
                             <td>
                                 @if ($item['type'] === 'division')
@@ -186,7 +186,7 @@
         </div>
 
         @if ($items->hasPages())
-            <div class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 border-top bg-light">
+            <div class="category-table-footer d-flex flex-wrap justify-content-between align-items-center px-4 py-3">
                 <div class="text-muted small">
                     Menampilkan <strong>{{ $items->firstItem() ?? 0 }}-{{ $items->lastItem() ?? 0 }}</strong> dari <strong>{{ $items->total() }}</strong> kategori
                 </div>
@@ -208,7 +208,7 @@
 
                 <div class="modal-header modal-header-emerald">
                     <div>
-                        <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 0.08em; font-size: 11px;">FORM KATEGORI KRU</small>
+                        <small class="text-uppercase fw-bold" style="color: #B08D57; letter-spacing: 0.1em; font-size: 11px;">FORM KATEGORI KRU</small>
                         <h5 class="modal-title mt-1" id="memberCategoryModalLabel">Tambah Kategori</h5>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
@@ -240,8 +240,8 @@
                     </div>
                 </div>
 
-                <div class="modal-footer bg-light border-top p-3">
-                    <button type="button" class="btn btn-outline-secondary px-3" data-bs-dismiss="modal">Batal</button>
+                <div class="modal-footer category-modal-footer">
+                    <button type="button" class="btn btn-category-filter px-3" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn-emerald px-4" id="saveCategoryButton">
                         <i class="bi bi-check2-circle"></i>
                         <span>Simpan</span>
@@ -266,6 +266,11 @@
         const updateUrlTemplate = '{{ route('admin.member-categories.update', ['member_category' => ':id']) }}';
 
         if (!memberCategoryModal) return;
+
+        // Pastikan modal berada langsung di <body> agar selalu tampil di atas .modal-backdrop
+        if (memberCategoryModal.parentElement !== document.body) {
+            document.body.appendChild(memberCategoryModal);
+        }
 
         memberCategoryModal.addEventListener('show.bs.modal', function (event) {
             const trigger = event.relatedTarget;

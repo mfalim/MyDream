@@ -646,3 +646,83 @@
         padding: 4px 8px;
     }
 }
+
+/* ==========================================================================
+   CLIENT DASHBOARD MICRO-ANIMATIONS (Staggered Entrance & Subtle Hover)
+   ========================================================================== */
+@keyframes dh-rise {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.dh-hero {
+    animation: dh-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.dh-payment-banner {
+    animation: dh-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) 0.06s backwards;
+}
+
+.dh-stat-grid .dh-stat-card {
+    animation: dh-rise 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dh-stat-grid .dh-stat-card:nth-child(1) { animation-delay: 0.06s; }
+.dh-stat-grid .dh-stat-card:nth-child(2) { animation-delay: 0.11s; }
+.dh-stat-grid .dh-stat-card:nth-child(3) { animation-delay: 0.16s; }
+.dh-stat-grid .dh-stat-card:nth-child(4) { animation-delay: 0.21s; }
+
+.dh-stat-grid .dh-stat-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(176, 141, 87, 0.55);
+    box-shadow: 0 10px 24px rgba(92, 22, 32, 0.08);
+}
+
+.dh-content-card {
+    animation: dh-rise 0.44s cubic-bezier(0.2, 0.7, 0.2, 1) 0.18s backwards;
+    transition: box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.dh-content-card:hover {
+    border-color: rgba(176, 141, 87, 0.45);
+    box-shadow: 0 10px 26px rgba(92, 22, 32, 0.065);
+}
+
+.dh-countdown {
+    transition: transform 0.22s ease, background-color 0.22s ease;
+}
+
+.dh-countdown:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.dh-event-row,
+.dh-vendor-row {
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.dh-event-row:hover,
+.dh-vendor-row:hover {
+    transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dh-hero,
+    .dh-payment-banner,
+    .dh-stat-grid .dh-stat-card,
+    .dh-content-card,
+    .dh-countdown,
+    .dh-event-row,
+    .dh-vendor-row {
+        animation: none !important;
+        transition: none !important;
+    }
+}

@@ -199,14 +199,14 @@ class GoogleAuthController extends Controller
                 return redirect('/member/profile/complete');
             }
 
-            return redirect('/member/dashboard');
+            return redirect('/member/dashboard')->with('login_curtain', true);
         }
 
         return match ($user->role) {
-            'admin' => redirect('/admin/dashboard'),
-            'vendor' => redirect('/vendor/dashboard'),
-            'client' => redirect('/user/dashboard'),
-            default => redirect('/user/dashboard'),
+            'admin' => redirect('/admin/dashboard')->with('login_curtain', true),
+            'vendor' => redirect('/vendor/dashboard')->with('login_curtain', true),
+            'client' => redirect('/user/dashboard')->with('login_curtain', true),
+            default => redirect('/user/dashboard')->with('login_curtain', true),
         };
     }
 

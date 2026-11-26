@@ -1,6 +1,6 @@
 /* ==========================================================================
-   KATEGORI MEMBER (DIVISI, POSISI, SPESIALISASI)
-   MyDream Wedding Organizer - Botanical Emerald Theme
+   KATEGORI MEMBER & KATEGORI VENDOR
+   MyDream Wedding Organizer - Maroon, Cream & Champagne Gold Theme
    File: resources/css/admin/members/categories.css
    ========================================================================== */
 
@@ -19,23 +19,23 @@
     margin-bottom: 24px;
 }
 .member-category-header .eyebrow {
-    color: #7A6760;
+    color: #B08D57;
     font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     margin-bottom: 4px;
 }
 .member-category-header h2 {
-    color: #173f39;
-    font-family: "Cormorant Garamond", serif;
-    font-size: 30px;
+    color: #2B211C;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(24px, 3vw, 30px);
     font-weight: 700;
     margin: 0 0 4px;
     line-height: 1.2;
 }
 .member-category-header p {
-    color: #556b62;
+    color: #7A6760;
     font-size: 14px;
     margin: 0;
 }
@@ -47,64 +47,121 @@
     gap: 14px;
     margin-bottom: 22px;
 }
+.category-stats-grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .category-stat-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    padding: 16px 18px;
-    background: #ffffff;
+    padding: 18px 20px;
+    background: #FFFDFB;
     border: 1px solid #E8D8CC;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
-    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(92, 22, 32, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .category-stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(92, 22, 32, 0.06);
+    border-color: rgba(176, 141, 87, 0.55);
+    box-shadow: 0 8px 20px rgba(92, 22, 32, 0.08);
 }
 .category-stat-info small {
     display: block;
-    color: #5a7067;
-    font-size: 12px;
-    font-weight: 600;
+    color: #7A6760;
+    font-size: 11.5px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 4px;
+    letter-spacing: 0.07em;
+    margin-bottom: 6px;
 }
 .category-stat-info strong {
-    font-size: 24px;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 26px;
     font-weight: 700;
-    color: #173f39;
+    color: #2B211C;
     line-height: 1;
 }
+.category-stat-info strong.is-maroon { color: #7A1F2B; }
+.category-stat-info strong.is-gold { color: #8B6914; }
+.category-stat-info strong.is-plum { color: #5C1620; }
+.category-stat-info strong.is-emerald { color: #1F4D3D; }
+
 .category-stat-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 20px;
     flex-shrink: 0;
 }
+.category-stat-icon.is-maroon {
+    background: #F4E4E6;
+    color: #7A1F2B;
+}
+.category-stat-icon.is-gold {
+    background: #F9F2E4;
+    color: #9A7228;
+}
+.category-stat-icon.is-plum {
+    background: rgba(92, 22, 32, 0.1);
+    color: #5C1620;
+}
+.category-stat-icon.is-emerald {
+    background: #EAF3EF;
+    color: #1F4D3D;
+}
 
 /* Filter Card */
 .category-filter-card {
-    background: #ffffff;
+    background: #FFFDFB;
     border: 1px solid #E8D8CC;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 18px 20px;
-    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.03);
+    box-shadow: 0 4px 14px rgba(92, 22, 32, 0.035);
     margin-bottom: 22px;
+}
+.category-filter-card .form-label {
+    color: #7A6760;
+    letter-spacing: 0.06em;
+}
+.category-filter-card .form-control,
+.category-filter-card .form-select,
+.category-filter-card .input-group-text,
+.category-form-card .form-control,
+.category-form-card .form-select {
+    border-color: #E2D4C6;
+    background-color: #FFFFFF;
+    color: #2B211C;
+    border-radius: 10px;
+}
+.category-filter-card .input-group .input-group-text {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: #FFFDFB;
+    color: #8C7870;
+}
+.category-filter-card .input-group .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.category-filter-card .form-control:focus,
+.category-filter-card .form-select:focus,
+.category-form-card .form-control:focus,
+.category-form-card .form-select:focus {
+    border-color: #7A1F2B;
+    box-shadow: 0 0 0 3px rgba(122, 31, 43, 0.12);
 }
 
 /* Table Card */
 .category-table-card {
-    background: #ffffff;
+    background: #FFFDFB;
     border: 1px solid #E8D8CC;
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(92, 22, 32, 0.04);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(92, 22, 32, 0.045);
     overflow: hidden;
 }
 .member-category-table {
@@ -112,134 +169,280 @@
     margin-bottom: 0;
 }
 .member-category-table thead th {
-    background: #f7faf9;
-    color: #4b6259;
+    background: #FCF8F4;
+    color: #7A6760;
     border-bottom: 1px solid #E8D8CC;
     font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    padding: 14px 18px;
+    padding: 14px 20px;
 }
 .member-category-table tbody td {
-    padding: 14px 18px;
-    border-bottom: 1px solid #f0f4f2;
+    padding: 15px 20px;
+    border-bottom: 1px solid #F3EAE2;
     vertical-align: middle;
     font-size: 14px;
-    color: #2b3b35;
+    color: #2B211C;
+    background: transparent;
+}
+.member-category-table tbody tr {
+    transition: background-color 0.15s ease;
 }
 .member-category-table tbody tr:hover {
-    background: #fafcfb;
+    background: #FBF6F1;
 }
 .member-category-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* Badges Jenis Kategori */
+.category-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.category-name-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #F4E4E6;
+    color: #7A1F2B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+.category-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #E8D8CC;
+    background: #FCF8F4;
+    flex-shrink: 0;
+}
+.category-upload-box {
+    padding: 16px;
+    border-radius: 12px;
+    background: #FCF8F4;
+    border: 1px dashed #DFCFC0;
+}
+.category-preview-img {
+    width: 112px;
+    height: 84px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #E8D8CC;
+    background: #FFFFFF;
+}
+.category-name-title {
+    color: #2B211C;
+    font-size: 14.5px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+/* Badges Jenis Kategori & Jumlah Vendor */
+.category-badge-division,
+.category-badge-position,
+.category-badge-specialization,
+.category-badge-vendor-count {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
 .category-badge-division {
     background: #F4E4E6;
     color: #7A1F2B;
-    border: 1px solid #c2dbd0;
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+    border: 1px solid rgba(122, 31, 43, 0.22);
 }
 .category-badge-position {
-    background: #fdf6ec;
-    color: #92530c;
-    border: 1px solid #fae1c3;
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+    background: #F9F2E4;
+    color: #8B6914;
+    border: 1px solid rgba(176, 141, 87, 0.35);
 }
 .category-badge-specialization {
-    background: #eff6ff;
-    color: #1e40af;
-    border: 1px solid #bfdbfe;
-    font-size: 11.5px;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+    background: #EAF3EF;
+    color: #1F4D3D;
+    border: 1px solid rgba(31, 77, 61, 0.22);
+}
+.category-badge-vendor-count {
+    background: #FCF8F4;
+    color: #5C1620;
+    border: 1px solid #E8D8CC;
+}
+.category-badge-vendor-count.is-empty {
+    background: #F6F0EA;
+    color: #8C7870;
+    border-color: #E8DDD3;
 }
 
 /* Action Buttons */
 .btn-category-action {
-    width: 32px;
-    height: 32px;
-    border-radius: 7px;
-    border: 1px solid #d4dfda;
-    background: #ffffff;
-    color: #3b5249;
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    border: 1px solid #E5D7CA;
+    background: #FFFFFF;
+    color: #5C4B44;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
+    font-size: 13.5px;
     text-decoration: none;
-    transition: all 0.15s;
+    transition: all 0.16s ease;
     cursor: pointer;
 }
 .btn-category-action:hover {
     background: #7A1F2B;
-    color: #ffffff;
+    color: #FFFFFF;
     border-color: #7A1F2B;
+    transform: translateY(-1px);
 }
 .btn-category-action.delete:hover {
-    background: #dc2626;
-    color: #ffffff;
-    border-color: #dc2626;
+    background: #B91C1C;
+    color: #FFFFFF;
+    border-color: #B91C1C;
 }
 
-/* Theme Button Emerald */
+/* Primary Theme Button (Maroon -> Dark Maroon + Gold) */
 .btn-emerald {
-    background: #7A1F2B;
-    color: #ffffff;
+    background: linear-gradient(135deg, #7A1F2B 0%, #5C1620 100%);
+    color: #FFFFFF;
     border: 1px solid #7A1F2B;
     font-size: 13.5px;
     font-weight: 600;
-    padding: 9px 18px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     text-decoration: none;
-    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(92, 22, 32, 0.18);
+    transition: all 0.2s ease;
+    cursor: pointer;
 }
 .btn-emerald:hover {
-    background: #052c27;
+    background: linear-gradient(135deg, #5C1620 0%, #441018 100%);
     color: #E2BE82;
+    border-color: #5C1620;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(92, 22, 32, 0.24);
+}
+
+.btn-category-filter {
+    background: #FCF8F4;
+    color: #5C1620;
+    border: 1px solid #DFCFC0;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13.5px;
+    transition: all 0.18s ease;
+}
+.btn-category-filter:hover {
+    background: #F4E4E6;
+    color: #7A1F2B;
+    border-color: rgba(122, 31, 43, 0.35);
+}
+
+/* Form Card (Create / Edit Kategori Vendor) */
+.category-form-card {
+    max-width: 680px;
+    background: #FFFDFB;
+    border: 1px solid #E8D8CC;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(92, 22, 32, 0.045);
+    overflow: hidden;
+}
+.category-form-card__header {
+    background: #FCF8F4;
+    border-bottom: 1px solid #E8D8CC;
+    padding: 18px 24px;
+}
+.category-form-card__header small {
+    display: block;
+    color: #B08D57;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+.category-form-card__header h5 {
+    margin: 0;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: #2B211C;
+}
+.category-form-card__body {
+    padding: 24px;
+}
+.category-form-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    background: #FCF8F4;
+    border-top: 1px solid #E8D8CC;
 }
 
 /* Modal Form Styles */
 .modal-header-emerald {
-    background: #f7faf9;
+    background: #FCF8F4;
     border-bottom: 1px solid #E8D8CC;
     padding: 18px 24px;
 }
 .modal-header-emerald .modal-title {
+    font-family: "Fraunces", Georgia, serif;
     color: #7A1F2B;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 19px;
+}
+.category-modal-footer {
+    background: #FCF8F4;
+    border-top: 1px solid #E8D8CC;
+    padding: 14px 24px;
+}
+.category-table-footer {
+    background: #FCF8F4;
+    border-top: 1px solid #E8D8CC;
+}
+
+/* Empty State */
+.category-empty-state {
+    padding: 44px 20px;
+    text-align: center;
+}
+.category-empty-state i {
+    font-size: 2.4rem;
+    color: #C7B2A3;
+    display: block;
+    margin-bottom: 10px;
+}
+.category-empty-state p {
+    color: #7A6760;
+    margin: 0;
+    font-size: 14px;
 }
 
 /* Responsif */
 @media (max-width: 991px) {
-    .category-stats-grid {
+    .category-stats-grid,
+    .category-stats-grid--3 {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 @media (max-width: 575px) {
-    .category-stats-grid {
+    .category-stats-grid,
+    .category-stats-grid--3 {
         grid-template-columns: 1fr;
     }
     .member-category-header {
@@ -247,4 +450,3 @@
         align-items: flex-start;
     }
 }
-

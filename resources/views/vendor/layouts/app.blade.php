@@ -20,6 +20,7 @@
 </head>
 
 <body class="vendor-portal">
+    <x-login-curtain subtitle="Vendor Portal" />
     {{-- MOBILE TOPBAR (Hanya tampil di layar <= 992px) --}}
     <header class="mobile-topbar">
         <button type="button" class="mobile-menu-btn" id="sidebarToggle" aria-label="Buka menu navigasi">

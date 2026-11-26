@@ -448,24 +448,77 @@
 }
 
 /* ==========================================================================
-   RESPONSIVE
+   RESPONSIVE (Laptop Kecil, Tablet & Split-Screen)
    ========================================================================== */
+.admin-layout .brand-block {
+    justify-content: space-between;
+}
+
+.admin-layout .brand-block-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+@media (max-width: 1180px) {
+    .admin-layout .sidebar {
+        width: 248px;
+        padding: 20px 14px;
+    }
+
+    .admin-main {
+        margin-left: 248px;
+        width: calc(100% - 248px);
+        max-width: calc(100% - 248px);
+    }
+
+    .admin-content {
+        padding: 24px 22px;
+    }
+}
+
 @media (max-width: 992px) {
+    .admin-layout .admin-mobile-topbar {
+        display: flex;
+        z-index: 1035;
+    }
+
     .admin-layout .dashboard-shell {
         display: block;
     }
 
     .admin-layout .sidebar {
-        position: relative;
-        inset: auto;
-        width: 100%;
-        height: auto;
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(300px, 84vw);
+        height: 100dvh;
+        z-index: 1045;
+        transform: translateX(-105%);
+        transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: 0 20px 50px rgba(43, 33, 28, 0.24);
+    }
+
+    .admin-layout .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .admin-layout .sidebar-close-btn {
+        display: inline-flex;
+    }
+
+    .admin-layout .sidebar-overlay {
+        z-index: 1040;
     }
 
     .admin-main {
         margin-left: 0;
         width: 100%;
         max-width: 100%;
+    }
+
+    .admin-content {
+        padding: 22px 18px 36px;
     }
 }
 
@@ -476,7 +529,7 @@
     }
 
     .admin-content {
-        padding: 20px 16px;
+        padding: 18px 14px 32px;
     }
 }
 
@@ -488,8 +541,11 @@
     to { opacity: 1; transform: none; }
 }
 
+/* Gunakan `backwards` (bukan `both`/`forwards`) agar setelah animasi selesai,
+   .admin-content tidak menahan stacking context yang menenggelamkan modal Bootstrap
+   di bawah .modal-backdrop (layar abu-abu). */
 .admin-content {
-    animation: admin-fade-up 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: admin-fade-up 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
 }
 
 .admin-layout .btn-director {

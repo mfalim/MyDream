@@ -77,6 +77,7 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->route('member.dashboard')
+            ->with('login_curtain', true)
             ->with('success', 'Profile berhasil dilengkapi. Selamat datang!');
     }
 }

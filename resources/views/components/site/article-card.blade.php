@@ -5,7 +5,12 @@
         <img src="{{ \App\Support\Media::url($article->photo) }}" alt="{{ $article->title }}" loading="lazy" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105">
     </div>
     <div class="mt-4 space-y-1.5">
-        <x-site.badge variant="gold">{{ $article->category }}</x-site.badge>
+        <div class="flex flex-wrap items-center gap-1.5">
+            <x-site.badge variant="gold">{{ $article->category }}</x-site.badge>
+            @if ($article->event)
+                <x-site.badge variant="maroon">True Event</x-site.badge>
+            @endif
+        </div>
         @if ($article->rating)
             <span class="inline-flex items-center gap-1 text-sm font-semibold text-amber-600" aria-label="{{ $article->rating }} dari 5 bintang">★ {{ $article->rating }}/5</span>
         @endif

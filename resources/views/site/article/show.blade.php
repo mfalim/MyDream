@@ -22,6 +22,38 @@
     </section>
 
     <article class="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+        @if ($article->event)
+            @php
+                $ev = $article->event;
+                $evClient = $ev->booking?->client;
+                $evCouple = $evClient ? trim(($evClient->groom_name ?? '') . ' & ' . ($evClient->bride_name ?? ''), ' &') : null;
+                $evDate = $ev->event_date ? $ev->event_date->locale('id')->translatedFormat('d F Y') : null;
+            @endphp
+            <div data-reveal="zoom" class="mb-8 rounded-2xl border border-gold/30 bg-white/80 p-5 shadow-sm">
+                <div class="flex flex-wrap items-center gap-2">
+                    <x-site.badge variant="maroon">Based on True Event</x-site.badge>
+                    @if ($ev->event_type)
+                        <span class="text-xs font-medium uppercase tracking-wider text-gold">{{ $ev->event_type }}</span>
+                    @endif
+                </div>
+                <h2 class="mt-2 font-display text-xl font-semibold text-ink">{{ $ev->name }}</h2>
+                <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-ink/70">
+                    @if ($evCouple)
+                        <span><strong class="text-ink">Mempelai:</strong> {{ $evCouple }}</span>
+                    @endif
+                    @if ($evDate)
+                        <span><strong class="text-ink">Tanggal Acara:</strong> {{ $evDate }}</span>
+                    @endif
+                    @if ($ev->guest_count)
+                        <span><strong class="text-ink">Tamu:</strong> ± {{ number_format($ev->guest_count, 0, ',', '.') }} orang</span>
+                    @endif
+                    @if ($package)
+                        <span><strong class="text-ink">Paket:</strong> {{ $package->name }}</span>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <div data-seq class="space-y-5 text-lg leading-relaxed text-ink/70">
             @foreach ($paragraphs as $paragraph)
                 <p class="whitespace-pre-line {{ $loop->first ? 'dropcap' : '' }}">{{ $paragraph }}</p>

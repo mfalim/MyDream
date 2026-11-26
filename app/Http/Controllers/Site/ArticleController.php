@@ -23,12 +23,19 @@ class ArticleController extends Controller
 
     public function show(string $slug): View
     {
-        $article = Article::published()->with(['package', 'event'])->where('slug', $slug)->firstOrFail();
+        $article = Article::published()
+            ->with(['package', 'event.booking.client', 'event.package', 'event.booking.package'])
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $package = $article->package
+            ?? $article->event?->package
+            ?? $article->event?->booking?->package;
 
         return view('site.article.show', [
             'article' => $article,
-            'package' => $article->package,
-            'related' => Article::published()->where('id', '!=', $article->id)->latestFirst()->take(3)->get(),
+            'package' => $package,
+            'related' => Article::published()->with('event')->where('id', '!=', $article->id)->latestFirst()->take(3)->get(),
         ]);
     }
 }

@@ -43,6 +43,7 @@ class ClientController extends Controller
         ]);
 
         return redirect('/user/dashboard')
+            ->with('login_curtain', true)
             ->with('success', 'Informasi pribadi berhasil disimpan.');
     }
 }

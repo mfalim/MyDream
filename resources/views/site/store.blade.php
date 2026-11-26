@@ -25,7 +25,14 @@
                 @foreach ($categories->take(8) as $i => $category)
                     <a href="{{ route('catalog.index', ['category' => $category->id]) }}" data-reveal="pop" style="--d: {{ $i * 0.08 }}s"
                        class="group flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-maroon-light font-display text-xl font-semibold text-maroon transition-all duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-maroon group-hover:text-white">{{ mb_substr($category->name, 0, 1) }}</span>
+                        @if ($category->image)
+                            <span class="h-12 w-12 shrink-0 overflow-hidden rounded-2xl bg-cream-dark ring-1 ring-black/5">
+                                <img src="{{ \App\Support\Media::url($category->image) }}" alt="{{ $category->name }}" loading="lazy"
+                                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110">
+                            </span>
+                        @else
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-maroon-light font-display text-xl font-semibold text-maroon transition-all duration-300 group-hover:rotate-6 group-hover:scale-110 group-hover:bg-maroon group-hover:text-white">{{ mb_substr($category->name, 0, 1) }}</span>
+                        @endif
                         <span class="min-w-0">
                             <span class="block truncate font-display text-base font-semibold">{{ $category->name }}</span>
                             <span class="block text-xs text-ink/50 transition-transform duration-300 group-hover:translate-x-1">Lihat vendor &rarr;</span>

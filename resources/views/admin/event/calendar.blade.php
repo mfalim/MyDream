@@ -444,7 +444,7 @@
 
     // Modal Detail Cepat Handler
     function openEventDetailModal(eventId, eventType) {
-        const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+        const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('eventDetailModal'));
         const modalCategory = document.getElementById('modalEventCategory');
         const modalTitle = document.getElementById('modalEventTitle');
         const modalBody = document.getElementById('modalEventDetail');

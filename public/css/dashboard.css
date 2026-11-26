@@ -408,3 +408,59 @@ a {
         display: inline-flex;
     }
 }
+
+/* ==========================================================================
+   SUBTLE MICRO-ANIMATIONS (Selaras dengan Dashboard Admin & Member)
+   ========================================================================== */
+@keyframes wo-dash-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Gunakan `backwards` agar tidak menahan stacking context saat modal dibuka */
+.dashboard-shell > main,
+.dashboard-shell > .wo-page {
+    animation: wo-dash-fade-up 0.36s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+}
+
+.brand-mark {
+    transition: transform 0.25s ease;
+}
+
+.brand-block:hover .brand-mark {
+    transform: rotate(8deg) scale(1.05);
+}
+
+.btn-director {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-director::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.24) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.btn-director:hover::after {
+    transform: translateX(120%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-shell > main,
+    .dashboard-shell > .wo-page,
+    .brand-mark,
+    .btn-director::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

@@ -34,6 +34,7 @@
 </head>
 
 <body>
+    <x-login-curtain subtitle="Client Portal" />
 
     {{-- MOBILE TOPBAR (Hanya tampil di layar <= 992px) --}}
     <header class="mobile-topbar">

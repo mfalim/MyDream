@@ -17,17 +17,43 @@
 </head>
 
 <body class="admin-layout">
+    <x-login-curtain subtitle="Admin Workspace" />
+
+    {{-- TABLET / SMALL-SCREEN TOPBAR (Hanya tampil di layar <= 992px) --}}
+    <header class="mobile-topbar admin-mobile-topbar">
+        <button type="button" class="mobile-menu-btn" id="sidebarToggle" aria-label="Buka menu admin">
+            <i class="bi bi-list"></i>
+        </button>
+
+        <a href="{{ route('admin.dashboard') }}" class="mobile-brand">
+            <span class="mobile-brand-mark"><i class="bi bi-gem"></i></span>
+            <span>
+                <strong>MyDream</strong>
+                <small>@yield('page-title', 'Admin Workspace')</small>
+            </span>
+        </a>
+
+        <a href="{{ route('home') }}" target="_blank" rel="noopener" class="mobile-home-btn" aria-label="Kunjungi Website" title="Kunjungi Website">
+            <i class="bi bi-arrow-up-right-circle"></i>
+        </a>
+    </header>
+
     <div class="dashboard-shell">
         <aside class="sidebar" id="sidebar">
             {{-- BRAND HEADER --}}
             <div class="brand-block">
-                <div class="brand-mark">
-                    <i class="bi bi-gem"></i>
+                <div class="brand-block-left">
+                    <div class="brand-mark">
+                        <i class="bi bi-gem"></i>
+                    </div>
+                    <div class="brand-text">
+                        <div class="brand-name">My<span>Dream</span></div>
+                        <div class="brand-subtitle">WEDDING ORGANIZER</div>
+                    </div>
                 </div>
-                <div class="brand-text">
-                    <div class="brand-name">My<span>Dream</span></div>
-                    <div class="brand-subtitle">WEDDING ORGANIZER</div>
-                </div>
+                <button type="button" class="sidebar-close-btn" id="sidebarClose" aria-label="Tutup menu">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
 
             {{-- PROFILE BADGE --}}
@@ -238,6 +264,21 @@
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Pastikan setiap modal Bootstrap di Admin selalu berada langsung di <body>
+        // agar tidak pernah terjebak di bawah .modal-backdrop (layar abu-abu).
+        document.addEventListener('show.bs.modal', function (event) {
+            const modal = event.target;
+            if (!modal || !modal.classList || !modal.classList.contains('modal')) return;
+            if (modal.parentElement !== document.body) {
+                const workspace = modal.closest('[data-ajax-workspace][id]');
+                if (workspace) {
+                    modal.dataset.hoistedFromWorkspace = workspace.id;
+                }
+                document.body.appendChild(modal);
+            }
+        });
+    </script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
     @vite('resources/js/admin/shared/ajax-workspace.js')
     @stack('scripts')

@@ -28,7 +28,7 @@
 }
 .calendar-header h2 {
     color: #173f39;
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 30px;
     font-weight: 700;
     margin: 0 0 4px;
@@ -99,7 +99,7 @@
 
 .calendar-month-title {
     color: #173f39;
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 26px;
     font-weight: 700;
     margin: 0;

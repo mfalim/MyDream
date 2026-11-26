@@ -124,7 +124,7 @@
                             $isFuture = $article->published_at && $article->published_at->isFuture();
                             $state = ! $article->is_published ? 'draft' : ($isFuture ? 'scheduled' : 'live');
                         @endphp
-                        <tr class="article-row" data-state="{{ $state }}" data-title="{{ strtolower($article->title) }}" data-category="{{ strtolower($article->category ?? '') }}" data-author="{{ strtolower($article->author ?? '') }}">
+                        <tr class="article-row" data-state="{{ $state }}" data-title="{{ strtolower($article->title . ' ' . ($article->event?->name ?? '')) }}" data-category="{{ strtolower($article->category ?? '') }}" data-author="{{ strtolower($article->author ?? '') }}">
                             <td>
                                 @if ($article->photo)
                                     <img src="{{ \App\Support\Media::url($article->photo) }}" alt="{{ $article->title }}" class="article-thumb">
@@ -143,6 +143,11 @@
                                 </div>
                                 <div class="mt-1 d-flex align-items-center gap-2 flex-wrap">
                                     <small class="text-muted"><i class="bi bi-person"></i> {{ $article->author ?: 'Tim MyDream' }}</small>
+                                    @if ($article->event)
+                                        <span class="pkg-tag" style="background: #F4E4E6; color: #7A1F2B; border-color: rgba(122, 31, 43, 0.22);">
+                                            <i class="bi bi-stars"></i> True Event: {{ $article->event->name }}
+                                        </span>
+                                    @endif
                                     @if ($article->package)
                                         <span class="pkg-tag">
                                             <i class="bi bi-box-seam"></i> Paket: {{ $article->package->name }}

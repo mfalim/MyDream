@@ -40,6 +40,18 @@ function initAjaxWorkspaces() {
                     return;
                 }
 
+                // Bersihkan modal yang sebelumnya di-hoist ke <body> dari workspace ini
+                // agar tidak terjadi duplikasi ID setelah konten diperbarui via AJAX.
+                document
+                    .querySelectorAll(
+                        `body > .modal[data-hoisted-from-workspace="${workspaceId}"]`
+                    )
+                    .forEach((el) => {
+                        const instance = window.bootstrap?.Modal?.getInstance(el);
+                        if (instance) instance.dispose();
+                        el.remove();
+                    });
+
                 workspaceEl.innerHTML = nextWorkspace.innerHTML;
                 if (pushHistory) {
                     window.history.pushState({ ajaxWorkspaceUrl: url }, '', url);

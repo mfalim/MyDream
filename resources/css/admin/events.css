@@ -28,7 +28,7 @@
 .eventday-header h2 {
     margin: 0 0 6px;
     color: #173f39;
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 32px;
     font-weight: 700;
     line-height: 1.2;
@@ -295,7 +295,7 @@
     text-transform: capitalize;
 }
 .event-couple-title {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 1.45rem;
     font-weight: 700;
     color: #5C1620;
@@ -491,7 +491,7 @@
     border-bottom: 0;
 }
 .eventday-modal .modal-header .modal-title {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 1.6rem;
     font-weight: 700;
 }
@@ -517,7 +517,7 @@
     margin-bottom: 18px;
 }
 .modal-hero-couple {
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", Georgia, serif;
     font-size: 28px;
     font-weight: 700;
     color: #5C1620;

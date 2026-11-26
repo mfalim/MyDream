@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\Event;
 use App\Models\Package;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class ArticleController extends Controller
             'author' => 'nullable|string|max:100',
             'published_at' => 'nullable|date',
             'package_id' => 'nullable|integer|exists:packages,id',
+            'event_id' => 'nullable|integer|exists:events,id',
         ];
     }
 
@@ -44,6 +46,7 @@ class ArticleController extends Controller
             'photo.max' => 'Ukuran gambar maksimal 2MB',
             'published_at.date' => 'Tanggal tayang tidak valid',
             'package_id.exists' => 'Paket tidak valid',
+            'event_id.exists' => 'Event tidak valid',
         ];
     }
 
@@ -51,6 +54,10 @@ class ArticleController extends Controller
     {
         return [
             'packages' => Package::orderBy('name')->get(),
+            'events' => Event::with(['booking.client', 'package'])
+                ->orderByDesc('event_date')
+                ->orderByDesc('id')
+                ->get(),
             'categories' => collect(self::DEFAULT_CATEGORIES)
                 ->merge(Article::distinct()->pluck('category'))->unique()->values(),
         ];
@@ -59,7 +66,7 @@ class ArticleController extends Controller
     public function index(): View
     {
         return view('admin.articles.index', [
-            'articles' => Article::with('package')->latestFirst()->get(),
+            'articles' => Article::with(['package', 'event.booking.client'])->latestFirst()->get(),
         ]);
     }
 
@@ -72,9 +79,13 @@ class ArticleController extends Controller
     {
         $request->validate($this->rules(), $this->messages());
 
-        $data = $request->only(['title', 'category', 'excerpt', 'content', 'author', 'published_at', 'package_id']);
+        $data = $request->only(['title', 'category', 'excerpt', 'content', 'author', 'published_at', 'package_id', 'event_id']);
         $data['is_published'] = $request->boolean('is_published');
         $data['author'] = $data['author'] ?: $request->user()?->name;
+        $data['event_id'] = ! empty($data['event_id']) ? (int) $data['event_id'] : null;
+        $data['client_id'] = $data['event_id']
+            ? Event::with('booking')->find($data['event_id'])?->booking?->client_id
+            : null;
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('articles', 'public');
@@ -94,8 +105,12 @@ class ArticleController extends Controller
     {
         $request->validate($this->rules(), $this->messages());
 
-        $data = $request->only(['title', 'category', 'excerpt', 'content', 'author', 'published_at', 'package_id']);
+        $data = $request->only(['title', 'category', 'excerpt', 'content', 'author', 'published_at', 'package_id', 'event_id']);
         $data['is_published'] = $request->boolean('is_published');
+        $data['event_id'] = ! empty($data['event_id']) ? (int) $data['event_id'] : null;
+        $data['client_id'] = $data['event_id']
+            ? Event::with('booking')->find($data['event_id'])?->booking?->client_id
+            : null;
 
         if ($request->hasFile('photo')) {
             $this->deletePhoto($article);
