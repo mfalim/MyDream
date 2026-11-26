@@ -213,12 +213,41 @@ class PaymentController extends Controller
                 ->first();
 
             if ($payment) {
-                return [
-                    'token' => $payment->snap_token,
-                    'redirect_url' => $payment->snap_redirect_url,
-                    'order_id' => $payment->midtrans_order_id,
-                    'payment_id' => $payment->id,
-                ];
+                $isStale = $payment->created_at && $payment->created_at->lt(now()->subHours(20));
+
+                if (! $isStale) {
+                    // Cek status terbaru ke Midtrans agar token yang sudah expire/cancel tidak dipakai ulang
+                    $payment->syncWithMidtrans();
+                    $payment->refresh();
+                }
+
+                $stillUsable = ! $isStale
+                    && in_array($payment->status, ['initiated', 'pending'], true)
+                    && in_array($payment->transaction_status, ['created', 'pending', 'capture', 'challenge'], true);
+
+                if ($stillUsable) {
+                    return [
+                        'token' => $payment->snap_token,
+                        'redirect_url' => $payment->snap_redirect_url,
+                        'order_id' => $payment->midtrans_order_id,
+                        'payment_id' => $payment->id,
+                    ];
+                }
+
+                if (in_array($payment->status, ['initiated', 'pending'], true)) {
+                    $previousStatus = $payment->status;
+                    $previousTx = $payment->transaction_status;
+                    $payment->update([
+                        'status' => 'rejected',
+                        'transaction_status' => 'expire',
+                    ]);
+                    $payment->recordLifecycleEvent(
+                        'midtrans',
+                        $previousStatus,
+                        $previousTx,
+                        'Token Midtrans lama kedaluwarsa, membuat transaksi baru.'
+                    );
+                }
             }
 
             $invoice = $lockedBooking->ensureInvoiceNumber();
@@ -242,6 +271,7 @@ class PaymentController extends Controller
             try {
                 $response = Http::withBasicAuth($serverKey, '')
                     ->acceptJson()
+                    ->withOptions(['curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4]])
                     ->timeout(20)
                     ->post($snapBaseUrl . '/snap/v1/transactions', [
                         'transaction_details' => [
@@ -255,10 +285,12 @@ class PaymentController extends Controller
                             'name' => mb_substr('Reservasi #' . $lockedBooking->id . ' - ' . $invoice, 0, 50),
                         ]],
                     ]);
-            } catch (ConnectionException) {
+            } catch (ConnectionException $e) {
                 Log::warning('Midtrans Snap request could not connect.', [
                     'booking_id' => $lockedBooking->id,
                     'order_id' => $orderId,
+                    'url' => $snapBaseUrl . '/snap/v1/transactions',
+                    'error' => $e->getMessage(),
                 ]);
                 $previousStatus = $payment->status;
                 $previousTransactionStatus = $payment->transaction_status;

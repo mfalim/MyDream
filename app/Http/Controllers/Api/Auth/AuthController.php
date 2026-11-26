@@ -98,6 +98,15 @@ class AuthController extends Controller
     {
         $user = $request->user();
 
+        if (! in_array($user->role, ['client', 'member'], true)) {
+            $user->currentAccessToken()?->delete();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Admin dan Vendor hanya dapat diakses melalui Website.',
+            ], 403);
+        }
+
         if (in_array($user->status, ['pending', 'rejected'], true)) {
             $user->currentAccessToken()?->delete();
 

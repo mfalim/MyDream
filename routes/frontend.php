@@ -18,5 +18,3 @@ Route::get('/checkout', [CheckoutController::class, 'index'])
 Route::post('/checkout', [CheckoutController::class, 'store'])
     ->middleware(['auth', EnsureUserRole::class . ':client'])
     ->name('checkout.store');
-
-Route::view('/welcome', 'welcome')->name('welcome');

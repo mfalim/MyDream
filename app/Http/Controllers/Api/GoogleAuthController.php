@@ -108,6 +108,14 @@ class GoogleAuthController extends Controller
             ], 403);
         }
 
+        // Aplikasi Mobile hanya melayani role client dan member (admin & vendor khusus Website).
+        if (! in_array($user->role, ['client', 'member'], true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Admin dan Vendor hanya dapat diakses melalui Website.',
+            ], 403);
+        }
+
         $client = Client::where('users_id', $user->id)->first();
         $member = $user->role === 'member'
             ? Member::where('user_id', $user->id)->first()
@@ -122,8 +130,6 @@ class GoogleAuthController extends Controller
         $redirectTo = match ($user->role) {
             'client' => is_null($client) ? '/login/profile' : '/user/dashboard',
             'member' => ($member && !empty($member->call_sign)) ? '/member/dashboard' : '/member/profile/complete',
-            'admin' => '/admin/dashboard',
-            'vendor' => '/vendor/dashboard',
             default => '/user/dashboard',
         };
 
