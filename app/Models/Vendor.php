@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Vendor extends Model
@@ -21,6 +22,11 @@ class Vendor extends Model
         'city',
         'instagram',
         'description',
+        'is_open',
+    ];
+
+    protected $casts = [
+        'is_open' => 'boolean',
     ];
 
     protected $appends = [
@@ -108,5 +114,10 @@ class Vendor extends Model
     public function schedules()
     {
         return $this->hasMany(Schedule::class);
+    }
+
+    public function scopeAvailableForBooking(Builder $query): Builder
+    {
+        return $query->where('is_open', true);
     }
 }

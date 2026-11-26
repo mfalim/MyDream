@@ -77,7 +77,7 @@
                         <x-site.button type="submit" size="lg" class="btn-shine w-full">Tambah ke Keranjang</x-site.button>
                     </form>
                 @else
-                    <x-site.button :href="route('login')" size="lg" class="w-full">Masuk untuk Memesan</x-site.button>
+                    <x-site.button :href="route('login', ['redirect' => url()->full()])" size="lg" class="w-full">Masuk untuk Memesan</x-site.button>
                 @endauth
 
                 <x-site.button :href="\App\Support\Format::waLink($vendor->phone, 'Halo ' . $vendor->name . ', saya melihat Anda di MyDream dan ingin bertanya.')" variant="outline" class="w-full">Chat Vendor via WhatsApp</x-site.button>

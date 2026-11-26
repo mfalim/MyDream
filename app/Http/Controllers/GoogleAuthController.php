@@ -15,11 +15,20 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController extends Controller
 {
+    public function showLogin(Request $request)
+    {
+        $this->storeIntendedRedirect($request);
+
+        return view('login.login');
+    }
+
     /**
      * Login menggunakan Username / Email + Password.
      */
     public function loginWithCredentials(Request $request)
     {
+        $this->storeIntendedRedirect($request);
+
         $validator = Validator::make($request->all(), [
             'login' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
@@ -66,6 +75,8 @@ class GoogleAuthController extends Controller
      */
     public function registerWithCredentials(Request $request)
     {
+        $this->storeIntendedRedirect($request);
+
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:120'],
             'username' => ['required', 'string', 'min:3', 'max:50', 'alpha_dash', 'unique:users,username'],
@@ -121,6 +132,8 @@ class GoogleAuthController extends Controller
                 ])
                 ->redirect();
         }
+
+        $this->storeIntendedRedirect($request);
 
         return Socialite::driver('google')->redirect();
     }
@@ -205,9 +218,41 @@ class GoogleAuthController extends Controller
         return match ($user->role) {
             'admin' => redirect('/admin/dashboard')->with('login_curtain', true),
             'vendor' => redirect('/vendor/dashboard')->with('login_curtain', true),
-            'client' => redirect('/user/dashboard')->with('login_curtain', true),
+            'client' => redirect()->intended('/user/dashboard')->with('login_curtain', true),
             default => redirect('/user/dashboard')->with('login_curtain', true),
         };
+    }
+
+    private function storeIntendedRedirect(Request $request): void
+    {
+        $redirect = $request->input('redirect');
+        if (! is_string($redirect)) {
+            return;
+        }
+
+        $parts = parse_url($redirect);
+        if (
+            ! is_array($parts)
+            || (isset($parts['host']) && strcasecmp($parts['host'], $request->getHost()) !== 0)
+            || (isset($parts['scheme']) && ! in_array(strtolower($parts['scheme']), ['http', 'https'], true))
+            || ! isset($parts['path'])
+            || ! is_string($parts['path'])
+            || ! str_starts_with($parts['path'], '/')
+            || str_starts_with($parts['path'], '//')
+            || $parts['path'] === '/login'
+        ) {
+            return;
+        }
+
+        $intendedUrl = $parts['path'];
+        if (isset($parts['query'])) {
+            $intendedUrl .= '?' . $parts['query'];
+        }
+        if (isset($parts['fragment'])) {
+            $intendedUrl .= '#' . $parts['fragment'];
+        }
+
+        $request->session()->put('url.intended', $intendedUrl);
     }
 
     /**

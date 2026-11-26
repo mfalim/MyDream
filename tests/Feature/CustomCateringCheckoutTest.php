@@ -87,6 +87,7 @@ class CustomCateringCheckoutTest extends TestCase
         $this->assertDatabaseHas('schedules', [
             'vendor_id' => $vendors[1]->id,
             'price' => 3000000,
+            'is_open' => true,
             'agreed_fee' => 3000000,
         ]);
     }
@@ -202,6 +203,7 @@ class CustomCateringCheckoutTest extends TestCase
                 'category_id' => $cateringCategory->id,
                 'price' => 10000000,
                 'guest_capacity' => 200,
+                'is_open' => true,
                 'phone' => '081234567890',
                 'address' => 'Jakarta',
             ]),
@@ -209,6 +211,7 @@ class CustomCateringCheckoutTest extends TestCase
                 'name' => 'Photography Vendor',
                 'category_id' => $photoCategory->id,
                 'price' => 3000000,
+                'is_open' => true,
                 'phone' => '081234567891',
                 'address' => 'Jakarta',
             ]),
@@ -216,6 +219,7 @@ class CustomCateringCheckoutTest extends TestCase
                 'name' => 'Decoration Vendor',
                 'category_id' => $decorCategory->id,
                 'price' => 4000000,
+                'is_open' => true,
                 'phone' => '081234567892',
                 'address' => 'Jakarta',
             ]),
@@ -265,6 +269,7 @@ class CustomCateringCheckoutTest extends TestCase
             $table->string('slug')->nullable();
             $table->decimal('price', 15, 2)->default(0);
             $table->unsignedInteger('guest_capacity')->nullable();
+            $table->boolean('is_open')->default(false);
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->text('description')->nullable();

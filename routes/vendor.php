@@ -10,6 +10,7 @@ Route::prefix('vendor')
     ->middleware(['auth', EnsureUserRole::class . ':vendor'])
     ->group(function () {
         Route::get('/dashboard', [VendorPortalController::class, 'dashboard'])->name('dashboard');
+        Route::patch('/availability', [VendorPortalController::class, 'updateAvailability'])->name('availability.update');
         Route::get('/kalender', [VendorPortalController::class, 'kalender'])->name('kalender');
         Route::get('/tracking', [VendorPortalController::class, 'tracking'])->name('tracking');
         Route::get('/kas', [VendorPortalController::class, 'kas'])->name('kas');

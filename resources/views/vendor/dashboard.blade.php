@@ -20,6 +20,29 @@
         </div>
     </section>
 
+    <section class="wo-card mb-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <span class="wo-eyebrow">Status Pemesanan</span>
+            <h2 class="h5 mb-1">
+                Sesi {{ $vendor->is_open ? 'sedang dibuka' : 'sedang ditutup' }}
+            </h2>
+            <p class="mb-0 text-muted">
+                {{ $vendor->is_open
+                    ? 'Vendor Anda dan paket yang memuat vendor Anda dapat dipesan.'
+                    : 'Vendor Anda dan paket yang memuat vendor Anda tidak akan tampil sebagai tersedia untuk dipesan.' }}
+            </p>
+        </div>
+        <form action="{{ route('vendor.availability.update') }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <input type="hidden" name="is_open" value="{{ $vendor->is_open ? 0 : 1 }}">
+            <button type="submit" class="wo-btn {{ $vendor->is_open ? 'wo-btn-outline' : 'wo-btn-dark' }}">
+                <i class="bi bi-{{ $vendor->is_open ? 'pause-circle' : 'play-circle' }}"></i>
+                {{ $vendor->is_open ? 'Tutup Sesi' : 'Buka Sesi' }}
+            </button>
+        </form>
+    </section>
+
     <div class="stats-grid">
         <div class="wo-card stat-card">
             <span class="vendor-kpi-label">Acara Hari Ini</span>

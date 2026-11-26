@@ -135,6 +135,7 @@
                     <form action="{{ route('login.attempt') }}" method="POST" class="auth-form">
                         @csrf
                         <input type="hidden" name="auth_tab" value="login">
+                        <input type="hidden" name="redirect" value="{{ session('url.intended') }}">
 
                         <div class="auth-field">
                             <label for="login_identifier">Username atau Email</label>
@@ -181,7 +182,7 @@
                     </div>
 
                     <!-- GOOGLE LOGIN -->
-                    <a href="{{ url('/auth/google') }}" class="google-button" data-no-transition>
+                    <a href="{{ route('auth.google.redirect', ['redirect' => session('url.intended')]) }}" class="google-button" data-no-transition>
                         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#4285F4" d="M21.35 12.27c0-.68-.06-1.35-.17-1.98H12v3.75h5.22a4.47 4.47 0 0 1-1.94 2.93v2.44h3.14c1.84-1.69 2.93-4.18 2.93-7.14z"/>
                             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.34l-3.14-2.44c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"/>
@@ -195,7 +196,7 @@
                 <!-- TAB 2: REGISTER FORM (CLIENT) -->
                 <div id="auth-panel-register" class="auth-panel {{ $activeTab === 'register' ? 'active' : '' }}">
                     <!-- GOOGLE INSTANT REGISTRATION -->
-                    <a href="{{ url('/auth/google') }}" class="google-button" data-no-transition>
+                    <a href="{{ route('auth.google.redirect', ['redirect' => session('url.intended')]) }}" class="google-button" data-no-transition>
                         <svg class="google-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#4285F4" d="M21.35 12.27c0-.68-.06-1.35-.17-1.98H12v3.75h5.22a4.47 4.47 0 0 1-1.94 2.93v2.44h3.14c1.84-1.69 2.93-4.18 2.93-7.14z"/>
                             <path fill="#34A853" d="M12 21.75c2.63 0 4.84-.87 6.45-2.34l-3.14-2.44c-.87.58-1.98.92-3.31.92-2.54 0-4.69-1.72-5.46-4.03H3.3v2.52A9.75 9.75 0 0 0 12 21.75z"/>
@@ -212,6 +213,7 @@
                     <form action="{{ route('register.attempt') }}" method="POST" class="auth-form">
                         @csrf
                         <input type="hidden" name="auth_tab" value="register">
+                        <input type="hidden" name="redirect" value="{{ session('url.intended') }}">
 
                         <div class="auth-field">
                             <label for="reg_name">Nama Panggilan / Lengkap <span class="req">*</span></label>

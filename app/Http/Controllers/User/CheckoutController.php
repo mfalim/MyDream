@@ -39,20 +39,29 @@ class CheckoutController extends Controller
         $maxGuests = null;
 
         if ($cart['type'] === 'package' && $cart['package_id']) {
-            $package = Package::with('vendors.category')
+            $package = Package::availableForBooking()->with('vendors.category')
                 ->find($cart['package_id']);
 
-            if ($package) {
-                $vendors = $package->vendors;
-                $totalPrice = $vendors->sum('price');
-                $maxGuests = $package->guest_capacity ?: null;
+            if (! $package) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Paket tidak tersedia karena ada vendor yang sedang menutup sesi.');
             }
+
+            $vendors = $package->vendors;
+            $totalPrice = $vendors->sum('price');
+            $maxGuests = $package->guest_capacity ?: null;
         }
 
         if ($cart['type'] === 'custom' && ! empty($cart['vendor_ids'])) {
             $vendors = Vendor::with(['category', 'photos'])
+                ->availableForBooking()
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
+
+            if ($vendors->count() !== count($cart['vendor_ids'])) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Ada vendor dalam keranjang yang sedang menutup sesi. Hapus vendor tersebut sebelum checkout.');
+            }
 
             if ($vendors->count() < 2) {
                 return redirect()
@@ -97,8 +106,13 @@ class CheckoutController extends Controller
         }
 
         $vendors = Vendor::with('category')
+            ->availableForBooking()
             ->whereIn('id', $cart['vendor_ids'])
             ->get();
+
+        if ($vendors->count() !== count($cart['vendor_ids'])) {
+            return response()->json(['message' => 'Ada vendor dalam keranjang yang sedang menutup sesi.'], 409);
+        }
 
         if ($vendors->count() < 2) {
             return response()->json(['message' => 'Minimal pilih 2 vendor untuk melanjutkan.'], 422);
@@ -141,19 +155,25 @@ class CheckoutController extends Controller
         $guestCapacity = 10000;
 
         if (($cart['type'] ?? null) === 'package' && ! empty($cart['package_id'])) {
-            $package = Package::with('vendors.category')->find($cart['package_id']);
+            $package = Package::availableForBooking()->with('vendors.category')->find($cart['package_id']);
             if (! $package) {
                 return redirect()
                     ->route('cart.index')
-                    ->with('error', 'Paket tidak ditemukan.');
+                    ->with('error', 'Paket tidak tersedia karena ada vendor yang sedang menutup sesi.');
             }
 
             $vendors = $package->vendors;
             $guestCapacity = $package->guest_capacity ?: $guestCapacity;
         } elseif (($cart['type'] ?? null) === 'custom' && ! empty($cart['vendor_ids'])) {
             $vendors = Vendor::with('category')
+                ->availableForBooking()
                 ->whereIn('id', $cart['vendor_ids'])
                 ->get();
+
+            if ($vendors->count() !== count($cart['vendor_ids'])) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Ada vendor dalam keranjang yang sedang menutup sesi. Hapus vendor tersebut sebelum checkout.');
+            }
 
             if ($vendors->count() < 2) {
                 return redirect()

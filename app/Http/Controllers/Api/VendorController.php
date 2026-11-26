@@ -15,7 +15,7 @@ class VendorController extends Controller
         $search = trim((string) $request->input('q'));
         $categoryId = $request->input('category_id');
 
-        $vendors = Vendor::with(['category', 'photos'])
+        $vendors = Vendor::availableForBooking()->with(['category', 'photos'])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('name', 'like', "%{$search}%")
@@ -40,6 +40,7 @@ class VendorController extends Controller
 
     public function show(Vendor $vendor)
     {
+        abort_unless($vendor->is_open, 404);
         $vendor->load(['category', 'photos']);
 
         return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Package extends Model
@@ -90,5 +91,12 @@ class Package extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function scopeAvailableForBooking(Builder $query): Builder
+    {
+        return $query
+            ->whereHas('vendors')
+            ->whereDoesntHave('vendors', fn (Builder $vendors) => $vendors->where('is_open', false));
     }
 }

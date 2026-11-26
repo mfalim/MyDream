@@ -9,6 +9,9 @@ class VendorController extends Controller
 {
     public function show(string $slug)
     {
-        return response()->json(['data' => Vendor::with(['category', 'photos', 'packages.vendors.photos'])->where('slug', $slug)->firstOrFail()]);
+        return response()->json(['data' => Vendor::availableForBooking()
+            ->with(['category', 'photos', 'packages' => fn ($query) => $query->availableForBooking()->with('vendors.photos')])
+            ->where('slug', $slug)
+            ->firstOrFail()]);
     }
 }

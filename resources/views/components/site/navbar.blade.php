@@ -45,6 +45,7 @@
                         $dashboard = match (auth()->user()->role) {
                             'admin' => route('admin.dashboard'),
                             'member' => route('member.dashboard'),
+                            'vendor' => route('vendor.dashboard'),
                             default => route('user.dashboard'),
                         };
                     @endphp

@@ -22,7 +22,9 @@ class CartController extends Controller
 
     public function addPackage(Request $request, int $packageId)
     {
-        $package = Package::with(['vendors.category', 'vendors.photos'])->findOrFail($packageId);
+        $package = Package::availableForBooking()
+            ->with(['vendors.category', 'vendors.photos'])
+            ->findOrFail($packageId);
         $cart = DB::transaction(function () use ($request, $package) {
             $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
             $cart->update(['type' => 'package', 'package_id' => $package->id]);
@@ -36,7 +38,7 @@ class CartController extends Controller
 
     public function addVendor(Request $request, int $vendorId)
     {
-        $vendor = Vendor::findOrFail($vendorId);
+        $vendor = Vendor::availableForBooking()->findOrFail($vendorId);
         $cart = DB::transaction(function () use ($request, $vendor) {
             $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
             $cart->refresh();
