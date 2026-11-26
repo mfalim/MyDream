@@ -187,7 +187,7 @@
                             <p class="text-center text-xs text-maroon">Tambahkan minimal {{ $minVendors }} vendor untuk melanjutkan.</p>
                         @endif
                     @else
-                        <x-site.button :href="route('login')" size="lg" class="w-full">Masuk untuk Melanjutkan</x-site.button>
+                        <x-site.button :href="route('login', ['redirect' => url()->full()])" size="lg" class="w-full">Masuk untuk Melanjutkan</x-site.button>
                     @endauth
 
                     <x-site.button :href="\App\Support\Format::waLink(config('mydream.whatsapp'), 'Halo MyDream, saya butuh bantuan soal keranjang reservasi.')" variant="ghost" class="w-full">Tanya Admin via WhatsApp</x-site.button>

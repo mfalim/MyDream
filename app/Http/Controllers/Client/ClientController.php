@@ -42,7 +42,7 @@ class ClientController extends Controller
             'email' => $validated['email'] ?? Auth::user()?->email,
         ]);
 
-        return redirect('/user/dashboard')
+        return redirect()->intended('/user/dashboard')
             ->with('success', 'Informasi pribadi berhasil disimpan.');
     }
 }
