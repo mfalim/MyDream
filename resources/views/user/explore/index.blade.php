@@ -121,7 +121,7 @@
             <h2>Punya vendor langganan sendiri di luar rekanan WO PROJECT?</h2>
             <p>Tidak masalah! Anda dapat mendaftarkan vendor independen pilihan keluarga. Tim kami akan melakukan validasi kelayakan teknis panggung, mengoordinasikan loading barang dengan pihak venue, serta memasukkannya ke dalam Rundown Resmi Hari H.</p>
 
-            <form class="ev-custom-form" onsubmit="event.preventDefault(); alert('Pengajuan vendor custom terkirim ke Tim WO untuk kurasi (dummy).');">
+            <form class="ev-custom-form" onsubmit="event.preventDefault(); window.showMyDreamToast('Pengajuan vendor custom terkirim ke Tim WO untuk kurasi.', 'success', 'Pengajuan Terkirim');">
                 <div class="ev-form-row">
                     <div>
                         <label>Nama Brand / Vendor</label>

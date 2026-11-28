@@ -28,7 +28,6 @@
 }
 .member-category-header h2 {
     color: #2B211C;
-    font-family: "Fraunces", Georgia, serif;
     font-size: clamp(24px, 3vw, 30px);
     font-weight: 700;
     margin: 0 0 4px;
@@ -77,7 +76,7 @@
     margin-bottom: 6px;
 }
 .category-stat-info strong {
-    font-family: "Fraunces", Georgia, serif;
+    font-variant-numeric: tabular-nums;
     font-size: 26px;
     font-weight: 700;
     color: #2B211C;
@@ -376,7 +375,6 @@
 }
 .category-form-card__header h5 {
     margin: 0;
-    font-family: "Fraunces", Georgia, serif;
     font-size: 19px;
     font-weight: 700;
     color: #2B211C;
@@ -401,7 +399,6 @@
     padding: 18px 24px;
 }
 .modal-header-emerald .modal-title {
-    font-family: "Fraunces", Georgia, serif;
     color: #7A1F2B;
     font-weight: 700;
     font-size: 19px;

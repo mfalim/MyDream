@@ -9,6 +9,7 @@ use App\Models\EventMember;
 use App\Models\Package;
 use App\Models\Schedule;
 use App\Models\Vendor;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class BookingController extends Controller
@@ -267,6 +268,7 @@ class BookingController extends Controller
             $photoPath = $request->file('event_photo')->store('events', 'public');
         }
 
+        $wasCompleted = $event->status === 'completed';
         $nextStatus = Event::normalizeStatus($request->event_status ?? $event->status) ?? $event->status;
 
         $event->update([
@@ -279,6 +281,16 @@ class BookingController extends Controller
             'notes' => $request->event_notes,
             'status' => $nextStatus,
         ]);
+
+        if (! $wasCompleted && $nextStatus === 'completed' && $event->booking) {
+            app(NotificationService::class)->notifyBookingClient(
+                $event->booking,
+                'booking',
+                'Acara Selesai — Bagikan Ulasan Anda',
+                "Terima kasih telah mempercayakan {$event->title} bersama MyDream. Yuk bagikan ulasan pengalaman Anda!",
+                '/my-rundown'
+            );
+        }
 
         $existingSchedules = $event->schedules->keyBy('vendor_id');
         $event->schedules()->delete();
@@ -463,6 +475,16 @@ class BookingController extends Controller
         $event->status = 'completed';
         $event->save();
 
+        if ($event->booking) {
+            app(NotificationService::class)->notifyBookingClient(
+                $event->booking,
+                'booking',
+                'Acara Selesai — Bagikan Ulasan Anda',
+                "Terima kasih telah mempercayakan {$event->title} bersama MyDream. Yuk bagikan ulasan pengalaman Anda!",
+                '/my-rundown'
+            );
+        }
+
         return back()->with('success', 'Event berhasil ditandai selesai dan divalidasi admin.');
     }
 
@@ -503,6 +525,15 @@ class BookingController extends Controller
                     'allowance' => 0,
                     'payment_status' => 'pending',
                 ]);
+
+                $dateText = $event->event_date ? ' (' . $event->event_date->format('d M Y') . ')' : '';
+                app(NotificationService::class)->notifyMember(
+                    $member,
+                    'booking',
+                    'Penugasan Event Baru',
+                    "Anda ditugaskan sebagai {$role} pada {$event->title}{$dateText}.",
+                    '/member/dashboard'
+                );
             }
         }
 

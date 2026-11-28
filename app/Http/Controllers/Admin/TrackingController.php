@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Event;
 use App\Models\Schedule;
 use App\Models\EventMember;
+use App\Models\Member;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class TrackingController extends Controller
@@ -78,13 +80,25 @@ class TrackingController extends Controller
 
     public function updateScheduleStatus(Request $request, $scheduleId)
     {
-        $schedule = Schedule::findOrFail($scheduleId);
+        $schedule = Schedule::with('event.booking.client.user')->findOrFail($scheduleId);
+        $previousStatus = $schedule->status;
 
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected',
         ]);
 
         $schedule->update(['status' => $validated['status']]);
+
+        if ($previousStatus !== $validated['status'] && in_array($validated['status'], ['approved', 'rejected'], true) && $schedule->event?->booking) {
+            $isApproved = $validated['status'] === 'approved';
+            app(NotificationService::class)->notifyBookingClient(
+                $schedule->event->booking,
+                'reminder',
+                $isApproved ? 'Kesiapan Jadwal Dikonfirmasi' : 'Jadwal Perlu Penyesuaian',
+                "Item rundown \"{$schedule->activity}\" pada {$schedule->event->title} " . ($isApproved ? 'telah dikonfirmasi siap.' : 'ditandai perlu penyesuaian oleh Admin.'),
+                '/my-rundown'
+            );
+        }
 
         return response()->json([
             'success' => true,
@@ -153,19 +167,41 @@ class TrackingController extends Controller
             }
         }
 
+        $previousStatus = $booking->status;
         $booking->update(['status' => $validated['status']]);
+        $notifier = app(NotificationService::class);
+
+        if ($previousStatus !== $validated['status'] && in_array($validated['status'], ['approved', 'rejected'], true)) {
+            $refLabel = $booking->invoice_number ?: ('Pesanan #' . $booking->id);
+            $isApproved = $validated['status'] === 'approved';
+            $notifier->notifyBookingClient(
+                $booking,
+                'booking',
+                $isApproved ? "Reservasi {$refLabel} Disetujui" : "Reservasi {$refLabel} Ditolak",
+                $isApproved
+                    ? 'Pesanan pernikahan Anda telah disetujui Admin dan tim pelaksana sedang disiapkan.'
+                    : 'Mohon maaf, pengajuan reservasi Anda belum dapat disetujui. Silakan cek detail pesanan.',
+                '/my-bookings'
+            );
+        }
 
         if ($validated['status'] === 'approved') {
             $event = Event::where('booking_id', $bookingId)->first();
 
             if ($event) {
+                $existingMemberIds = EventMember::where('event_id', $event->id)
+                    ->pluck('member_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
                 $selectedMemberIds = [];
+                $memberRoles = [];
 
                 if (! empty($validated['coordinator_id'])) {
                     $coordinatorId = (int) $validated['coordinator_id'];
                     $selectedMemberIds[] = $coordinatorId;
 
                     $role = $validated['coordinator_role'] ?? 'Lead Coordinator';
+                    $memberRoles[$coordinatorId] = $role;
 
                     \App\Models\EventMember::updateOrCreate(
                         [
@@ -194,6 +230,7 @@ class TrackingController extends Controller
 
                         $selectedMemberIds[] = $memberId;
                         $role = $validated['team_member_role'][$index] ?? 'Team Member';
+                        $memberRoles[$memberId] = $role;
                         $notes = $validated['team_member_notes'][$index] ?? null;
 
                         \App\Models\EventMember::updateOrCreate(
@@ -210,6 +247,22 @@ class TrackingController extends Controller
                                 'allowance' => 0,
                                 'payment_status' => 'pending',
                             ]
+                        );
+                    }
+                }
+
+                $newlyAssignedIds = array_values(array_diff($selectedMemberIds, $existingMemberIds));
+                if (! empty($newlyAssignedIds)) {
+                    $dateText = $event->event_date ? ' (' . $event->event_date->format('d M Y') . ')' : '';
+                    $assignedMembers = Member::with('user')->whereIn('id', $newlyAssignedIds)->get();
+                    foreach ($assignedMembers as $assignedMember) {
+                        $roleLabel = $memberRoles[$assignedMember->id] ?? 'Tim Kru';
+                        $notifier->notifyMember(
+                            $assignedMember,
+                            'booking',
+                            'Penugasan Event Baru',
+                            "Anda ditugaskan sebagai {$roleLabel} pada {$event->title}{$dateText}.",
+                            '/member/dashboard'
                         );
                     }
                 }

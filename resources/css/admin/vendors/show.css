@@ -6,11 +6,12 @@
     display: flex;
     gap: 8px;
     margin-bottom: 24px;
-    color: #71817d;
+    color: #7A6760;
     font-size: 13px;
 }
 .vendor-breadcrumb a {
-    color: #087f5b;
+    color: #7A1F2B;
+    font-weight: 600;
     text-decoration: none;
 }
 
@@ -24,12 +25,12 @@
 .vendor-detail-category {
     display: inline-block;
     margin-bottom: 8px;
-    padding: 5px 10px;
+    padding: 5px 12px;
     border-radius: 999px;
-    background: #e8f3ef;
-    color: #087f5b;
+    background: #F4E4E6;
+    color: #7A1F2B;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
 }
 .vendor-detail-header h2 {
     margin: 0 0 6px;
@@ -74,8 +75,8 @@
     aspect-ratio: 4 / 3;
     overflow: hidden;
     border: 1px solid #E8D8CC;
-    border-radius: 10px;
-    background: #edf3f1;
+    border-radius: 12px;
+    background: #FBF3EC;
 }
 .vendor-main-photo img {
     display: block;
@@ -90,7 +91,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #899793;
+    color: #7A6760;
 }
 .vendor-no-main-photo span {
     font-size: 42px;
@@ -106,16 +107,16 @@
     gap: 6px;
     padding: 16px;
     border: 1px solid #E8D8CC;
-    border-radius: 10px;
+    border-radius: 12px;
     background: #ffffff;
 }
 .package-summary-item small {
-    color: #899793;
+    color: #7A6760;
     font-size: 12px;
 }
 .package-summary-item strong {
     overflow-wrap: anywhere;
-    color: #315d55;
+    color: #2B211C;
     font-size: 14px;
 }
 .vendor-thumbnails {
@@ -129,12 +130,12 @@
     overflow: hidden;
     padding: 0;
     border: 2px solid transparent;
-    border-radius: 7px;
-    background: #edf3f1;
+    border-radius: 8px;
+    background: #FBF3EC;
     cursor: pointer;
 }
 .vendor-thumbnail.active {
-    border-color: #087f5b;
+    border-color: #7A1F2B;
 }
 .vendor-thumbnail img {
     display: block;
@@ -152,33 +153,34 @@
 }
 .vendor-info-card-header {
     padding-bottom: 14px;
-    border-bottom: 1px solid #edf1ef;
-    color: #173f39;
+    border-bottom: 1px solid #E8D8CC;
+    color: #7A1F2B;
     font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 .vendor-info-item {
     display: grid;
     gap: 4px;
     padding: 14px 0;
-    border-bottom: 1px solid #f0f3f2;
+    border-bottom: 1px solid #f2e8e0;
 }
 .vendor-info-item small {
-    color: #899793;
+    color: #7A6760;
     font-size: 12px;
 }
 .vendor-info-item strong {
     overflow-wrap: anywhere;
-    color: #315d55;
+    color: #2B211C;
     font-size: 14px;
 }
 .btn-whatsapp-detail {
     display: block;
     margin-top: 16px;
     padding: 11px 14px;
-    border-radius: 7px;
-    background: #087f5b;
+    border-radius: 8px;
+    background: #0d6e4c;
     color: #ffffff;
     text-align: center;
     text-decoration: none;
@@ -186,12 +188,12 @@
     font-weight: 600;
 }
 .btn-whatsapp-detail:hover {
-    background: #066b4c;
+    background: #09583c;
     color: #ffffff;
 }
 .vendor-description-detail {
     padding-top: 14px;
-    color: #687873;
+    color: #7A6760;
     line-height: 1.7;
     white-space: pre-line;
 }
@@ -200,10 +202,10 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    color: #687873;
+    color: #7A6760;
 }
 .vendor-photo-count strong {
-    color: #173f39;
+    color: #2B211C;
 }
 
 @media (max-width: 800px) {

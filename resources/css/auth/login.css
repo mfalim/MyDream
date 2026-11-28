@@ -620,6 +620,75 @@ body {
     color: var(--color-ink-muted);
 }
 
+/* OTP & Password Recovery Utilities */
+.auth-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.auth-label-row label {
+    margin-bottom: 0;
+}
+
+.forgot-password-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-maroon);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.forgot-password-link:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+.auth-input-wrap input.otp-code-input {
+    letter-spacing: 8px;
+    font-weight: 700;
+    font-size: 19px;
+    text-align: center;
+    padding-left: 38px;
+    padding-right: 38px;
+}
+
+.auth-alert-dev {
+    background: #FCF8F4;
+    border: 1px solid #E8D8CC;
+    color: var(--color-maroon-dark);
+}
+
+.auth-alert-dev i {
+    color: var(--color-gold);
+}
+
+.otp-resend-form {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--color-ink-muted);
+}
+
+.otp-resend-btn {
+    background: none;
+    border: 0;
+    color: var(--color-maroon);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s;
+}
+
+.otp-resend-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 /* ==========================================================
    RESPONSIVE
    ========================================================== */

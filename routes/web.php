@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthOtpController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\Client\ClientController;
 use App\Http\Controllers\Member\DashboardController as MemberDashboardController;
@@ -11,8 +12,17 @@ use App\Http\Middleware\EnsureUserRole;
 Route::get('/login', [GoogleAuthController::class, 'showLogin'])->name('login');
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
-Route::post('/login', [GoogleAuthController::class, 'loginWithCredentials'])->name('login.attempt');
-Route::post('/register', [GoogleAuthController::class, 'registerWithCredentials'])->name('register.attempt');
+Route::post('/login', [GoogleAuthController::class, 'loginWithCredentials'])->middleware('throttle:10,1')->name('login.attempt');
+Route::post('/register', [GoogleAuthController::class, 'registerWithCredentials'])->middleware('throttle:6,1')->name('register.attempt');
+
+// Verifikasi OTP Pendaftaran, Login Admin (opsional), & Lupa/Ubah Password
+Route::get('/login/otp', [AuthOtpController::class, 'showVerify'])->name('auth.otp.show');
+Route::post('/login/otp', [AuthOtpController::class, 'verify'])->middleware('throttle:10,1')->name('auth.otp.verify');
+Route::post('/login/otp/resend', [AuthOtpController::class, 'resend'])->middleware('throttle:4,1')->name('auth.otp.resend');
+Route::get('/forgot-password', [AuthOtpController::class, 'showForgotForm'])->name('password.request');
+Route::post('/forgot-password', [AuthOtpController::class, 'sendResetOtp'])->middleware('throttle:5,1')->name('password.otp.send');
+Route::get('/reset-password', [AuthOtpController::class, 'showResetForm'])->name('password.otp.form');
+Route::post('/reset-password', [AuthOtpController::class, 'resetPassword'])->middleware('throttle:10,1')->name('password.otp.update');
 
 Route::post('/logout', function () {
     Auth::logout();

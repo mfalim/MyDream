@@ -384,7 +384,8 @@ class PaymentController extends Controller
             return response()->json(['message' => 'Transaction amount mismatch.'], 422);
         }
 
-        DB::transaction(function () use ($payment, $data) {
+        $notifyStatus = null;
+        DB::transaction(function () use ($payment, $data, &$notifyStatus) {
             $lockedPayment = Payment::whereKey($payment->id)->lockForUpdate()->firstOrFail();
             $previousStatus = $lockedPayment->status;
             $previousTransactionStatus = $lockedPayment->transaction_status;
@@ -442,7 +443,28 @@ class PaymentController extends Controller
             );
 
             $lockedPayment->booking->syncPaymentStatus();
+
+            if ($previousStatus !== $lockedPayment->status && in_array($lockedPayment->status, ['verified', 'rejected'], true)) {
+                $notifyStatus = $lockedPayment->status;
+            }
         });
+
+        if ($notifyStatus !== null) {
+            $payment->loadMissing('booking.client.user');
+            if ($payment->booking) {
+                $refLabel = $payment->booking->invoice_number ?: ('Booking #' . $payment->booking->id);
+                $formattedAmount = 'Rp ' . number_format((float) $payment->amount, 0, ',', '.');
+                app(\App\Services\NotificationService::class)->notifyBookingClient(
+                    $payment->booking,
+                    'payment',
+                    $notifyStatus === 'verified' ? 'Pembayaran Berhasil Dikonfirmasi' : 'Transaksi Pembayaran Gagal',
+                    $notifyStatus === 'verified'
+                        ? "Pembayaran Midtrans {$formattedAmount} untuk {$refLabel} telah terkonfirmasi otomatis."
+                        : "Transaksi pembayaran {$formattedAmount} untuk {$refLabel} tidak berhasil atau kedaluwarsa.",
+                    '/my-bookings'
+                );
+            }
+        }
 
         return response()->json(['message' => 'Notification processed.']);
     }

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\EventMember;
 use App\Models\Member;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -156,7 +157,22 @@ class DashboardController extends Controller
             $updateData['member_id'] = $member->id;
         }
 
+        $previousStatus = $schedule->status;
         $schedule->update($updateData);
+
+        if ($previousStatus !== $schedule->status && in_array($schedule->status, ['approved', 'rejected'], true)) {
+            $schedule->loadMissing('event.booking.client.user');
+            if ($schedule->event?->booking) {
+                $isApproved = $schedule->status === 'approved';
+                app(NotificationService::class)->notifyBookingClient(
+                    $schedule->event->booking,
+                    'reminder',
+                    $isApproved ? 'Item Rundown Selesai' : 'Kendala pada Item Rundown',
+                    "Tugas \"{$schedule->activity}\" pada {$schedule->event->title} " . ($isApproved ? 'telah ditandai selesai di lapangan.' : 'dilaporkan terkendala oleh tim lapangan.'),
+                    '/my-rundown'
+                );
+            }
+        }
 
         return response()->json(['success' => true, 'message' => 'Status tugas berhasil diperbarui.']);
     }
@@ -199,9 +215,21 @@ class DashboardController extends Controller
             }
         }
 
+        $previousMemberId = $schedule->member_id;
         $schedule->update([
             'member_id' => $validated['member_id'] ?: null,
         ]);
+
+        if ($schedule->member_id && (int) $schedule->member_id !== (int) $previousMemberId && (int) $schedule->member_id !== (int) $member->id) {
+            $schedule->loadMissing(['member.user', 'event']);
+            app(NotificationService::class)->notifyMember(
+                $schedule->member,
+                'reminder',
+                'Penugasan PIC Rundown',
+                "Koordinator menugaskan Anda sebagai PIC untuk \"{$schedule->activity}\" pada " . ($schedule->event?->title ?? 'acara ini') . '.',
+                '/member/dashboard'
+            );
+        }
 
         return response()->json([
             'success' => true,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\Vendor;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -97,6 +98,10 @@ class PackageController extends Controller
 
         if ($request->vendors) {
             $package->vendors()->attach($request->vendors, ['status' => 'active']);
+        }
+
+        if ($package->is_featured) {
+            app(NotificationService::class)->broadcastExclusivePackage($package);
         }
 
         return redirect()
@@ -196,9 +201,14 @@ class PackageController extends Controller
             $updatePayload['photo'] = null;
         }
 
+        $wasFeatured = (bool) $package->is_featured;
         $package->update($updatePayload);
 
         $package->vendors()->syncWithPivotValues($request->input('vendors', []), ['status' => 'active']);
+
+        if (! $wasFeatured && $package->is_featured) {
+            app(NotificationService::class)->broadcastExclusivePackage($package);
+        }
 
         return redirect()
             ->route('admin.packages.show', $package)

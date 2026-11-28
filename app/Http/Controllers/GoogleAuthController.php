@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\GoogleAuthController as ApiGoogleAuthController;
 use App\Models\User;
 use App\Models\Client;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -64,6 +65,27 @@ class GoogleAuthController extends Controller
                 ->with('error', 'Username/Email atau password yang Anda masukkan salah.');
         }
 
+        // Jika AUTH_ADMIN_OTP=true di .env dan akun Admin memiliki email, wajibkan verifikasi OTP terlebih dahulu.
+        if ($user->role === 'admin' && config('services.auth.admin_login_otp') && ! empty($user->email)) {
+            try {
+                $meta = app(OtpService::class)->issue(OtpService::PURPOSE_ADMIN_LOGIN, $user->email, [
+                    'user_id' => $user->id,
+                ]);
+            } catch (\RuntimeException $e) {
+                return back()
+                    ->withInput(['login' => $login, 'auth_tab' => 'login'])
+                    ->with('error', $e->getMessage());
+            }
+
+            $request->session()->put('otp_flow', [
+                'challenge_id' => $meta['challenge_id'],
+                'purpose' => OtpService::PURPOSE_ADMIN_LOGIN,
+            ]);
+
+            return redirect()->route('auth.otp.show')
+                ->with('success', 'Kode verifikasi Admin telah dikirim ke ' . $meta['masked_email']);
+        }
+
         Auth::login($user);
         $request->session()->regenerate();
 
@@ -71,29 +93,13 @@ class GoogleAuthController extends Controller
     }
 
     /**
-     * Registrasi akun Klien baru menggunakan Username (+ Email opsional) & Password.
+     * Registrasi akun Klien baru menggunakan Username, Email & Password (dengan verifikasi OTP Email).
      */
-    public function registerWithCredentials(Request $request)
+    public function registerWithCredentials(Request $request, OtpService $otpService)
     {
         $this->storeIntendedRedirect($request);
 
-        $validator = Validator::make($request->all(), [
-            'name' => ['required', 'string', 'max:120'],
-            'username' => ['required', 'string', 'min:3', 'max:50', 'alpha_dash', 'unique:users,username'],
-            'email' => ['nullable', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-        ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'username.required' => 'Username wajib diisi.',
-            'username.min' => 'Username minimal 3 karakter.',
-            'username.alpha_dash' => 'Username hanya boleh berisi huruf, angka, tanda hubung (-), dan garis bawah (_).',
-            'username.unique' => 'Username tersebut sudah digunakan, silakan pilih username lain.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email tersebut sudah terdaftar pada akun lain.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 6 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-        ]);
+        $validator = Validator::make($request->all(), OtpService::REGISTER_RULES, OtpService::REGISTER_MESSAGES);
 
         if ($validator->fails()) {
             return back()
@@ -101,24 +107,21 @@ class GoogleAuthController extends Controller
                 ->withInput($request->only(['name', 'username', 'email']) + ['auth_tab' => 'register']);
         }
 
-        $data = $validator->validated();
-        $email = ! empty($data['email']) ? strtolower(trim($data['email'])) : null;
+        try {
+            $meta = $otpService->issueRegistration($validator->validated());
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput($request->only(['name', 'username', 'email']) + ['auth_tab' => 'register'])
+                ->with('error', $e->getMessage());
+        }
 
-        $user = User::create([
-            'name' => trim($data['name']),
-            'username' => strtolower(trim($data['username'])),
-            'email' => $email,
-            'password' => $data['password'],
-            'role' => 'client',
-            'status' => 'approved',
-            'google_id' => null,
-            'avatar' => null,
+        $request->session()->put('otp_flow', [
+            'challenge_id' => $meta['challenge_id'],
+            'purpose' => OtpService::PURPOSE_REGISTER,
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return $this->redirectAfterLogin($user);
+        return redirect()->route('auth.otp.show')
+            ->with('success', 'Kode OTP 6 digit telah dikirim ke ' . $meta['masked_email']);
     }
 
     public function redirect(Request $request)
@@ -186,9 +189,9 @@ class GoogleAuthController extends Controller
     }
 
     /**
-     * Alur pengecekan status dan redirect pasca-login (digunakan bersama oleh Google OAuth & Password Login).
+     * Alur pengecekan status dan redirect pasca-login (digunakan bersama oleh Google OAuth, Password Login & OTP).
      */
-    protected function redirectAfterLogin(User $user)
+    public function redirectAfterLogin(User $user)
     {
         if ($user->status === 'pending') {
             Auth::logout();

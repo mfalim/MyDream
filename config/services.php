@@ -39,7 +39,11 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET') ? trim(env('GOOGLE_CLIENT_SECRET')) : null,
         'redirect' => env('GOOGLE_REDIRECT_URI'),
         'android_client_id' => env('ANDROID_CLIENT_ID') ? trim(env('ANDROID_CLIENT_ID')) : null,
-],
+    ],
+    'auth' => [
+        // Opsional: aktifkan OTP setiap login password Admin jika SMTP produksi sudah siap.
+        'admin_login_otp' => (bool) env('AUTH_ADMIN_OTP', false),
+    ],
     'midtrans' => [
         'server_key' => env('MIDTRANS_SERVER_KEY'),
         'client_key' => env('MIDTRANS_CLIENT_KEY'),
@@ -56,6 +60,9 @@ return [
                 ? 'https://api.midtrans.com'
                 : 'https://api.sandbox.midtrans.com'
         ),
+    ],
+    'firebase' => [
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase-service-account.json')),
     ],
 
 ];

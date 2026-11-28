@@ -4,112 +4,79 @@
 @section('page-title', 'Honor & Pencairan Fee Kru')
 
 @push('styles')
-    @vite(['resources/css/admin/tracking.css', 'resources/css/admin/finance/index.css'])
+    @vite('resources/css/admin/finance/index.css')
 @endpush
 
 @section('content')
-<div class="tracking-page" id="payrollWorkspace" data-ajax-workspace>
-    {{-- Header --}}
-    <div class="tracking-header">
+<div class="finance-page" id="payrollWorkspace" data-ajax-workspace>
+    {{-- Header (Seragam dengan Pusat Keuangan) --}}
+    <div class="finance-header">
         <div>
-            <div class="tracking-eyebrow">Manajemen Keuangan Kru WO</div>
-            <h2>Honorarium, Rekening &amp; Bukti Pencairan Kru</h2>
+            <div class="finance-header-eyebrow">MANAJEMEN KEUANGAN KRU WO</div>
+            <h1>Honorarium, Rekening &amp; Bukti Pencairan Kru</h1>
             <p>Validasi jam kerja aktual dari lapangan, setujui honor kru (ACC), dan unggah bukti transfer pencairan ke rekening kru secara transparan.</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="finance-header-actions">
             <a href="{{ route('admin.payments.index') }}" class="btn-fin-primary">
-                <i class="bi bi-wallet2"></i> Pusat Keuangan &amp; Kas
+                <i class="bi bi-wallet2"></i>
+                <span>Pusat Keuangan &amp; Kas</span>
             </a>
-            <a href="{{ route('admin.tracking.index') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i> Monitoring Tracking
+            <a href="{{ route('admin.tracking.index') }}" class="btn-fin-outline">
+                <i class="bi bi-arrow-left"></i>
+                <span>Monitoring Tracking</span>
             </a>
         </div>
     </div>
 
-    {{-- Financial Statistics Cards --}}
-    <div class="payroll-stat-grid">
-        <div class="tracking-stat-card">
-            <div class="tracking-stat-info">
-                <small>Menunggu Validasi &amp; ACC</small>
-                <strong style="color: #b7791f;">Rp {{ number_format($totalPendingFee, 0, ',', '.') }}</strong>
+    {{-- 4 KPI Cards (Identik dengan Pusat Keuangan) --}}
+    <div class="finance-kpi-grid">
+        <div class="finance-kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Menunggu Validasi &amp; ACC</span>
+                <span class="kpi-icon receivable"><i class="bi bi-hourglass-top"></i></span>
             </div>
-            <div class="tracking-stat-icon" style="background: #fff3d6; color: #b7791f;">
-                <i class="bi bi-hourglass-top"></i>
-            </div>
-        </div>
-
-        <div class="tracking-stat-card">
-            <div class="tracking-stat-info">
-                <small>Disetujui (Siap Dicairkan)</small>
-                <strong style="color: #0284c7;">Rp {{ number_format($totalApprovedFee, 0, ',', '.') }}</strong>
-            </div>
-            <div class="tracking-stat-icon" style="background: #e0f2fe; color: #0284c7;">
-                <i class="bi bi-patch-check-fill"></i>
+            <div class="kpi-value">Rp {{ number_format($totalPendingFee, 0, ',', '.') }}</div>
+            <div class="kpi-sub">
+                <span>Status:</span>
+                <strong class="text-warning-emphasis">Perlu Persetujuan Admin</strong>
             </div>
         </div>
 
-        <div class="tracking-stat-card">
-            <div class="tracking-stat-info">
-                <small>Total Lunas Dicairkan</small>
-                <strong style="color: #0d6e4c;">Rp {{ number_format($totalPaidFee, 0, ',', '.') }}</strong>
+        <div class="finance-kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Disetujui (Siap Dicairkan)</span>
+                <span class="kpi-icon" style="background: #F4E4E6; color: #7A1F2B;"><i class="bi bi-patch-check-fill"></i></span>
             </div>
-            <div class="tracking-stat-icon" style="background: #F4E4E6; color: #0d6e4c;">
-                <i class="bi bi-cash-stack"></i>
+            <div class="kpi-value">Rp {{ number_format($totalApprovedFee, 0, ',', '.') }}</div>
+            <div class="kpi-sub">
+                <span>Tahap:</span>
+                <strong style="color: #7A1F2B;">Menunggu Transfer</strong>
+            </div>
+        </div>
+
+        <div class="finance-kpi-card">
+            <div class="kpi-top">
+                <span class="kpi-label">Total Lunas Dicairkan</span>
+                <span class="kpi-icon inflow"><i class="bi bi-cash-stack"></i></span>
+            </div>
+            <div class="kpi-value">Rp {{ number_format($totalPaidFee, 0, ',', '.') }}</div>
+            <div class="kpi-sub">
+                <span>Pencairan:</span>
+                <strong class="text-success">Terbayar ke Rekening</strong>
             </div>
         </div>
 
-        <div class="tracking-stat-card">
-            <div class="tracking-stat-info">
-                <small>Total Kru Terdaftar</small>
-                <strong style="color: #7A1F2B;">{{ $totalMembersAssigned }} Orang</strong>
+        <div class="finance-kpi-card highlight">
+            <div class="kpi-top">
+                <span class="kpi-label">Total Kru Terdaftar</span>
+                <span class="kpi-icon balance"><i class="bi bi-people-fill"></i></span>
             </div>
-            <div class="tracking-stat-icon" style="background: #e6f4ea; color: #7A1F2B;">
-                <i class="bi bi-people-fill"></i>
+            <div class="kpi-value">{{ $totalMembersAssigned }} Orang</div>
+            <div class="kpi-sub">
+                <span>Penugasan Aktif:</span>
+                <strong class="num-tabular">{{ $eventMembers->total() }} entri honor</strong>
             </div>
         </div>
-    </div>
-
-    {{-- Filter Bar --}}
-    <div class="payroll-filter-bar">
-        <form method="GET" action="{{ route('admin.payroll.index') }}" class="row g-2 align-items-center">
-            <div class="col-md-3">
-                <label class="form-label small fw-semibold text-muted mb-1">Status Pembayaran</label>
-                <select name="status" class="form-select form-select-sm" data-ajax-auto-submit="true">
-                    <option value="">-- Semua Status --</option>
-                    <option value="pending" @selected($status === 'pending')>Menunggu ACC Admin</option>
-                    <option value="approved" @selected($status === 'approved')>Disetujui (Siap Cair)</option>
-                    <option value="paid" @selected($status === 'paid')>Lunas Dicairkan</option>
-                </select>
-            </div>
-
-            <div class="col-md-4">
-                <label class="form-label small fw-semibold text-muted mb-1">Filter Event / Acara</label>
-                <select name="event_id" class="form-select form-select-sm" data-ajax-auto-submit="true">
-                    <option value="">-- Semua Acara --</option>
-                    @foreach($events as $ev)
-                        <option value="{{ $ev->id }}" @selected((string)$eventId === (string)$ev->id)>
-                            #{{ $ev->id }} - {{ $ev->name ?? $ev->title }} ({{ \Carbon\Carbon::parse($ev->event_date)->translatedFormat('d M Y') }})
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="col-md-3">
-                <label class="form-label small fw-semibold text-muted mb-1">Cari Nama Kru</label>
-                <div class="input-group input-group-sm">
-                    <input type="text" name="search" class="form-control" placeholder="Nama / Call sign..." value="{{ $search }}">
-                    <button class="btn btn-outline-secondary" type="submit">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="col-md-2 d-flex align-items-end mt-auto">
-                <a href="{{ route('admin.payroll.index') }}" class="btn btn-sm btn-light border w-100" title="Reset Filter">
-                    <i class="bi bi-arrow-clockwise"></i> Reset
-                </a>
-            </div>
-        </form>
     </div>
 
     {{-- Batch Action Bar --}}
@@ -128,8 +95,45 @@
         </div>
     </div>
 
-    {{-- Main Table Card --}}
-    <div class="card shadow-sm border-0" style="border-radius: 12px; overflow: hidden;">
+    {{-- Unified Workspace Card (Identik dengan Pusat Keuangan) --}}
+    <div class="finance-workspace">
+        <div class="finance-workspace-head">
+            <div class="finance-pill-group">
+                <a href="{{ route('admin.payroll.index', ['event_id' => $eventId, 'search' => $search]) }}"
+                   class="finance-pill {{ empty($status) ? 'active' : '' }}">Semua</a>
+                <a href="{{ route('admin.payroll.index', ['status' => 'pending', 'event_id' => $eventId, 'search' => $search]) }}"
+                   class="finance-pill {{ $status === 'pending' ? 'active' : '' }}">Menunggu ACC</a>
+                <a href="{{ route('admin.payroll.index', ['status' => 'approved', 'event_id' => $eventId, 'search' => $search]) }}"
+                   class="finance-pill {{ $status === 'approved' ? 'active' : '' }}">Siap Cair</a>
+                <a href="{{ route('admin.payroll.index', ['status' => 'paid', 'event_id' => $eventId, 'search' => $search]) }}"
+                   class="finance-pill {{ $status === 'paid' ? 'active' : '' }}">Lunas</a>
+            </div>
+
+            <form method="GET" action="{{ route('admin.payroll.index') }}" class="d-flex align-items-center flex-wrap gap-2">
+                @if($status)
+                    <input type="hidden" name="status" value="{{ $status }}">
+                @endif
+                <select name="event_id" class="form-select form-select-sm" data-ajax-auto-submit="true" style="min-width: 210px; width: auto;">
+                    <option value="">Semua Acara</option>
+                    @foreach($events as $ev)
+                        <option value="{{ $ev->id }}" @selected((string)$eventId === (string)$ev->id)>
+                            #{{ $ev->id }} - {{ $ev->name ?? $ev->title }} ({{ \Carbon\Carbon::parse($ev->event_date)->translatedFormat('d M Y') }})
+                        </option>
+                    @endforeach
+                </select>
+
+                <div class="ledger-search-box" style="min-width: 210px;">
+                    <i class="bi bi-search text-muted"></i>
+                    <input type="text" name="search" class="border-0 w-100" placeholder="Cari nama / call sign..." value="{{ $search }}">
+                    @if($search || $eventId || $status)
+                        <a href="{{ route('admin.payroll.index') }}" class="btn-clear-search" title="Reset Filter">
+                            <i class="bi bi-x-circle-fill"></i>
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0 table-payroll">
                 <thead>
@@ -158,7 +162,7 @@
                             </td>
                             <td>
                                 <div class="d-flex align-items-start gap-2">
-                                    <div class="member-avatar-circle {{ $isCoord ? 'coord' : 'crew' }}" style="width: 36px; height: 36px; font-size: 13px;">
+                                    <div class="payroll-avatar {{ $isCoord ? 'coord' : '' }}">
                                         {{ strtoupper(substr($em->member?->name ?? 'M', 0, 2)) }}
                                     </div>
                                     <div>
@@ -401,7 +405,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-light border" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-sm btn-wo-primary" onclick="confirmBatchAction()">
+                <button type="button" class="btn-fin-primary" onclick="confirmBatchAction()">
                     <i class="bi bi-check2"></i> Eksekusi Sekarang
                 </button>
             </div>
@@ -480,16 +484,17 @@ async function updateSingleStatus(id, status, notes = '') {
             throw new Error(data.message || 'Gagal mengubah status.');
         }
 
+        window.queueMyDreamToast(data.message || 'Status honor kru berhasil diperbarui.', 'success', 'Honorarium Diperbarui');
         location.reload();
     } catch (err) {
-        alert(err.message || 'Terjadi kesalahan');
+        window.showMyDreamToast(err.message || 'Terjadi kesalahan', 'error');
     }
 }
 
 function handleBatchAction(action) {
     const ids = getSelectedIds();
     if (ids.length === 0) {
-        alert('Silakan pilih minimal 1 kru terlebih dahulu.');
+        window.showMyDreamToast('Silakan pilih minimal 1 kru terlebih dahulu.', 'warning', 'Belum Ada Kru Dipilih');
         return;
     }
 
@@ -534,9 +539,10 @@ async function confirmBatchAction() {
             throw new Error(data.message || 'Gagal melakukan aksi massal.');
         }
 
+        window.queueMyDreamToast(data.message || 'Aksi massal honor kru berhasil diproses.', 'success', 'Batch Honorarium Selesai');
         location.reload();
     } catch (err) {
-        alert(err.message || 'Terjadi kesalahan');
+        window.showMyDreamToast(err.message || 'Terjadi kesalahan', 'error');
     }
 }
 </script>

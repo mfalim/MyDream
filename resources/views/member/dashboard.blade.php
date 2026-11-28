@@ -536,30 +536,10 @@
         </div>
     </main>
 
-    <div class="member-toast" id="memberToast" role="status" aria-live="polite">
-        <i class="bi bi-check-circle-fill"></i>
-        <span id="memberToastText"></span>
-    </div>
+    <x-mydream-toast />
 
     @vite('resources/js/app.js')
     <script>
-        let toastTimer = null;
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('memberToast');
-            const text = document.getElementById('memberToastText');
-            if (!toast || !text) return;
-
-            text.textContent = message;
-            toast.classList.toggle('is-error', isError);
-            toast.classList.add('is-visible');
-
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => {
-                toast.classList.remove('is-visible');
-            }, 3000);
-        }
-
         function updateMemberStatus(status) {
             const buttons = document.querySelectorAll('.availability-btn');
             buttons.forEach(btn => btn.disabled = true);

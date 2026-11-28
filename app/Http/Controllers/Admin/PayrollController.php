@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\EventMember;
 use App\Models\Member;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class PayrollController extends Controller
@@ -78,7 +79,8 @@ class PayrollController extends Controller
             'bank_account_holder' => 'nullable|string|max:120',
         ]);
 
-        $eventMember = EventMember::with('member')->findOrFail($id);
+        $eventMember = EventMember::with(['member.user', 'event'])->findOrFail($id);
+        $previousStatus = $eventMember->payment_status;
         $eventMember->payment_status = $validated['payment_status'];
 
         if ($validated['payment_status'] === 'paid') {
@@ -110,6 +112,21 @@ class PayrollController extends Controller
 
         $eventMember->save();
 
+        if ($previousStatus !== $eventMember->payment_status && in_array($eventMember->payment_status, ['approved', 'paid'], true)) {
+            $feeText = 'Rp ' . number_format((float) $eventMember->total_fee, 0, ',', '.');
+            $eventTitle = $eventMember->event?->title ?? 'Event';
+            $isPaid = $eventMember->payment_status === 'paid';
+            app(NotificationService::class)->notifyMember(
+                $eventMember->member,
+                'payment',
+                $isPaid ? 'Honorarium Telah Dicairkan' : 'Honorarium Disetujui (ACC)',
+                $isPaid
+                    ? "Honorarium {$feeText} untuk {$eventTitle} telah ditransfer oleh Admin."
+                    : "Honorarium {$feeText} untuk {$eventTitle} telah di-ACC Admin dan siap dicairkan.",
+                '/member/dashboard'
+            );
+        }
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -139,9 +156,11 @@ class PayrollController extends Controller
         $statusLabel = $validated['action'] === 'approve' ? 'ACC Disetujui' : 'Lunas Dicairkan';
         $timestamp = now()->format('d/m/Y H:i');
 
-        $members = EventMember::whereIn('id', $validated['ids'])->get();
+        $members = EventMember::with(['member.user', 'event'])->whereIn('id', $validated['ids'])->get();
+        $notifier = app(NotificationService::class);
 
         foreach ($members as $em) {
+            $prevStatus = $em->payment_status;
             $em->payment_status = $targetStatus;
             if ($targetStatus === 'paid') {
                 $em->paid_at = now();
@@ -151,6 +170,21 @@ class PayrollController extends Controller
                 $em->notes = $em->notes ? $em->notes . "\n" . $noteEntry : $noteEntry;
             }
             $em->save();
+
+            if ($prevStatus !== $targetStatus) {
+                $feeText = 'Rp ' . number_format((float) $em->total_fee, 0, ',', '.');
+                $eventTitle = $em->event?->title ?? 'Event';
+                $isPaid = $targetStatus === 'paid';
+                $notifier->notifyMember(
+                    $em->member,
+                    'payment',
+                    $isPaid ? 'Honorarium Telah Dicairkan' : 'Honorarium Disetujui (ACC)',
+                    $isPaid
+                        ? "Honorarium {$feeText} untuk {$eventTitle} telah ditransfer oleh Admin."
+                        : "Honorarium {$feeText} untuk {$eventTitle} telah di-ACC Admin dan siap dicairkan.",
+                    '/member/dashboard'
+                );
+            }
         }
 
         if ($request->wantsJson() || $request->ajax()) {

@@ -7,13 +7,12 @@ use App\Models\Cart;
 use App\Models\Package;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
     public function show(Request $request)
     {
-        $cart = Cart::with(['package.vendors.category', 'package.vendors.photos', 'vendors.category', 'vendors.photos'])
+        $cart = Cart::with(Cart::RELATIONS)
             ->where('user_id', $request->user()->id)
             ->first();
 
@@ -22,16 +21,9 @@ class CartController extends Controller
 
     public function addPackage(Request $request, int $packageId)
     {
-        $package = Package::availableForBooking()
-            ->with(['vendors.category', 'vendors.photos'])
-            ->findOrFail($packageId);
-        $cart = DB::transaction(function () use ($request, $package) {
-            $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
-            $cart->update(['type' => 'package', 'package_id' => $package->id]);
-            $cart->vendors()->sync([]);
-
-            return $cart->fresh(['package.vendors.category', 'package.vendors.photos', 'vendors.category', 'vendors.photos']);
-        });
+        $package = Package::availableForBooking()->findOrFail($packageId);
+        $cart = Cart::setPackageForUser((int) $request->user()->id, (int) $package->id)
+            ->fresh(Cart::RELATIONS);
 
         return response()->json(['data' => $this->cartData($cart)]);
     }
@@ -39,44 +31,27 @@ class CartController extends Controller
     public function addVendor(Request $request, int $vendorId)
     {
         $vendor = Vendor::availableForBooking()->findOrFail($vendorId);
-        $cart = DB::transaction(function () use ($request, $vendor) {
-            $cart = Cart::firstOrCreate(['user_id' => $request->user()->id]);
-            $cart->refresh();
-            if ($cart->type === 'package') {
-                return null;
-            }
-
-            $cart->update(['type' => 'custom', 'package_id' => null]);
-            $cart->vendors()->syncWithoutDetaching([$vendor->id]);
-
-            return $cart->fresh(['package.vendors.category', 'package.vendors.photos', 'vendors.category', 'vendors.photos']);
-        });
+        $cart = Cart::addVendorForUser((int) $request->user()->id, (int) $vendor->id);
 
         if ($cart === null) {
             return response()->json([
-                'message' => 'A package is already selected. Clear the package before adding custom vendors.',
+                'message' => 'Anda sudah memilih paket. Hapus paket terlebih dahulu untuk menambah vendor custom.',
             ], 409);
         }
 
-        return response()->json(['data' => $this->cartData($cart)]);
+        return response()->json(['data' => $this->cartData($cart->fresh(Cart::RELATIONS))]);
     }
 
     public function removeVendor(Request $request, int $vendorId)
     {
-        $cart = Cart::where('user_id', $request->user()->id)->first();
-        if ($cart) {
-            $cart->vendors()->detach($vendorId);
-            if ($cart->type === 'custom' && ! $cart->vendors()->exists()) {
-                $cart->update(['type' => null]);
-            }
-        }
+        Cart::removeVendorForUser((int) $request->user()->id, $vendorId);
 
         return $this->show($request);
     }
 
     public function clear(Request $request)
     {
-        Cart::where('user_id', $request->user()->id)->delete();
+        Cart::clearForUser((int) $request->user()->id);
 
         return $this->show($request);
     }

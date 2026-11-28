@@ -45,6 +45,7 @@
     </main>
 
     <x-footer />
+    <x-mydream-toast />
 
     <script src="{{ asset('js/app.js') }}" defer></script>
 

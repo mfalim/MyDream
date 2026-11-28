@@ -309,6 +309,16 @@ class PaymentController extends Controller
             $booking->syncPaymentStatus();
         });
 
+        $refLabel = $booking->invoice_number ?: ('Booking #' . $booking->id);
+        $formattedAmount = 'Rp ' . number_format((float) $validated['amount'], 0, ',', '.');
+        app(\App\Services\NotificationService::class)->notifyBookingClient(
+            $booking,
+            'payment',
+            'Pembayaran Dicatat & Diverifikasi',
+            "Pembayaran {$formattedAmount} untuk {$refLabel} telah dicatat dan diverifikasi oleh Admin.",
+            '/my-bookings'
+        );
+
         return redirect()
             ->route('admin.payments.index', ['tab' => 'bookings'])
             ->with('success', "Pembayaran manual untuk Booking #{$booking->id} berhasil dicatat dan diverifikasi.");
@@ -444,6 +454,20 @@ class PaymentController extends Controller
             );
             $payment->booking->syncPaymentStatus();
         });
+
+        $booking = $payment->booking;
+        $refLabel = $booking->invoice_number ?: ('Booking #' . $booking->id);
+        $formattedAmount = 'Rp ' . number_format((float) $payment->amount, 0, ',', '.');
+        $noteSuffix = filled($note) ? " Catatan: {$note}" : '';
+        app(\App\Services\NotificationService::class)->notifyBookingClient(
+            $booking,
+            'payment',
+            $status === 'verified' ? 'Pembayaran Diverifikasi Admin' : 'Pembayaran Ditolak',
+            $status === 'verified'
+                ? "Pembayaran {$formattedAmount} untuk {$refLabel} telah diverifikasi.{$noteSuffix}"
+                : "Bukti pembayaran {$formattedAmount} untuk {$refLabel} ditolak Admin.{$noteSuffix}",
+            '/my-bookings'
+        );
 
         return redirect()
             ->route('admin.payments.index', ['tab' => 'verification', 'status' => 'pending'])

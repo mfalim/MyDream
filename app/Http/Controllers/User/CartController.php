@@ -8,11 +8,10 @@ use App\Models\Package;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $cart = Cart::forCurrentUser();
 
@@ -24,7 +23,7 @@ class CartController extends Controller
         $missingCateringCapacity = false;
 
         if ($cart['type'] === 'package' && $cart['package_id']) {
-            $package = Package::with('vendors.category')
+            $package = Package::with(['vendors.category', 'vendors.photos'])
                 ->find($cart['package_id']);
 
             if ($package) {
@@ -68,16 +67,7 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Paket tidak tersedia karena ada vendor yang sedang menutup sesi.');
         }
 
-        DB::transaction(function () use ($package) {
-            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
-            $cart->update([
-                'type' => 'package',
-                'package_id' => $package->id,
-            ]);
-            $cart->vendors()->sync([]);
-        });
-
-        Cart::forCurrentUser();
+        Cart::setPackageForUser((int) Auth::id(), (int) $package->id);
 
         if ($request->input('redirect') === 'checkout') {
             return redirect()
@@ -97,27 +87,11 @@ class CartController extends Controller
             return redirect()->back()->with('error', 'Vendor sedang menutup sesi dan belum bisa dipesan.');
         }
 
-        $current = Cart::forCurrentUser();
-
-        if ($current['type'] === 'package') {
+        if (Cart::addVendorForUser((int) Auth::id(), (int) $vendor->id) === null) {
             return redirect()
                 ->back()
-                ->with(
-                    'error',
-                    'Anda sudah memilih paket. Hapus paket terlebih dahulu untuk menambah vendor custom.'
-                );
+                ->with('error', 'Anda sudah memilih paket. Hapus paket terlebih dahulu untuk menambah vendor custom.');
         }
-
-        DB::transaction(function () use ($vendor) {
-            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
-            $cart->update([
-                'type' => 'custom',
-                'package_id' => null,
-            ]);
-            $cart->vendors()->syncWithoutDetaching([$vendor->id]);
-        });
-
-        Cart::forCurrentUser();
 
         return redirect()
             ->route('user.cart')
@@ -126,15 +100,7 @@ class CartController extends Controller
 
     public function remove($vendorId)
     {
-        $cart = Cart::where('user_id', Auth::id())->first();
-        if ($cart) {
-            $cart->vendors()->detach($vendorId);
-            if ($cart->type === 'custom' && ! $cart->vendors()->exists()) {
-                $cart->update(['type' => null]);
-            }
-        }
-
-        Cart::forCurrentUser();
+        Cart::removeVendorForUser((int) Auth::id(), (int) $vendorId);
 
         return redirect()
             ->route('user.cart')

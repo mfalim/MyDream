@@ -546,13 +546,15 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                if (!data.success) {
-                    alert(data.message || 'Gagal memperbarui PIC tugas.');
+                if (data.success) {
+                    window.showMyDreamToast(data.message || 'PIC tugas berhasil diperbarui.', 'success');
+                } else {
+                    window.showMyDreamToast(data.message || 'Gagal memperbarui PIC tugas.', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Gagal memperbarui PIC tugas.');
+                window.showMyDreamToast('Gagal memperbarui PIC tugas.', 'error');
             });
         });
     });
@@ -564,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const endTime = row.querySelector('.schedule-time-end').value;
 
             if (!startTime || (endTime && endTime <= startTime)) {
-                alert('Isi jam mulai dan pastikan jam selesai setelah jam mulai.');
+                window.showMyDreamToast('Isi jam mulai dan pastikan jam selesai setelah jam mulai.', 'warning', 'Waktu Tidak Valid');
                 return;
             }
 
@@ -580,14 +582,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
+                    window.showMyDreamToast(data.message || 'Jam vendor berhasil disimpan.', 'success');
                 } else {
-                    alert(data.message || 'Jam vendor gagal disimpan.');
+                    window.showMyDreamToast(data.message || 'Jam vendor gagal disimpan.', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Jam vendor gagal disimpan.');
+                window.showMyDreamToast('Jam vendor gagal disimpan.', 'error');
             });
         });
     });
@@ -644,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Status booking berhasil diupdate');
+                window.queueMyDreamToast('Status booking berhasil diperbarui.', 'success', 'Booking Diperbarui');
                 location.reload();
             }
         })
@@ -730,7 +732,7 @@ document.querySelectorAll('.save-member-fee').forEach(button => {
         const paymentStatus = row.querySelector('.payment-status')?.value || 'pending';
 
         if (actualHours < 0 || actualHours > 24 || allowance < 0) {
-            alert('Jam kerja harus antara 0–24 jam dan allowance tidak boleh negatif.');
+            window.showMyDreamToast('Jam kerja harus antara 0–24 jam dan allowance tidak boleh negatif.', 'warning', 'Input Tidak Valid');
             return;
         }
 
@@ -767,12 +769,12 @@ document.querySelectorAll('.save-member-fee').forEach(button => {
                 totalFeeEl.textContent = data.total_fee ?? formatRupiah(calculateMemberFee(row));
             }
 
-            alert(data.message || 'Tracking member berhasil disimpan.');
+            window.queueMyDreamToast(data.message || 'Tracking member berhasil disimpan.', 'success');
             location.reload();
 
         } catch (error) {
             console.error('Error:', error);
-            alert(error.message || 'Gagal menyimpan tracking member.');
+            window.showMyDreamToast(error.message || 'Gagal menyimpan tracking member.', 'error');
 
         } finally {
             this.disabled = false;
@@ -804,9 +806,10 @@ window.quickFeeStatus = async function(eventId, memberId, status) {
             throw new Error(data.message || 'Gagal mengubah status bayaran.');
         }
 
+        window.queueMyDreamToast(data.message || 'Status honor kru berhasil diperbarui.', 'success');
         location.reload();
     } catch (err) {
-        alert(err.message || 'Terjadi kesalahan sistem.');
+        window.showMyDreamToast(err.message || 'Terjadi kesalahan sistem.', 'error');
     }
 };
 
@@ -834,9 +837,10 @@ window.batchEventFee = async function(eventId, action) {
             throw new Error(data.message || 'Gagal memproses aksi massal.');
         }
 
+        window.queueMyDreamToast(data.message || 'Aksi massal honor kru berhasil diproses.', 'success');
         location.reload();
     } catch (err) {
-        alert(err.message || 'Terjadi kesalahan sistem.');
+        window.showMyDreamToast(err.message || 'Terjadi kesalahan sistem.', 'error');
     }
 };
 

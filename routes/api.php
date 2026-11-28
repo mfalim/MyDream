@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Client\CartController;
 use App\Http\Controllers\Api\Client\ClientController;
 use App\Http\Controllers\Api\GoogleAuthController;
 use App\Http\Controllers\Api\Member\MemberAccountController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\Site\AboutController;
 use App\Http\Controllers\Api\Site\ArticleController;
 use App\Http\Controllers\Api\Site\CatalogController;
@@ -20,10 +21,14 @@ use App\Http\Controllers\Site\PaymentController as SitePaymentController;
 use App\Http\Middleware\EnsureUserRole;
 use Illuminate\Support\Facades\Route;
 
-// Autentikasi Mobile (hanya Klien & Kru/Member) + Webhook Midtrans
-Route::post('/auth/login', [AuthController::class, 'login'])->name('api.auth.login');
-Route::post('/auth/register', [AuthController::class, 'register'])->name('api.auth.register');
-Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->name('api.auth.google');
+// Autentikasi Mobile (hanya Klien & Kru/Member) + OTP Pendaftaran/Reset Password + Webhook Midtrans
+Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('api.auth.login');
+Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:6,1')->name('api.auth.register');
+Route::post('/auth/register/verify', [AuthController::class, 'verifyRegisterOtp'])->middleware('throttle:10,1')->name('api.auth.register.verify');
+Route::post('/auth/password/otp', [AuthController::class, 'requestPasswordOtp'])->middleware('throttle:5,1')->name('api.auth.password.otp');
+Route::post('/auth/password/reset', [AuthController::class, 'resetPasswordWithOtp'])->middleware('throttle:10,1')->name('api.auth.password.reset');
+Route::post('/auth/otp/resend', [AuthController::class, 'resendOtp'])->middleware('throttle:4,1')->name('api.auth.otp.resend');
+Route::post('/auth/google', [GoogleAuthController::class, 'loginWithGoogle'])->middleware('throttle:10,1')->name('api.auth.google');
 Route::post('/midtrans/notification', [SitePaymentController::class, 'notification'])
     ->name('midtrans.notification');
 
@@ -73,10 +78,14 @@ Route::middleware(['auth:sanctum', EnsureUserRole::class . ':member'])->prefix('
     Route::post('/events/{eventId}/members/{memberId}/attendance', [MemberAccountController::class, 'updateTeamAttendance'])->name('team.attendance');
 });
 
-// Sesi & Keranjang Klien
+// Sesi, Notifikasi & Keranjang
 Route::middleware(['auth:sanctum', EnsureUserRole::class . ':client,member'])->group(function () {
     Route::get('/me', [AuthController::class, 'me'])->name('api.me');
     Route::post('/logout', [AuthController::class, 'logout'])->name('api.logout');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('api.notifications.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])->name('api.notifications.read_all');
+    Route::post('/notifications/device-token', [NotificationController::class, 'saveDeviceToken'])->name('api.notifications.device_token');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->name('api.notifications.read');
 });
 
 Route::middleware(['auth:sanctum', EnsureUserRole::class . ':client'])->prefix('cart')->name('api.cart.')->group(function () {
